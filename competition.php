@@ -272,10 +272,9 @@ $results = getCompetitionResults($comp_data_path);
                 display: none !important;
             }
             
-            /* 인쇄 시 번호 컬럼에 "No." 텍스트 추가 (세 번째 컬럼) */
-            .professional-timetable th:nth-child(3)::before {
-                content: "No." !important;
-                display: inline !important;
+            /* 인쇄 시 번호 컬럼 아이콘만 숨김 */
+            .professional-timetable th:nth-child(2) .material-symbols-rounded {
+                display: none !important;
             }
             
             /* 인쇄 시 댄스 컬럼 아이콘 숨김 */
@@ -284,13 +283,13 @@ $results = getCompetitionResults($comp_data_path);
             }
             
             /* 댄스 컬럼 글씨 진하게 */
-            .professional-timetable td:nth-child(5) {
+            .professional-timetable td:nth-child(4) {
                 font-weight: bold !important;
                 color: #000 !important;
             }
             
-            /* 인쇄 시 시간 정렬 개선 (두 번째 컬럼) */
-            .professional-timetable td:nth-child(2) {
+            /* 인쇄 시 시간 정렬 개선 (첫 번째 컬럼) */
+            .professional-timetable td:nth-child(1) {
                 text-align: center !important;
                 vertical-align: middle !important;
             }
@@ -703,14 +702,10 @@ $results = getCompetitionResults($comp_data_path);
                     <?php if (isset($schedule['timetable_rows'])): ?>
                         <!-- 푸시된 타임테이블 데이터 표시 (시간 포함) -->
                         <div class="timetable-info" style="background: #334155; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #475569;">
-                            <h3 style="margin: 0 0 10px 0; color: #60a5fa;">
-                                <span class="material-symbols-rounded" style="vertical-align: middle;">info</span>
-                                타임테이블 정보
-                            </h3>
-                            <p style="margin: 5px 0;"><strong>마지막 업데이트:</strong> <?= htmlspecialchars($schedule['generated_at'] ?? '') ?></p>
-                            <p style="margin: 5px 0;"><strong>대회 시작:</strong> <?= htmlspecialchars($schedule['start_time'] ?? '09:00') ?></p>
-                            <p style="margin: 5px 0;"><strong>개회식 시간:</strong> <?= htmlspecialchars($schedule['opening_time'] ?? '10:30') ?></p>
-                            <p style="margin: 5px 0;"><strong>총 항목 수:</strong> <?= count($schedule['timetable_rows']) ?>개</p>
+                            <p style="margin: 0; color: #94a3b8; font-size: 14px;">
+                                <span class="material-symbols-rounded" style="vertical-align: middle; font-size: 16px;">schedule</span>
+                                마지막 업데이트: <?= htmlspecialchars($schedule['generated_at'] ?? '') ?>
+                            </p>
                         </div>
                         
                         <!-- 전문적인 표 형태 타임테이블 -->
@@ -719,7 +714,7 @@ $results = getCompetitionResults($comp_data_path);
                                 <thead>
                                     <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                                         <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 90px; font-size: 0.95em;">⏰ 시간</th>
-                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 60px; font-size: 0.95em;">🔢 번호</th>
+                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 60px; font-size: 0.95em;">No.</th>
                                         <th style="padding: 16px 12px; text-align: left; font-weight: 700; color: white; width: 230px; font-size: 0.95em;">🏆 경기 종목</th>
                                         <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 250px; font-size: 0.95em;">💃 댄스</th>
                                         <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 140px; font-size: 0.95em;">🎯 라운드</th>
@@ -903,13 +898,10 @@ $results = getCompetitionResults($comp_data_path);
                     <?php elseif (isset($schedule['events'])): ?>
                         <!-- 기존 이벤트 데이터 표시 (호환성) -->
                         <div class="timetable-info" style="background: #334155; color: white; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #475569;">
-                            <h3 style="margin: 0 0 10px 0; color: #60a5fa;">
-                                <span class="material-symbols-rounded" style="vertical-align: middle;">info</span>
-                                이벤트 목록
-                            </h3>
-                            <p style="margin: 5px 0;"><strong>마지막 업데이트:</strong> <?= htmlspecialchars($schedule['generated_at'] ?? '') ?></p>
-                            <p style="margin: 5px 0;"><strong>총 이벤트 수:</strong> <?= count($schedule['events']) ?>개</p>
-                            <p style="color: #f59e0b;"><strong>⚠️ 시간 정보가 없습니다. 다시 푸시해주세요.</strong></p>
+                            <p style="margin: 0; color: #94a3b8; font-size: 14px;">
+                                <span class="material-symbols-rounded" style="vertical-align: middle; font-size: 16px;">schedule</span>
+                                마지막 업데이트: <?= htmlspecialchars($schedule['generated_at'] ?? '') ?>
+                            </p>
                         </div>
                         
                         <div class="item-list">

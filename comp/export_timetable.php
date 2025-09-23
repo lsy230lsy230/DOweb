@@ -101,8 +101,14 @@ foreach ($sorted_raw_nos as $raw_no) {
         }
         
         if ($selected_event) {
-            $base_time = 1.5; // 기본 시간 (분)
-            $duration = $base_time * $max_dance_count;
+            // RunOrder_Tablet.txt에서 읽어온 음악 시간 사용 (댄스당 시간)
+            $music_time_per_dance = floatval($selected_event['time'] ?? 0);
+            if ($music_time_per_dance > 0) {
+                $duration = $music_time_per_dance * $max_dance_count; // 댄스당 시간 × 댄스 개수
+            } else {
+                $base_time = 1.5; // 기본 시간 (분) - 음악 시간이 없을 때만 사용
+                $duration = $base_time * $max_dance_count;
+            }
             $extra_time = $selected_event['extra_time'];
             $total_duration = $duration + $extra_time;
             
@@ -116,6 +122,11 @@ foreach ($sorted_raw_nos as $raw_no) {
                 'extra_time' => $extra_time,
                 'group_events' => $group
             ];
+            
+            // 디버깅: 순번 1의 시간 계산 확인
+            if ($selected_event['no'] == '1') {
+                echo "<!-- 디버깅 export: 순번 1, music_time_per_dance=" . $music_time_per_dance . ", max_dance_count=" . $max_dance_count . ", duration=" . $duration . ", total_duration=" . $total_duration . " -->";
+            }
         }
     }
 }
@@ -129,7 +140,7 @@ if (file_exists($special_events_file)) {
 
 // 시간표 계산 (manage_timetable.php와 동일한 로직)
 $rows = [];
-$current_time = 9 * 60; // 09:00 시작 (분 단위)
+$current_time = 9 * 60 + 1; // 09:01 시작 (분 단위) - 기본값
 
 foreach ($events_for_timetable as $event) {
     $start_time = sprintf('%02d:%02d', floor($current_time / 60), $current_time % 60);
@@ -162,7 +173,7 @@ foreach ($events_for_timetable as $event) {
         ];
     }
     
-    $current_time += $event['duration'];
+    $current_time += $event['duration']; // 연속 진행
     
     // 특별 이벤트 처리 (manage_timetable.php와 동일한 로직)
     foreach ($special_events as $special_event) {
@@ -179,7 +190,7 @@ foreach ($events_for_timetable as $event) {
                 'end_time' => $special_end_time
             ];
             
-            $current_time += $special_event['duration'];
+            $current_time += $special_event['duration']; // 연속 진행
         }
     }
 }

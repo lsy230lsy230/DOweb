@@ -14,7 +14,7 @@
             "desc": "프로 라틴",
             "roundtype": "Round 1",
             "roundnum": "",
-            "detail_no": "1-1",
+            "detail_no": "1-2",
             "dances": [
                 "C",
                 "SA",
@@ -23,13 +23,31 @@
                 "J"
             ],
             "dance_count": 5,
-            "duration": 7.5,
+            "music_time": 2,
+            "duration": 10,
             "extra_time": 0,
             "group_events": [
                 {
                     "no": "1",
                     "desc": "프로 라틴",
                     "roundtype": "Round 1",
+                    "roundnum": "",
+                    "detail_no": "1-2",
+                    "dances": [
+                        "C",
+                        "SA",
+                        "R",
+                        "P",
+                        "J"
+                    ],
+                    "dance_count": 5,
+                    "music_time": 2,
+                    "extra_time": 0
+                },
+                {
+                    "no": "1",
+                    "desc": "아마추어 라틴",
+                    "roundtype": "Final",
                     "roundnum": "",
                     "detail_no": "1-1",
                     "dances": [
@@ -40,6 +58,7 @@
                         "J"
                     ],
                     "dance_count": 5,
+                    "music_time": 2,
                     "extra_time": 0
                 }
             ]
@@ -49,7 +68,7 @@
             "desc": "프로 라틴",
             "roundtype": "Semi-Final",
             "roundnum": "",
-            "detail_no": "10-2",
+            "detail_no": "",
             "dances": [
                 "C",
                 "SA",
@@ -58,7 +77,8 @@
                 "J"
             ],
             "dance_count": 5,
-            "duration": 7.5,
+            "music_time": 2,
+            "duration": 10,
             "extra_time": 0,
             "group_events": [
                 {
@@ -66,7 +86,7 @@
                     "desc": "프로 라틴",
                     "roundtype": "Semi-Final",
                     "roundnum": "",
-                    "detail_no": "10-2",
+                    "detail_no": "",
                     "dances": [
                         "C",
                         "SA",
@@ -75,6 +95,7 @@
                         "J"
                     ],
                     "dance_count": 5,
+                    "music_time": 2,
                     "extra_time": 0
                 }
             ]
@@ -84,7 +105,7 @@
             "desc": "프로 라틴",
             "roundtype": "Final",
             "roundnum": "",
-            "detail_no": "20-3",
+            "detail_no": "",
             "dances": [
                 "C",
                 "SA",
@@ -93,7 +114,8 @@
                 "J"
             ],
             "dance_count": 5,
-            "duration": 7.5,
+            "music_time": 2,
+            "duration": 10,
             "extra_time": 0,
             "group_events": [
                 {
@@ -101,7 +123,7 @@
                     "desc": "프로 라틴",
                     "roundtype": "Final",
                     "roundnum": "",
-                    "detail_no": "20-3",
+                    "detail_no": "",
                     "dances": [
                         "C",
                         "SA",
@@ -110,6 +132,7 @@
                         "J"
                     ],
                     "dance_count": 5,
+                    "music_time": 2,
                     "extra_time": 0
                 }
             ]
@@ -120,7 +143,7 @@
         {
             "type": "event",
             "no": "1",
-            "detail_no": "1-1",
+            "detail_no": "1-2",
             "title": "프로 라틴",
             "desc": "프로 라틴",
             "roundtype": "Round 1",
@@ -133,19 +156,118 @@
                 "J"
             ],
             "dance_count": 5,
-            "duration": 7.5,
+            "duration": 10,
             "start": 540,
-            "end": 547.5,
+            "end": 550,
             "start_time": "09:00",
-            "end_time": "09:07",
+            "end_time": "09:10",
             "extra_time": 0,
-            "is_multi_event": false,
-            "group_events": []
+            "is_multi_event": true,
+            "is_first_in_group": true,
+            "group_size": 2,
+            "group_events": [
+                {
+                    "no": "1",
+                    "desc": "프로 라틴",
+                    "roundtype": "Round 1",
+                    "roundnum": "",
+                    "detail_no": "1-2",
+                    "dances": [
+                        "C",
+                        "SA",
+                        "R",
+                        "P",
+                        "J"
+                    ],
+                    "dance_count": 5,
+                    "music_time": 2,
+                    "extra_time": 0
+                },
+                {
+                    "no": "1",
+                    "desc": "아마추어 라틴",
+                    "roundtype": "Final",
+                    "roundnum": "",
+                    "detail_no": "1-1",
+                    "dances": [
+                        "C",
+                        "SA",
+                        "R",
+                        "P",
+                        "J"
+                    ],
+                    "dance_count": 5,
+                    "music_time": 2,
+                    "extra_time": 0
+                }
+            ]
+        },
+        {
+            "type": "event",
+            "no": "1",
+            "detail_no": "1-1",
+            "title": "아마추어 라틴",
+            "desc": "아마추어 라틴",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "C",
+                "SA",
+                "R",
+                "P",
+                "J"
+            ],
+            "dance_count": 5,
+            "duration": 10,
+            "start": 540,
+            "end": 550,
+            "start_time": "09:00",
+            "end_time": "09:10",
+            "extra_time": 0,
+            "is_multi_event": true,
+            "is_first_in_group": false,
+            "group_size": 2,
+            "group_events": [
+                {
+                    "no": "1",
+                    "desc": "프로 라틴",
+                    "roundtype": "Round 1",
+                    "roundnum": "",
+                    "detail_no": "1-2",
+                    "dances": [
+                        "C",
+                        "SA",
+                        "R",
+                        "P",
+                        "J"
+                    ],
+                    "dance_count": 5,
+                    "music_time": 2,
+                    "extra_time": 0
+                },
+                {
+                    "no": "1",
+                    "desc": "아마추어 라틴",
+                    "roundtype": "Final",
+                    "roundnum": "",
+                    "detail_no": "1-1",
+                    "dances": [
+                        "C",
+                        "SA",
+                        "R",
+                        "P",
+                        "J"
+                    ],
+                    "dance_count": 5,
+                    "music_time": 2,
+                    "extra_time": 0
+                }
+            ]
         },
         {
             "type": "event",
             "no": "10",
-            "detail_no": "10-2",
+            "detail_no": "",
             "title": "프로 라틴",
             "desc": "프로 라틴",
             "roundtype": "Semi-Final",
@@ -158,11 +280,11 @@
                 "J"
             ],
             "dance_count": 5,
-            "duration": 7.5,
-            "start": 547.5,
-            "end": 555,
-            "start_time": "09:07",
-            "end_time": "09:15",
+            "duration": 10,
+            "start": 550,
+            "end": 560,
+            "start_time": "09:10",
+            "end_time": "09:20",
             "extra_time": 0,
             "is_multi_event": false,
             "group_events": []
@@ -170,7 +292,7 @@
         {
             "type": "event",
             "no": "20",
-            "detail_no": "20-3",
+            "detail_no": "",
             "title": "프로 라틴",
             "desc": "프로 라틴",
             "roundtype": "Final",
@@ -183,18 +305,18 @@
                 "J"
             ],
             "dance_count": 5,
-            "duration": 7.5,
-            "start": 555,
-            "end": 562.5,
-            "start_time": "09:15",
-            "end_time": "09:22",
+            "duration": 10,
+            "start": 560,
+            "end": 570,
+            "start_time": "09:20",
+            "end_time": "09:30",
             "extra_time": 0,
             "is_multi_event": false,
             "group_events": []
         }
     ],
     "start_time": "09:00",
-    "opening_time": "10:30",
-    "generated_at": "2025-09-24 01:48:21",
+    "opening_time": "09:40",
+    "generated_at": "2025-09-24 02:34:28",
     "generated_by": "lsy230"
 }

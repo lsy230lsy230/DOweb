@@ -55,7 +55,7 @@ try {
     
     // 기본 시간 설정 (기본값으로 사용)
     $start_time_min = to_time('09:00');
-    $opening_time_min = to_time('10:30');
+    $opening_time_min = to_time('09:40');
     
     // 저장된 추가 시간 불러오기
     $extra_times = [];
@@ -89,6 +89,7 @@ try {
             $desc = $cols[1] ?? '';
             $roundtype = $cols[2] ?? '';
             $roundnum = $cols[3] ?? '';
+            $music_time = isset($cols[12]) ? floatval($cols[12]) : 0; // 시간(분) 추가
             $detail_no = $cols[13] ?? '';
             $dances = [];
             for ($i = 6; $i <= 10; $i++) {
@@ -110,6 +111,7 @@ try {
                 'detail_no' => $detail_no,
                 'dances' => $dances,
                 'dance_count' => count($dances),
+                'music_time' => $music_time,
                 'extra_time' => $extra_time
             ];
         }
@@ -129,8 +131,14 @@ try {
         }
         
         if ($selected_event) {
-            $base_time = 1.5; // 기본 시간 (분)
-            $duration = $base_time * $max_dance_count; // 종목수만큼 곱하기!
+            // RunOrder_Tablet.txt에서 읽어온 음악 시간 사용 (댄스당 시간)
+            $music_time_per_dance = floatval($selected_event['music_time'] ?? 0);
+            if ($music_time_per_dance > 0) {
+                $duration = $music_time_per_dance * $max_dance_count; // 댄스당 시간 × 댄스 개수
+            } else {
+                $base_time = 1.5; // 기본 시간 (분) - 음악 시간이 없을 때만 사용
+                $duration = $base_time * $max_dance_count; // 종목수만큼 곱하기!
+            }
             
             // 멀티이벤트의 경우 raw_no 기준으로 추가 시간 사용
             $extra_time = isset($extra_times[$raw_no]) ? $extra_times[$raw_no] : 0;
@@ -143,6 +151,7 @@ try {
                 'detail_no' => $selected_event['detail_no'],
                 'dances' => $selected_event['dances'],
                 'dance_count' => $max_dance_count,
+                'music_time' => $selected_event['music_time'],
                 'duration' => $duration,
                 'extra_time' => $extra_time,
                 'group_events' => $group
@@ -181,7 +190,15 @@ try {
         
         // 추가 시간 적용
         $extra_time = $events[$i]['extra_time'] ?? 0;
-        $total_duration = $events[$i]['duration'] + $extra_time;
+        // RunOrder_Tablet.txt에서 읽어온 음악 시간 사용 (댄스당 시간)
+        $music_time_per_dance = floatval($events[$i]['music_time'] ?? 0);
+        if ($music_time_per_dance > 0) {
+            $duration = $music_time_per_dance * $events[$i]['dance_count']; // 댄스당 시간 × 댄스 개수
+        } else {
+            $base_time = 1.5; // 기본 시간 (분) - 음악 시간이 없을 때만 사용
+            $duration = $base_time * $events[$i]['dance_count']; // 종목수만큼 곱하기!
+        }
+        $total_duration = $duration + $extra_time;
         
         // 멀티이벤트인지 확인
         $is_multi_event = isset($events[$i]['group_events']) && count($events[$i]['group_events']) > 1;

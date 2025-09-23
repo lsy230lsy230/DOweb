@@ -1,4 +1,5 @@
 <?php
+session_start();
 $comp_id = $_GET['comp_id'] ?? '';
 $data_dir = __DIR__ . "/data/$comp_id";
 $info_file = "$data_dir/info.json";
@@ -39,8 +40,21 @@ function to_hm($m) {
     $m = (int)$m % 60;
     return padzero($h) . ':' . padzero($m);
 }
-$start_time_str = $_POST['start_time'] ?? '09:00';
-$opening_time_str = $_POST['opening_time'] ?? '10:30';
+// 시간 설정 처리
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['start_time'])) {
+    // 폼에서 제출된 시간 사용
+    $start_time_str = $_POST['start_time'];
+    $opening_time_str = $_POST['opening_time'] ?? '09:40';
+} else {
+    // 기본값 또는 세션에서 저장된 값 사용
+    $start_time_str = $_SESSION['start_time'] ?? '09:01';
+    $opening_time_str = $_SESSION['opening_time'] ?? '09:40';
+}
+
+// 세션에 시간 저장
+$_SESSION['start_time'] = $start_time_str;
+$_SESSION['opening_time'] = $opening_time_str;
+
 $start_time_min = to_time($start_time_str);
 $opening_time_min = to_time($opening_time_str);
 
@@ -174,6 +188,7 @@ if (file_exists($runorder_file)) {
         $desc = $cols[1] ?? '';
         $roundtype = $cols[2] ?? '';
         $roundnum = $cols[3] ?? '';
+        $music_time = isset($cols[12]) ? floatval($cols[12]) : 0; // 시간(분) 추가
         $detail_no = $cols[13] ?? ''; // 세부번호 추가
         $dances = [];
         for ($i = 6; $i <= 10; $i++) {
@@ -213,7 +228,7 @@ if (file_exists($runorder_file)) {
         }
         $extra_time = isset($cols[14]) && !empty($cols[14]) ? intval($cols[14]) : 0;
         if ($no == '1') {
-            echo "<!-- 디버깅 순번 1: cols[14]=" . (isset($cols[14]) ? $cols[14] : '없음') . ", extra_time=$extra_time -->";
+            echo "<!-- 디버깅 순번 1: cols[12]=" . (isset($cols[12]) ? $cols[12] : '없음') . ", music_time=$music_time, cols[14]=" . (isset($cols[14]) ? $cols[14] : '없음') . ", extra_time=$extra_time -->";
         }
         $raw_no_groups[$no][] = [
             'no' => $no,
@@ -223,6 +238,7 @@ if (file_exists($runorder_file)) {
             'detail_no' => $detail_no,
             'dances' => $dances_full,
             'dance_count' => count($dances_full),
+            'music_time' => $music_time, // 음악 시간 추가
             'extra_time' => $extra_time
         ];
     }
@@ -242,8 +258,14 @@ foreach ($raw_no_groups as $raw_no => $group) {
     }
     
     if ($selected_event) {
-        $base_time = 1.5; // 기본 시간 (분)
-        $duration = $base_time * $max_dance_count; // 종목수만큼 곱하기!
+        // RunOrder_Tablet.txt에서 읽어온 음악 시간 사용 (댄스당 시간)
+        $music_time_per_dance = floatval($selected_event['music_time'] ?? 0);
+        if ($music_time_per_dance > 0) {
+            $duration = $music_time_per_dance * $max_dance_count; // 댄스당 시간 × 댄스 개수
+        } else {
+            $base_time = 1.5; // 기본 시간 (분) - 음악 시간이 없을 때만 사용
+            $duration = $base_time * $max_dance_count; // 종목수만큼 곱하기!
+        }
         
         // 저장된 라운드 정보가 있으면 사용, 없으면 기존 방식 사용
         $event_idx = count($events);
@@ -266,14 +288,14 @@ foreach ($raw_no_groups as $raw_no => $group) {
         
         // 디버깅: 순번 1의 추가 시간 확인
         if ($selected_event['no'] == '1') {
-            echo "<!-- 디버깅 이벤트 배열: 순번 1, extra_time=" . $extra_time . " -->";
+            echo "<!-- 디버깅 이벤트 배열: 순번 1, music_time_per_dance=" . $music_time_per_dance . ", max_dance_count=" . $max_dance_count . ", duration=" . $duration . ", extra_time=" . $extra_time . " -->";
         }
     }
 }
 
 // 타임테이블 계산: 각 이벤트의 시작/종료 시간 구하기
 $rows = [];
-$cur_min = $start_time_min;
+$cur_min = $start_time_min; // 사용자가 입력한 시작 시간 사용
 $opening_row_idx = null;
 
 for ($i = 0; $i < count($events); $i++) {
@@ -328,7 +350,8 @@ for ($i = 0; $i < count($events); $i++) {
         'group_events' => $events[$i]['group_events'] ?? [], // 멀티이벤트 정보 추가
         'extra_time' => $extra_time, // 추가 시간 정보
     ];
-    $cur_min += $total_duration;
+    // 다음 이벤트는 현재 이벤트 종료 시간부터 바로 시작
+    $cur_min = $cur_min + $total_duration;
 }
 
 // 개회식 전 이벤트 시간 부족/초과 체크
