@@ -502,7 +502,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                     <span class="material-symbols-rounded">event</span>
                     <?= t('nav_competitions') ?>
                 </a></li>
-                <li><a href="/results/">
+                <li><a href="/results.php">
                     <span class="material-symbols-rounded">trophy</span>
                     <?= t('nav_results') ?>
                 </a></li>
