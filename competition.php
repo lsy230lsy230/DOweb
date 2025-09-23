@@ -520,147 +520,56 @@ $results = getCompetitionResults($comp_data_path);
                             <p style="margin: 5px 0;"><strong>총 항목 수:</strong> <?= count($schedule['timetable_rows']) ?>개</p>
                         </div>
                         
-                        <div class="item-list">
+                        <!-- 컴팩트한 타임테이블 표시 -->
+                        <div class="compact-timetable" style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
                             <?php 
-                            $processed_groups = []; // 멀티이벤트 그룹 처리 추적
-                            foreach ($schedule['timetable_rows'] as $index => $row): 
-                                $is_multi = isset($row['is_multi_event']) && $row['is_multi_event'];
-                                $is_first_in_group = isset($row['is_first_in_group']) && $row['is_first_in_group'];
-                                
-                                // 멀티이벤트 처리
-                                if ($is_multi && isset($row['no'])) {
-                                    $group_key = $row['no'] . '_' . $row['start_time'];
-                                    if (in_array($group_key, $processed_groups)) {
-                                        continue; // 이미 처리된 그룹은 건너뛰기
-                                    }
-                                    $processed_groups[] = $group_key;
-                                    
-                                    // 같은 그룹의 모든 이벤트 찾기
-                                    $group_rows = array_filter($schedule['timetable_rows'], function($r) use ($row) {
-                                        return isset($r['no']) && isset($row['no']) && 
-                                               $r['no'] === $row['no'] && 
-                                               $r['start_time'] === $row['start_time'] && 
-                                               isset($r['is_multi_event']) && $r['is_multi_event'];
-                                    });
+                            // 시간순으로 정렬하고 시간대별로 그룹화
+                            $all_rows = $schedule['timetable_rows'];
+                            usort($all_rows, function($a, $b) {
+                                return strcmp($a['start_time'] ?? '', $b['start_time'] ?? '');
+                            });
+                            
+                            // 시간대별로 그룹화
+                            $time_groups = [];
+                            foreach ($all_rows as $row) {
+                                $time_range = ($row['start_time'] ?? '') . '~' . ($row['end_time'] ?? '');
+                                if (!isset($time_groups[$time_range])) {
+                                    $time_groups[$time_range] = [];
                                 }
+                                $time_groups[$time_range][] = $row;
+                            }
                             ?>
-                                <div class="item-card" style="<?= isset($row['is_opening']) && $row['is_opening'] ? 'border-left: 4px solid #f59e0b;' : (isset($row['is_special']) && $row['is_special'] ? 'border-left: 4px solid #10b981;' : 'border-left: 4px solid #3b82f6;') ?>">
-                                    <div class="item-header" style="display: flex; align-items: center; gap: 15px;">
-                                        <?php if ($is_multi && isset($row['no'])): ?>
-                                            <!-- 멀티이벤트: 시간은 한 번만 표시 -->
-                                            <div class="time-info" style="min-width: 120px; text-align: center;">
-                                                <div style="color: #3b82f6; font-weight: bold; font-size: 1.1em;">
-                                                    <?= htmlspecialchars($row['start_time'] ?? '') ?>
-                                                </div>
-                                                <div style="color: #64748b; font-size: 0.9em;">
-                                                    <?= htmlspecialchars($row['end_time'] ?? '') ?>
-                                                </div>
-                                            </div>
-                                            <div class="event-info" style="flex: 1;">
-                                                <h3 class="item-title" style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                                                    <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
-                                                        <?= htmlspecialchars($row['no'] ?? '') ?>번
-                                                    </span>
-                                                    <span>멀티이벤트 (<?= count($group_rows) ?>개 세부 종목)</span>
-                                                </h3>
-                                                
-                                                <!-- 세부 이벤트들 표시 -->
-                                                <div style="margin-top: 10px;">
-                                                    <?php foreach ($group_rows as $sub_row): ?>
-                                                        <div style="padding: 8px; background: #475569; color: white; border-radius: 4px; margin-bottom: 8px; border-left: 3px solid #3b82f6; border: 1px solid #64748b;">
-                                                            <div style="display: flex; align-items: center; gap: 8px;">
-                                                                <span style="background: #64748b; color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.75em;">
-                                                                    <?= htmlspecialchars($sub_row['detail_no']) ?>
-                                                                </span>
-                                                                <strong><?= htmlspecialchars($sub_row['title']) ?></strong>
-                                                            </div>
-                                                            <?php if (!empty($sub_row['dances'])): ?>
-                                                                <div style="margin-top: 4px; font-size: 0.9em; color: #64748b;">
-                                                                    <strong>댄스:</strong> 
-                                                                    <?php
-                                                                    $dance_names = ['1' => 'W', '2' => 'T', '3' => 'V', '4' => 'F', '5' => 'Q', '6' => 'C', '7' => 'S', '8' => 'R', '9' => 'P', '10' => 'J'];
-                                                                    $dances = array_map(function($d) use ($dance_names) {
-                                                                        return $dance_names[$d] ?? $d;
-                                                                    }, $sub_row['dances']);
-                                                                    echo htmlspecialchars(implode(', ', $dances));
-                                                                    ?>
-                                                                </div>
-                                                            <?php endif; ?>
-                                                        </div>
-                                                    <?php endforeach; ?>
-                                                </div>
-                                                
-                                                <?php if (!empty($row['roundtype'])): ?>
-                                                    <div style="font-size: 0.9em; color: #64748b; margin-top: 8px;">
-                                                        <?= htmlspecialchars($row['roundtype']) ?>
-                                                        <?php if (!empty($row['roundnum']) && $row['roundnum'] !== ''): ?>
-                                                            <?= htmlspecialchars($row['roundnum']) ?>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
-                                        <?php else: ?>
-                                            <!-- 단일이벤트 또는 특별이벤트 -->
-                                            <div class="time-info" style="min-width: 120px; text-align: center;">
-                                                <div style="color: #3b82f6; font-weight: bold; font-size: 1.1em;">
-                                                    <?= htmlspecialchars($row['start_time'] ?? '') ?>
-                                                </div>
-                                                <div style="color: #64748b; font-size: 0.9em;">
-                                                    <?= htmlspecialchars($row['end_time'] ?? '') ?>
-                                                </div>
-                                            </div>
-                                            <div class="event-info" style="flex: 1;">
-                                                <h3 class="item-title" style="margin: 0; display: flex; align-items: center; gap: 8px;">
-                                                    <?php if (isset($row['is_opening']) && $row['is_opening']): ?>
-                                                        <span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
-                                                            개회식
-                                                        </span>
-                                                    <?php elseif (isset($row['is_special']) && $row['is_special']): ?>
-                                                        <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
-                                                            특별
-                                                        </span>
-                                                    <?php else: ?>
-                                                        <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
-                                                            <?= htmlspecialchars($row['no'] ?? '') ?>번
-                                                        </span>
+                            
+                            <?php foreach ($time_groups as $time_range => $rows): ?>
+                                <div style="border-bottom: 1px solid #e2e8f0; padding: 8px 12px;">
+                                    <div style="display: flex; gap: 15px; align-items: flex-start;">
+                                        <!-- 시간 (고정폭) -->
+                                        <div style="min-width: 100px; font-weight: 600; color: #1e40af; font-size: 0.95em;">
+                                            <?= htmlspecialchars($time_range) ?>
+                                        </div>
+                                        
+                                        <!-- 이벤트 목록 -->
+                                        <div style="flex: 1;">
+                                            <?php foreach ($rows as $index => $row): ?>
+                                                <div style="<?= $index > 0 ? 'margin-top: 4px; padding-left: 20px;' : '' ?>">
+                                                    <!-- 디테일 번호와 이벤트명 -->
+                                                    <span style="display: inline-flex; align-items: center; gap: 8px;">
                                                         <?php if (!empty($row['detail_no'])): ?>
-                                                            <span style="background: #64748b; color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.75em;">
+                                                            <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.8em; font-weight: 500;">
                                                                 <?= htmlspecialchars($row['detail_no']) ?>
                                                             </span>
+                                                        <?php elseif (!empty($row['no'])): ?>
+                                                            <span style="background: #3b82f6; color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.8em; font-weight: 500;">
+                                                                <?= htmlspecialchars($row['no']) ?>
+                                                            </span>
                                                         <?php endif; ?>
-                                                    <?php endif; ?>
-                                                    <span><?= htmlspecialchars($row['title'] ?? '경기 종목') ?></span>
-                                                </h3>
-                                                <?php if (!empty($row['roundtype'])): ?>
-                                                    <div style="font-size: 0.9em; color: #64748b; margin-top: 4px;">
-                                                        <?= htmlspecialchars($row['roundtype']) ?>
-                                                        <?php if (!empty($row['roundnum']) && $row['roundnum'] !== ''): ?>
-                                                            <?= htmlspecialchars($row['roundnum']) ?>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                    <div class="item-content">
-                                        <?php if (!empty($row['dances'])): ?>
-                                            <p><strong>댄스 종목:</strong> 
-                                                <?php
-                                                $dance_names = ['1' => 'W', '2' => 'T', '3' => 'V', '4' => 'F', '5' => 'Q', '6' => 'C', '7' => 'S', '8' => 'R', '9' => 'P', '10' => 'J'];
-                                                $dances = array_map(function($d) use ($dance_names) {
-                                                    return $dance_names[$d] ?? $d;
-                                                }, $row['dances']);
-                                                echo htmlspecialchars(implode(', ', $dances));
-                                                ?>
-                                            </p>
-                                        <?php endif; ?>
-                                        <?php if (isset($row['duration'])): ?>
-                                            <p><strong>예상 소요시간:</strong> <?= $row['duration'] ?>분
-                                                <?php if (isset($row['extra_time']) && $row['extra_time'] > 0): ?>
-                                                    (추가 <?= $row['extra_time'] ?>분)
-                                                <?php endif; ?>
-                                            </p>
-                                        <?php endif; ?>
+                                                        <span style="font-weight: 500; color: #1e293b;">
+                                                            <?= htmlspecialchars($row['title'] ?? $row['desc'] ?? '경기 종목') ?>
+                                                        </span>
+                                                    </span>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        </div>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
@@ -689,26 +598,10 @@ $results = getCompetitionResults($comp_data_path);
                                         </h3>
                                         <span class="item-date">
                                             <?= htmlspecialchars($event['roundtype'] ?? '') ?>
-                                            <?php if (!empty($event['roundnum'])): ?>
+                                            <?php if (!empty($event['roundnum']) && $event['roundnum'] !== ''): ?>
                                                 <?= htmlspecialchars($event['roundnum']) ?>
                                             <?php endif; ?>
                                         </span>
-                                    </div>
-                                    <div class="item-content">
-                                        <?php if (!empty($event['dances'])): ?>
-                                            <p><strong>댄스 종목:</strong> 
-                                                <?php
-                                                $dance_names = ['1' => 'W', '2' => 'T', '3' => 'V', '4' => 'F', '5' => 'Q', '6' => 'C', '7' => 'S', '8' => 'R', '9' => 'P', '10' => 'J'];
-                                                $dances = array_map(function($d) use ($dance_names) {
-                                                    return $dance_names[$d] ?? $d;
-                                                }, $event['dances']);
-                                                echo htmlspecialchars(implode(', ', $dances));
-                                                ?>
-                                            </p>
-                                        <?php endif; ?>
-                                        <?php if (isset($event['extra_time']) && $event['extra_time'] > 0): ?>
-                                            <p><strong>추가 시간:</strong> <?= $event['extra_time'] ?>분</p>
-                                        <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
