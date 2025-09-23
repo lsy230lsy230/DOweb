@@ -87,16 +87,15 @@ class Language {
     public function getLanguageUrl($langCode) {
         $currentUrl = $_SERVER['REQUEST_URI'];
         $urlParts = parse_url($currentUrl);
+        $params = [];
         
         // 기존 lang 파라미터 제거
         if (isset($urlParts['query'])) {
             parse_str($urlParts['query'], $params);
-            unset($params['lang']);
-            $params['lang'] = $langCode;
-            $queryString = http_build_query($params);
-        } else {
-            $queryString = 'lang=' . $langCode;
         }
+        
+        $params['lang'] = $langCode;
+        $queryString = http_build_query($params);
 
         $path = $urlParts['path'] ?? '/';
         return $path . '?' . $queryString;

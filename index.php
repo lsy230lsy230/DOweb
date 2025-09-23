@@ -1,4 +1,10 @@
 <?php
+session_start();
+
+// 다국어 시스템 로드
+require_once __DIR__ . '/lang/Language.php';
+$lang = Language::getInstance();
+
 $base_ads_dir = __DIR__ . "/data/";
 function read_banner($pos) {
     $img_web = "/data/$pos.jpg";
@@ -15,8 +21,8 @@ function read_banner($pos) {
 // 공지 및 일정 미리보기
 $notice_file = __DIR__ . "/data/notice.txt";
 $schedule_file = __DIR__ . "/data/schedule.txt";
-$notice_preview = file_exists($notice_file) ? nl2br(htmlspecialchars(file_get_contents($notice_file))) : "등록된 공지가 없습니다.";
-$schedule_preview = file_exists($schedule_file) ? nl2br(htmlspecialchars(file_get_contents($schedule_file))) : "등록된 대회일정이 없습니다.";
+$notice_preview = file_exists($notice_file) ? nl2br(htmlspecialchars(file_get_contents($notice_file))) : t('no_notices');
+$schedule_preview = file_exists($schedule_file) ? nl2br(htmlspecialchars(file_get_contents($schedule_file))) : t('no_schedule');
 
 // 대회 스케줄러 로드
 require_once __DIR__ . '/data/scheduler.php';
@@ -29,10 +35,10 @@ $upcoming_competitions = $scheduler->getUpcomingCompetitions(3);
 $recent_competitions = $scheduler->getRecentCompetitions(2);
 ?>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="<?= $lang->getCurrentLang() ?>">
 <head>
     <meta charset="UTF-8">
-    <title>DanceOffice - International DanceSport Competition Management System</title>
+    <title><?= t('site_title') ?></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -120,6 +126,82 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
 
         .sidebar-nav .material-symbols-rounded {
             font-size: 20px;
+        }
+
+        /* 언어 선택 */
+        .language-selector {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .language-dropdown {
+            position: relative;
+        }
+
+        .language-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            text-align: left;
+        }
+
+        .language-toggle:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        .language-menu {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .language-menu.active {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .language-option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+            margin: 4px;
+        }
+
+        .language-option:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .language-option.current {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
         }
 
         /* 메인 콘텐츠 */
@@ -414,25 +496,45 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             <ul class="sidebar-nav">
                 <li><a href="/" class="active">
                     <span class="material-symbols-rounded">dashboard</span>
-                    Dashboard
+                    <?= t('nav_dashboard') ?>
                 </a></li>
                 <li><a href="/comp/">
                     <span class="material-symbols-rounded">event</span>
-                    Competitions
+                    <?= t('nav_competitions') ?>
                 </a></li>
                 <li><a href="/results/">
                     <span class="material-symbols-rounded">trophy</span>
-                    Results
+                    <?= t('nav_results') ?>
                 </a></li>
                 <li><a href="/manage/">
                     <span class="material-symbols-rounded">settings</span>
-                    Management
+                    <?= t('nav_management') ?>
                 </a></li>
                 <li><a href="/notice/">
                     <span class="material-symbols-rounded">notifications</span>
-                    Notices
+                    <?= t('nav_notices') ?>
                 </a></li>
             </ul>
+
+            <!-- 언어 선택기 -->
+            <div class="language-selector">
+                <div class="language-dropdown">
+                    <div class="language-toggle" onclick="toggleLanguageMenu()">
+                        <span><?= $lang->getLangFlag() ?></span>
+                        <span><?= $lang->getLangName() ?></span>
+                        <span class="material-symbols-rounded" style="margin-left: auto;">expand_more</span>
+                    </div>
+                    <div class="language-menu" id="languageMenu">
+                        <?php foreach ($lang->getAvailableLanguages() as $code => $info): ?>
+                            <a href="<?= $lang->getLanguageUrl($code) ?>" 
+                               class="language-option <?= $code === $lang->getCurrentLang() ? 'current' : '' ?>">
+                                <span><?= $info['flag'] ?></span>
+                                <span><?= $info['name'] ?></span>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
         </nav>
 
         <!-- 메인 콘텐츠 -->
@@ -440,24 +542,24 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             <!-- 히어로 섹션 -->
             <section class="hero-section">
                 <div class="hero-content">
-                    <h1 class="hero-title">DanceOffice</h1>
+                    <h1 class="hero-title"><?= t('hero_title') ?></h1>
                     <p class="hero-subtitle">
-                        International DanceSport Competition Management System
-                        <br>Professional judging platform for global dance competitions
+                        <?= t('hero_subtitle') ?>
+                        <br><?= t('hero_description') ?>
                     </p>
                     
                     <div class="hero-stats">
                         <div class="stat-item">
                             <span class="stat-number"><?= count($upcoming_competitions) + count($recent_competitions) ?></span>
-                            <span class="stat-label">Total Competitions</span>
+                            <span class="stat-label"><?= t('stat_total_competitions') ?></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-number"><?= count($upcoming_competitions) ?></span>
-                            <span class="stat-label">Upcoming Events</span>
+                            <span class="stat-label"><?= t('stat_upcoming_events') ?></span>
                         </div>
                         <div class="stat-item">
                             <span class="stat-number"><?= count($recent_competitions) ?></span>
-                            <span class="stat-label">Completed</span>
+                            <span class="stat-label"><?= t('stat_completed') ?></span>
                         </div>
                     </div>
                 </div>
@@ -470,9 +572,9 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                     <div class="widget-header">
                         <h2 class="widget-title">
                             <span class="material-symbols-rounded widget-icon">upcoming</span>
-                            Upcoming Competitions
+                            <?= t('widget_upcoming_competitions') ?>
                         </h2>
-                        <a href="/comp/" class="widget-action">View All</a>
+                        <a href="/comp/" class="widget-action"><?= t('action_view_all') ?></a>
                     </div>
                     
                     <div class="widget-content">
@@ -481,7 +583,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                                 <div class="competition-item">
                                     <div class="comp-header">
                                         <h3 class="comp-title"><?= htmlspecialchars($comp['name']) ?></h3>
-                                        <span class="comp-status status-upcoming">Upcoming</span>
+                                        <span class="comp-status status-upcoming"><?= t('status_upcoming') ?></span>
                                     </div>
                                     <div class="comp-details">
                                         <?= htmlspecialchars($comp['description']) ?>
@@ -489,7 +591,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                                     <div class="comp-meta">
                                         <div class="meta-item">
                                             <span class="material-symbols-rounded">schedule</span>
-                                            <?= date('M d, Y', strtotime($comp['date'])) ?>
+                                            <?= $lang->formatDate($comp['date']) ?>
                                         </div>
                                         <div class="meta-item">
                                             <span class="material-symbols-rounded">location_on</span>
@@ -500,7 +602,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                             <?php endforeach; ?>
                         <?php else: ?>
                             <p style="color: #64748b; text-align: center; padding: 20px;">
-                                No upcoming competitions scheduled
+                                <?= t('no_upcoming_competitions') ?>
                             </p>
                         <?php endif; ?>
                     </div>
@@ -511,9 +613,9 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                     <div class="widget-header">
                         <h2 class="widget-title">
                             <span class="material-symbols-rounded widget-icon">history</span>
-                            Recent Results
+                            <?= t('widget_recent_results') ?>
                         </h2>
-                        <a href="/results/" class="widget-action">View All</a>
+                        <a href="/results/" class="widget-action"><?= t('action_view_all') ?></a>
                     </div>
                     
                     <div class="widget-content">
@@ -522,7 +624,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                                 <div class="competition-item">
                                     <div class="comp-header">
                                         <h3 class="comp-title"><?= htmlspecialchars($comp['name']) ?></h3>
-                                        <span class="comp-status status-completed">Completed</span>
+                                        <span class="comp-status status-completed"><?= t('status_completed') ?></span>
                                     </div>
                                     <div class="comp-details">
                                         <?= htmlspecialchars($comp['description']) ?>
@@ -530,7 +632,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                                     <div class="comp-meta">
                                         <div class="meta-item">
                                             <span class="material-symbols-rounded">schedule</span>
-                                            <?= date('M d, Y', strtotime($comp['date'])) ?>
+                                            <?= $lang->formatDate($comp['date']) ?>
                                         </div>
                                         <div class="meta-item">
                                             <span class="material-symbols-rounded">location_on</span>
@@ -541,7 +643,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                             <?php endforeach; ?>
                         <?php else: ?>
                             <p style="color: #64748b; text-align: center; padding: 20px;">
-                                No recent competitions
+                                <?= t('no_recent_competitions') ?>
                             </p>
                         <?php endif; ?>
                     </div>
@@ -552,9 +654,9 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                     <div class="widget-header">
                         <h2 class="widget-title">
                             <span class="material-symbols-rounded widget-icon">campaign</span>
-                            Announcements
+                            <?= t('widget_announcements') ?>
                         </h2>
-                        <a href="/notice/" class="widget-action">Manage</a>
+                        <a href="/notice/" class="widget-action"><?= t('action_manage') ?></a>
                     </div>
                     
                     <div class="widget-content">
@@ -569,9 +671,9 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                     <div class="widget-header">
                         <h2 class="widget-title">
                             <span class="material-symbols-rounded widget-icon">calendar_month</span>
-                            Schedule
+                            <?= t('widget_schedule') ?>
                         </h2>
-                        <a href="/manage/" class="widget-action">Edit</a>
+                        <a href="/manage/" class="widget-action"><?= t('action_edit') ?></a>
                     </div>
                     
                     <div class="widget-content">
@@ -586,18 +688,35 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             <div class="action-buttons">
                 <a href="/comp/" class="btn btn-primary">
                     <span class="material-symbols-rounded">add</span>
-                    New Competition
+                    <?= t('action_new_competition') ?>
                 </a>
                 <a href="/results/" class="btn btn-secondary">
                     <span class="material-symbols-rounded">visibility</span>
-                    View Results
+                    <?= t('action_view_results') ?>
                 </a>
                 <a href="/manage/" class="btn btn-secondary">
                     <span class="material-symbols-rounded">tune</span>
-                    Settings
+                    <?= t('action_settings') ?>
                 </a>
             </div>
         </main>
     </div>
+
+    <script>
+        function toggleLanguageMenu() {
+            const menu = document.getElementById('languageMenu');
+            menu.classList.toggle('active');
+        }
+
+        // 언어 메뉴 외부 클릭시 닫기
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.language-dropdown');
+            const menu = document.getElementById('languageMenu');
+            
+            if (!dropdown.contains(event.target)) {
+                menu.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
