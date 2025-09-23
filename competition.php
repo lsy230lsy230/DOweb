@@ -623,27 +623,41 @@ $results = getCompetitionResults($comp_data_path);
                                     $multi_round_groups = [];
                                     
                                     
-                                    // 이벤트별 행 수 계산
+                                    // 이벤트별 행 수 계산 (숫자 이벤트만)
                                     $event_rows = [];
                                     foreach ($all_rows as $row) {
                                         $event_no = $row['no'] ?? '';
-                                        if (!isset($event_rows[$event_no])) {
-                                            $event_rows[$event_no] = 0;
+                                        // 숫자 이벤트만 그룹화 (특별 이벤트 제외)
+                                        if (!empty($event_no) && is_numeric($event_no)) {
+                                            if (!isset($event_rows[$event_no])) {
+                                                $event_rows[$event_no] = 0;
+                                            }
+                                            $event_rows[$event_no]++;
                                         }
-                                        $event_rows[$event_no]++;
                                     }
                                     
                                     $current_event_no = null;
                                     $event_row_index = 0;
                                     
                                     foreach ($all_rows as $index => $row): 
-                                        $is_new_event = ($row['no'] ?? '') !== $current_event_no;
-                                        if ($is_new_event) {
-                                            $current_event_no = $row['no'] ?? '';
-                                            $event_row_index = 0;
+                                        $event_no = $row['no'] ?? '';
+                                        $is_numeric_event = !empty($event_no) && is_numeric($event_no);
+                                        
+                                        // 숫자 이벤트만 그룹화 처리
+                                        if ($is_numeric_event) {
+                                            $is_new_event = $event_no !== $current_event_no;
+                                            if ($is_new_event) {
+                                                $current_event_no = $event_no;
+                                                $event_row_index = 0;
+                                            }
+                                            $is_first_in_event = $is_new_event;
+                                            $event_row_count = $event_rows[$current_event_no] ?? 1;
+                                        } else {
+                                            // 특별 이벤트는 개별 처리
+                                            $is_first_in_event = true;
+                                            $event_row_count = 1;
+                                            $current_event_no = null; // 리셋
                                         }
-                                        $is_first_in_event = $is_new_event;
-                                        $event_row_count = $event_rows[$current_event_no] ?? 1;
                                         
                                         // 모든 행을 흰색 배경으로 통일
                                         $bg_color = '#ffffff';
@@ -653,7 +667,7 @@ $results = getCompetitionResults($comp_data_path);
                                             
                                             <!-- 시간 -->
                                             <?php if ($is_first_in_event): ?>
-                                            <td rowspan="<?= $event_row_count ?>" style="padding: 12px 8px; text-align: center; color: #1e40af; font-weight: 700; font-size: 0.95em; border-right: 1px solid #e5e7eb; vertical-align: middle;">
+                                            <td <?= $is_numeric_event && $event_row_count > 1 ? 'rowspan="' . $event_row_count . '"' : '' ?> style="padding: 12px 8px; text-align: center; color: #1e40af; font-weight: 700; font-size: 0.95em; border-right: 1px solid #e5e7eb; vertical-align: middle;">
                                                 <div style="display: flex; flex-direction: column; align-items: center;">
                                                     <span style="font-size: 1.1em; font-weight: 800; color: #1e40af;">
                                                         <?= htmlspecialchars($row['start_time'] ?? '') ?>
@@ -667,10 +681,12 @@ $results = getCompetitionResults($comp_data_path);
                                             </td>
                                             
                                             <!-- 이벤트 번호 -->
-                                            <td rowspan="<?= $event_row_count ?>" style="padding: 12px 8px; text-align: center; font-weight: 600; border-right: 1px solid #e5e7eb; vertical-align: middle;">
-                                                <span style="background: <?= $accent_color ?>; color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.9em; font-weight: 700;">
-                                                    <?= htmlspecialchars($row['no'] ?? '') ?>
-                                                </span>
+                                            <td <?= $is_numeric_event && $event_row_count > 1 ? 'rowspan="' . $event_row_count . '"' : '' ?> style="padding: 12px 8px; text-align: center; font-weight: 600; border-right: 1px solid #e5e7eb; vertical-align: middle;">
+                                                <?php if (!empty($row['no'])): ?>
+                                                    <span style="background: <?= $accent_color ?>; color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.9em; font-weight: 700;">
+                                                        <?= htmlspecialchars($row['no']) ?>
+                                                    </span>
+                                                <?php endif; ?>
                                             </td>
                                             <?php endif; ?>
                                             
