@@ -203,7 +203,7 @@ $results = getCompetitionResults($comp_data_path);
                 display: block !important;
             }
             /* 인쇄 시 불필요한 요소 숨기기 */
-            .comp-nav, .main-nav, button, .comp-nav-tabs {
+            .comp-nav, .main-nav, button, .comp-nav-tabs, .back-btn {
                 display: none !important;
             }
             
@@ -211,9 +211,9 @@ $results = getCompetitionResults($comp_data_path);
             body, .container, .comp-content {
                 background: white !important;
                 color: black !important;
-                font-size: 10px;
+                font-size: 12px;
                 margin: 0 !important;
-                padding: 5px !important;
+                padding: 10px !important;
             }
             
             /* 대회 타이틀 컴팩트하게 */
@@ -246,7 +246,7 @@ $results = getCompetitionResults($comp_data_path);
             /* 표 인쇄 스타일 */
             .professional-timetable table {
                 background: white !important;
-                font-size: 9px !important;
+                font-size: 11px !important;
                 border: 1px solid #000 !important;
                 page-break-inside: avoid;
             }
@@ -256,13 +256,15 @@ $results = getCompetitionResults($comp_data_path);
                 color: black !important;
                 border: 1px solid #000 !important;
                 font-weight: bold !important;
-                padding: 8px 4px !important;
+                padding: 10px 6px !important;
+                font-size: 12px !important;
             }
             
             .professional-timetable td {
                 border: 1px solid #000 !important;
                 color: black !important;
-                padding: 6px 4px !important;
+                padding: 8px 6px !important;
+                font-size: 11px !important;
             }
             
             /* 배지 색상 조정 */
