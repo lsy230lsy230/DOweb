@@ -1143,7 +1143,20 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         </h4>
         <form method="post">
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:10px; max-height:300px; overflow-y:auto;">
-                <?php foreach ($events as $evt): ?>
+                <?php 
+                // 중복 제거된 이벤트만 표시
+                $unique_events = [];
+                $seen_keys = [];
+                
+                foreach ($events as $evt) {
+                    $unique_key = $evt['name'] . '|' . $evt['raw_no'] . '|' . ($evt['detail_no'] ?? '');
+                    if (!in_array($unique_key, $seen_keys)) {
+                        $unique_events[] = $evt;
+                        $seen_keys[] = $unique_key;
+                    }
+                }
+                
+                foreach ($unique_events as $evt): ?>
                     <div style="display:flex; align-items:center; gap:10px; padding:8px; background:white; border-radius:4px; border:1px solid #e9ecef;">
                         <label style="min-width:60px; font-size:12px; color:#495057; font-weight:600;">
                             <?= h($evt['raw_no']) ?>
