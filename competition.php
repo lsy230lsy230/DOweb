@@ -814,11 +814,11 @@ $results = getCompetitionResults($comp_data_path);
                                                 <?php if (!empty($row['dances']) && is_array($row['dances'])): ?>
                                                     <div style="display: flex; gap: 3px; justify-content: center; flex-wrap: nowrap;">
                                                         <?php
-                                                        // 댄스 번호를 풀네임으로 매핑
+                                                        // 댄스 약자를 풀네임으로 매핑 (DanceName.txt 기준)
                                                         $dance_names = [
-                                                            '1' => 'Waltz', '2' => 'Tango', '3' => 'Viennese Waltz', '4' => 'Slow Foxtrot', '5' => 'Quickstep',
-                                                            '6' => 'Samba', '7' => 'Cha Cha Cha', '8' => 'Rumba', '9' => 'Paso Doble', '10' => 'Jive',
-                                                            '11' => 'Freestyle', '12' => 'Swing', '13' => 'Argentine Tango', '14' => 'Handicap', '15' => 'Formation Team'
+                                                            'W' => 'Waltz', 'T' => 'Tango', 'V' => 'Viennese Waltz', 'S' => 'Slow Foxtrot', 'Q' => 'Quickstep',
+                                                            'SA' => 'Samba', 'C' => 'Cha Cha Cha', 'R' => 'Rumba', 'P' => 'Paso Doble', 'J' => 'Jive',
+                                                            'F' => 'Freestyle', 'SW' => 'Swing', 'AT' => 'Argentine Tango', 'Hand.' => 'Handicap', 'FO' => 'Formation Team'
                                                         ];
                                                         foreach ($row['dances'] as $dance):
                                                         ?>
