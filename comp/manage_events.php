@@ -227,16 +227,26 @@ function calculateRoundInfo($events) {
     foreach ($name_groups as $name => &$group) {
         $unique_events = [];
         $seen_keys = [];
+        $seen_raw_numbers = []; // Raw 번호 기준 중복 제거
         
         foreach ($group as $item) {
             $unique_key = $item['unique_key'];
-            if (!in_array($unique_key, $seen_keys)) {
+            $raw_no = $item['event']['raw_no'];
+            
+            // Raw 번호 기준으로도 중복 제거
+            if (!in_array($unique_key, $seen_keys) && !in_array($raw_no, $seen_raw_numbers)) {
                 $unique_events[] = $item;
                 $seen_keys[] = $unique_key;
+                $seen_raw_numbers[] = $raw_no;
+                
+                // 디버깅: 추가된 이벤트 출력
+                if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+                    echo "<!-- DEBUG: Round calc - Added unique event - Raw: $raw_no, Name: {$item['event']['name']}, Detail: {$item['event']['detail_no']}, Index: {$item['idx']} -->\n";
+                }
             } else {
                 // 디버깅: 중복 제거된 이벤트 출력
                 if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-                    echo "<!-- DEBUG: Duplicate removed - Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Index: {$item['idx']} -->\n";
+                    echo "<!-- DEBUG: Round calc - Duplicate removed - Raw: $raw_no, Name: {$item['event']['name']}, Detail: {$item['event']['detail_no']}, Index: {$item['idx']} -->\n";
                 }
             }
         }
@@ -370,12 +380,27 @@ $next_event_info = $round_calculation['next_event_info'];
 // 중복 제거된 이벤트 데이터를 전역 변수로 저장 (일관성 보장)
 $unique_events = [];
 $seen_keys = [];
+$seen_raw_numbers = []; // Raw 번호 기준 중복 제거
 
 foreach ($events as $evt) {
     $unique_key = $evt['name'] . '|' . $evt['raw_no'] . '|' . ($evt['detail_no'] ?? '');
-    if (!in_array($unique_key, $seen_keys)) {
+    $raw_no = $evt['raw_no'];
+    
+    // Raw 번호 기준으로도 중복 제거 (같은 Raw 번호가 있으면 제외)
+    if (!in_array($unique_key, $seen_keys) && !in_array($raw_no, $seen_raw_numbers)) {
         $unique_events[] = $evt;
         $seen_keys[] = $unique_key;
+        $seen_raw_numbers[] = $raw_no;
+        
+        // 디버깅: 추가된 이벤트 출력
+        if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+            echo "<!-- DEBUG: Added unique event - Raw: $raw_no, Name: {$evt['name']}, Detail: {$evt['detail_no']} -->\n";
+        }
+    } else {
+        // 디버깅: 중복 제거된 이벤트 출력
+        if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+            echo "<!-- DEBUG: Duplicate removed - Raw: $raw_no, Name: {$evt['name']}, Detail: {$evt['detail_no']} -->\n";
+        }
     }
 }
 
