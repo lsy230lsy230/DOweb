@@ -112,4 +112,29 @@ return [
     
     // Common
     'or' => 'or',
+    'total' => 'Total',
+    'pinned' => 'Pinned',
+    'updated' => 'Updated',
+    'error' => 'Error',
+    'delete' => 'Delete',
+    'edit' => 'Edit',
+    'save_changes' => 'Save Changes',
+    'cancel' => 'Cancel',
+    'optional' => 'Optional',
+    
+    // Notice Management
+    'notice_title' => 'Title',
+    'notice_title_placeholder' => 'Enter notice title',
+    'notice_content_placeholder' => 'Enter notice content',
+    'notice_image' => 'Image',
+    'notice_image_help' => 'Only JPG, PNG, GIF, WebP files allowed (Max 5MB)',
+    'notice_pin' => 'Pin to Top',
+    'notice_unpin' => 'Unpin',
+    'notice_create' => 'Create Notice',
+    'create_notice' => 'Create New Notice',
+    'existing_notices' => 'Existing Notices',
+    'edit_notice' => 'Edit Notice',
+    'current_image' => 'Current Image',
+    'no_current_image' => 'No current image',
+    'notice_delete_confirm' => 'Are you sure you want to delete this notice?',
 ];

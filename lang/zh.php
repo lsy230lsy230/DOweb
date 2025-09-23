@@ -112,4 +112,29 @@ return [
     
     // 公共
     'or' => '或',
+    'total' => '总计',
+    'pinned' => '置顶',
+    'updated' => '已更新',
+    'error' => '错误',
+    'delete' => '删除',
+    'edit' => '编辑',
+    'save_changes' => '保存更改',
+    'cancel' => '取消',
+    'optional' => '可选',
+    
+    // 公告管理
+    'notice_title' => '标题',
+    'notice_title_placeholder' => '请输入公告标题',
+    'notice_content_placeholder' => '请输入公告内容',
+    'notice_image' => '图片',
+    'notice_image_help' => '仅允许JPG、PNG、GIF、WebP文件（最大5MB）',
+    'notice_pin' => '置顶',
+    'notice_unpin' => '取消置顶',
+    'notice_create' => '创建公告',
+    'create_notice' => '创建新公告',
+    'existing_notices' => '现有公告',
+    'edit_notice' => '编辑公告',
+    'current_image' => '当前图片',
+    'no_current_image' => '当前没有图片',
+    'notice_delete_confirm' => '确定要删除这个公告吗？',
 ];

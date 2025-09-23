@@ -5,6 +5,9 @@ session_start();
 require_once __DIR__ . '/../lang/Language.php';
 $lang = Language::getInstance();
 
+// NoticeManager 로드
+require_once __DIR__ . '/../data/NoticeManager.php';
+
 // 관리자 인증 확인
 if (!isset($_SESSION['admin'])) {
     if ($_POST['pw'] ?? '' === 'adminpw') {
@@ -181,17 +184,63 @@ $positions = [
     'main'   => ['label' => t('banner_main'),   'size' => '300x250px ' . t('or') . ' 728x90px', 'desc' => t('banner_main_desc'),   'img' => 'main.jpg',   'link' => 'main.link'],
 ];
 
-// 디렉토리 경로
+# 디렉토리 경로
 $base_ads_dir = __DIR__ . "/../data/ads/";
-$notice_file = __DIR__ . "/../data/notice.txt";
 $schedule_file = __DIR__ . "/../data/schedule.txt";
 
-// 공지/일정 삭제 처리
-if (isset($_GET['delete_notice'])) {
-    if (file_exists($notice_file)) unlink($notice_file);
-    header("Location: /manage/");
-    exit;
+// NoticeManager 초기화
+try {
+    $noticeManager = new NoticeManager();
+} catch (Exception $e) {
+    error_log("NoticeManager 초기화 실패: " . $e->getMessage());
 }
+
+// 공지사항 처리
+if (isset($_POST['notice_action']) && isset($noticeManager)) {
+    try {
+        switch ($_POST['notice_action']) {
+            case 'create':
+                $imagePath = null;
+                if (isset($_FILES['notice_image']) && $_FILES['notice_image']['size'] > 0) {
+                    $imagePath = $noticeManager->uploadImage($_FILES['notice_image']);
+                }
+                $noticeManager->createNotice(
+                    $_POST['notice_title'],
+                    $_POST['notice_content'],
+                    $imagePath,
+                    isset($_POST['is_pinned'])
+                );
+                break;
+            case 'edit':
+                $imagePath = $_POST['existing_image'] ?? null;
+                if (isset($_FILES['notice_image']) && $_FILES['notice_image']['size'] > 0) {
+                    $imagePath = $noticeManager->uploadImage($_FILES['notice_image']);
+                }
+                $noticeManager->updateNotice(
+                    $_POST['notice_id'],
+                    $_POST['notice_title'],
+                    $_POST['notice_content'],
+                    $imagePath,
+                    isset($_POST['is_pinned'])
+                );
+                break;
+            case 'delete':
+                $noticeManager->deleteNotice($_POST['notice_id']);
+                break;
+            case 'toggle_pin':
+                $noticeManager->togglePin($_POST['notice_id']);
+                break;
+        }
+    } catch (Exception $e) {
+        $notice_error = $e->getMessage();
+    }
+    if (!isset($notice_error)) {
+        header("Location: /manage/");
+        exit;
+    }
+}
+
+// 일정 삭제 처리
 if (isset($_GET['delete_schedule'])) {
     if (file_exists($schedule_file)) unlink($schedule_file);
     header("Location: /manage/");
@@ -228,12 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['pos'])) {
     exit;
 }
 
-// 공지사항 등록/수정
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['notice'])) {
-    file_put_contents($notice_file, trim($_POST['notice']));
-    echo "<script>location.href='/manage/';</script>";
-    exit;
-}
+// 기존 파일 기반 공지사항 시스템 제거됨 - 데이터베이스 기반으로 교체
 
 // 대회일정 등록/수정
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['schedule'])) {
@@ -242,7 +286,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['schedule'])) {
     exit;
 }
 
-$current_notice = file_exists($notice_file) ? file_get_contents($notice_file) : "";
+// 공지사항 및 통계 로드
+try {
+    $notices = isset($noticeManager) ? $noticeManager->getAllNotices() : [];
+    $notice_stats = isset($noticeManager) ? $noticeManager->getNoticeStats() : null;
+} catch (Exception $e) {
+    $notices = [];
+    $notice_stats = null;
+    error_log("공지사항 로드 실패: " . $e->getMessage());
+}
+
 $current_schedule = file_exists($schedule_file) ? file_get_contents($schedule_file) : "";
 ?>
 <!DOCTYPE html>
@@ -707,41 +760,136 @@ $current_schedule = file_exists($schedule_file) ? file_get_contents($schedule_fi
         </header>
 
         <main>
-            <!-- 공지사항/일정 관리 -->
-            <div class="cards-grid">
-                <!-- 공지사항 관리 -->
-                <div class="admin-card">
-                    <h2 class="card-title">
-                        <span class="material-symbols-rounded">campaign</span>
-                        <?= t('notice_management') ?>
-                    </h2>
+            <!-- 공지사항 관리 -->
+            <div class="admin-card" style="margin-bottom: 32px;">
+                <h2 class="card-title">
+                    <span class="material-symbols-rounded">campaign</span>
+                    <?= t('notice_management') ?>
                     
-                    <div class="preview-box">
-                        <strong><?= t('current_notice') ?></strong><br>
-                        <?= $current_notice ? nl2br(htmlspecialchars($current_notice)) : t('no_notices') ?>
-                        
-                        <?php if ($current_notice): ?>
-                            <div class="action-buttons">
-                                <a href="/manage/?delete_notice=1" class="btn btn-danger btn-small" 
-                                   onclick="return confirm('<?= t('notice_delete_confirm') ?>')">
-                                    <span class="material-symbols-rounded">delete</span>
-                                    <?= t('notice_delete') ?>
-                                </a>
-                            </div>
-                        <?php endif; ?>
+                    <?php if ($notice_stats): ?>
+                        <span style="font-size: 14px; color: #94a3b8; font-weight: 400;">
+                            (<?= t('total') ?>: <?= $notice_stats['total'] ?>, <?= t('pinned') ?>: <?= $notice_stats['pinned'] ?>)
+                        </span>
+                    <?php endif; ?>
+                </h2>
+                
+                <?php if (isset($notice_error)): ?>
+                    <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #fca5a5; padding: 12px; border-radius: 8px; margin-bottom: 16px;">
+                        <strong><?= t('error') ?>:</strong> <?= htmlspecialchars($notice_error) ?>
                     </div>
-                    
-                    <form method="post">
+                <?php endif; ?>
+                
+                <!-- 새 공지사항 작성 -->
+                <div class="preview-box" style="margin-bottom: 24px;">
+                    <strong><?= t('create_notice') ?></strong>
+                    <form method="post" enctype="multipart/form-data" style="margin-top: 16px;">
+                        <input type="hidden" name="notice_action" value="create">
+                        
                         <div class="form-group">
-                            <label for="notice"><?= t('notice_content') ?></label>
-                            <textarea id="notice" name="notice" placeholder="<?= t('notice_placeholder') ?>"><?= htmlspecialchars($current_notice) ?></textarea>
+                            <label for="notice_title"><?= t('notice_title') ?></label>
+                            <input type="text" id="notice_title" name="notice_title" placeholder="<?= t('notice_title_placeholder') ?>" required>
                         </div>
+                        
+                        <div class="form-group">
+                            <label for="notice_content"><?= t('notice_content') ?></label>
+                            <textarea id="notice_content" name="notice_content" placeholder="<?= t('notice_content_placeholder') ?>" required></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notice_image"><?= t('notice_image') ?> (<?= t('optional') ?>)</label>
+                            <input type="file" id="notice_image" name="notice_image" accept="image/*">
+                            <small style="color: #94a3b8; display: block; margin-top: 4px;">
+                                <?= t('notice_image_help') ?>
+                            </small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" name="is_pinned" style="width: auto;">
+                                <span><?= t('notice_pin') ?></span>
+                            </label>
+                        </div>
+                        
                         <button type="submit" class="btn">
-                            <span class="material-symbols-rounded">save</span>
-                            <?= t('notice_save') ?>
+                            <span class="material-symbols-rounded">add</span>
+                            <?= t('notice_create') ?>
                         </button>
                     </form>
                 </div>
+                
+                <!-- 기존 공지사항 목록 -->
+                <div style="max-height: 600px; overflow-y: auto;">
+                    <strong style="color: #f1f5f9; margin-bottom: 16px; display: block;"><?= t('existing_notices') ?></strong>
+                    
+                    <?php if (empty($notices)): ?>
+                        <div class="preview-box" style="text-align: center; color: #94a3b8;">
+                            <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 12px; display: block; opacity: 0.5;">campaign</span>
+                            <?= t('no_notices') ?>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($notices as $notice): ?>
+                            <div class="notice-item" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(59, 130, 246, 0.1); border-radius: 12px; padding: 16px; margin-bottom: 16px;">
+                                <div style="display: flex; justify-content: between; align-items: flex-start; margin-bottom: 12px;">
+                                    <div style="flex: 1;">
+                                        <h4 style="color: #f1f5f9; font-size: 16px; font-weight: 600; margin: 0 0 4px 0; display: flex; align-items: center; gap: 8px;">
+                                            <?php if ($notice['is_pinned']): ?>
+                                                <span class="material-symbols-rounded" style="color: #f59e0b; font-size: 18px;">push_pin</span>
+                                            <?php endif; ?>
+                                            <?= htmlspecialchars($notice['title']) ?>
+                                        </h4>
+                                        <p style="color: #94a3b8; font-size: 12px; margin: 0;">
+                                            <?= date('Y-m-d H:i', strtotime($notice['created_at'])) ?>
+                                            <?php if ($notice['updated_at'] !== $notice['created_at']): ?>
+                                                (<?= t('updated') ?>: <?= date('Y-m-d H:i', strtotime($notice['updated_at'])) ?>)
+                                            <?php endif; ?>
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <div style="color: #e2e8f0; margin-bottom: 12px; line-height: 1.5;">
+                                    <?= nl2br(htmlspecialchars($notice['content'])) ?>
+                                </div>
+                                
+                                <?php if ($notice['image_path']): ?>
+                                    <div style="margin-bottom: 12px;">
+                                        <img src="/<?= $notice['image_path'] ?>" alt="<?= htmlspecialchars($notice['title']) ?>" 
+                                             style="max-width: 100%; height: auto; border-radius: 8px; max-height: 200px;">
+                                    </div>
+                                <?php endif; ?>
+                                
+                                <div class="action-buttons">
+                                    <form method="post" style="display: inline;">
+                                        <input type="hidden" name="notice_action" value="toggle_pin">
+                                        <input type="hidden" name="notice_id" value="<?= $notice['id'] ?>">
+                                        <button type="submit" class="btn btn-small" style="background: <?= $notice['is_pinned'] ? 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)' : 'rgba(59, 130, 246, 0.1)' ?>; color: <?= $notice['is_pinned'] ? 'white' : '#3b82f6' ?>;">
+                                            <span class="material-symbols-rounded">push_pin</span>
+                                            <?= $notice['is_pinned'] ? t('notice_unpin') : t('notice_pin') ?>
+                                        </button>
+                                    </form>
+                                    
+                                    <button onclick="editNotice(<?= $notice['id'] ?>, '<?= addslashes($notice['title']) ?>', '<?= addslashes($notice['content']) ?>', '<?= $notice['image_path'] ?>', <?= $notice['is_pinned'] ? 'true' : 'false' ?>)" class="btn btn-small">
+                                        <span class="material-symbols-rounded">edit</span>
+                                        <?= t('edit') ?>
+                                    </button>
+                                    
+                                    <form method="post" style="display: inline;" onsubmit="return confirm('<?= t('notice_delete_confirm') ?>')">
+                                        <input type="hidden" name="notice_action" value="delete">
+                                        <input type="hidden" name="notice_id" value="<?= $notice['id'] ?>">
+                                        <button type="submit" class="btn btn-danger btn-small">
+                                            <span class="material-symbols-rounded">delete</span>
+                                            <?= t('delete') ?>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <!-- 일정 관리 -->
+            <div class="cards-grid">
+                <div class="admin-card">
 
                 <!-- 일정 관리 -->
                 <div class="admin-card">
@@ -863,6 +1011,56 @@ $current_schedule = file_exists($schedule_file) ? file_get_contents($schedule_fi
         </main>
     </div>
 
+    <!-- 편집 모달 -->
+    <div id="editModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 9999; padding: 20px;">
+        <div style="max-width: 600px; margin: 50px auto; background: rgba(30, 41, 59, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 16px; padding: 24px; max-height: 80vh; overflow-y: auto;">
+            <h3 style="color: #f1f5f9; margin: 0 0 20px 0; display: flex; align-items: center; gap: 12px;">
+                <span class="material-symbols-rounded" style="color: #3b82f6;">edit</span>
+                <?= t('edit_notice') ?>
+            </h3>
+            
+            <form method="post" enctype="multipart/form-data" id="editForm">
+                <input type="hidden" name="notice_action" value="edit">
+                <input type="hidden" name="notice_id" id="edit_notice_id">
+                <input type="hidden" name="existing_image" id="edit_existing_image">
+                
+                <div class="form-group">
+                    <label for="edit_notice_title"><?= t('notice_title') ?></label>
+                    <input type="text" id="edit_notice_title" name="notice_title" placeholder="<?= t('notice_title_placeholder') ?>" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_notice_content"><?= t('notice_content') ?></label>
+                    <textarea id="edit_notice_content" name="notice_content" placeholder="<?= t('notice_content_placeholder') ?>" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_notice_image"><?= t('notice_image') ?> (<?= t('optional') ?>)</label>
+                    <input type="file" id="edit_notice_image" name="notice_image" accept="image/*">
+                    <div id="current_image_preview" style="margin-top: 8px;"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                        <input type="checkbox" name="is_pinned" id="edit_is_pinned" style="width: auto;">
+                        <span><?= t('notice_pin') ?></span>
+                    </label>
+                </div>
+                
+                <div class="action-buttons">
+                    <button type="submit" class="btn">
+                        <span class="material-symbols-rounded">save</span>
+                        <?= t('save_changes') ?>
+                    </button>
+                    <button type="button" onclick="closeEditModal()" class="btn" style="background: rgba(148, 163, 184, 0.1); color: #94a3b8;">
+                        <span class="material-symbols-rounded">close</span>
+                        <?= t('cancel') ?>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         function toggleLanguageMenu() {
             const menu = document.getElementById('languageMenu');
@@ -876,6 +1074,43 @@ $current_schedule = file_exists($schedule_file) ? file_get_contents($schedule_fi
             
             if (!dropdown.contains(event.target)) {
                 menu.classList.remove('show');
+            }
+        });
+
+        // 공지사항 편집 함수
+        function editNotice(id, title, content, imagePath, isPinned) {
+            document.getElementById('edit_notice_id').value = id;
+            document.getElementById('edit_notice_title').value = title;
+            document.getElementById('edit_notice_content').value = content;
+            document.getElementById('edit_existing_image').value = imagePath || '';
+            document.getElementById('edit_is_pinned').checked = isPinned;
+            
+            // 현재 이미지 미리보기
+            const preview = document.getElementById('current_image_preview');
+            if (imagePath) {
+                preview.innerHTML = '<img src="/' + imagePath + '" style="max-width: 200px; height: auto; border-radius: 8px; display: block; margin-top: 8px;"><small style="color: #94a3b8; margin-top: 4px; display: block;"><?= t('current_image') ?></small>';
+            } else {
+                preview.innerHTML = '<small style="color: #94a3b8;"><?= t('no_current_image') ?></small>';
+            }
+            
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeEditModal();
+            }
+        });
+
+        // 모달 배경 클릭 시 닫기
+        document.getElementById('editModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeEditModal();
             }
         });
     </script>

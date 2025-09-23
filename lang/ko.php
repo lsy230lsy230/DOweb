@@ -112,4 +112,29 @@ return [
     
     // 공통
     'or' => '또는',
+    'total' => '전체',
+    'pinned' => '고정',
+    'updated' => '수정됨',
+    'error' => '오류',
+    'delete' => '삭제',
+    'edit' => '편집',
+    'save_changes' => '변경사항 저장',
+    'cancel' => '취소',
+    'optional' => '선택사항',
+    
+    // 공지사항 관리
+    'notice_title' => '제목',
+    'notice_title_placeholder' => '공지사항 제목을 입력하세요',
+    'notice_content_placeholder' => '공지사항 내용을 입력하세요',
+    'notice_image' => '이미지',
+    'notice_image_help' => 'JPG, PNG, GIF, WebP 파일만 가능 (최대 5MB)',
+    'notice_pin' => '상단 고정',
+    'notice_unpin' => '고정 해제',
+    'notice_create' => '공지사항 작성',
+    'create_notice' => '새 공지사항 작성',
+    'existing_notices' => '기존 공지사항',
+    'edit_notice' => '공지사항 편집',
+    'current_image' => '현재 이미지',
+    'no_current_image' => '현재 이미지가 없습니다',
+    'notice_delete_confirm' => '이 공지사항을 삭제하시겠습니까?',
 ];

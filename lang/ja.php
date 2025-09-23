@@ -112,4 +112,29 @@ return [
     
     // 共通
     'or' => 'または',
+    'total' => '合計',
+    'pinned' => '固定',
+    'updated' => '更新',
+    'error' => 'エラー',
+    'delete' => '削除',
+    'edit' => '編集',
+    'save_changes' => '変更を保存',
+    'cancel' => 'キャンセル',
+    'optional' => 'オプション',
+    
+    // お知らせ管理
+    'notice_title' => 'タイトル',
+    'notice_title_placeholder' => 'お知らせのタイトルを入力',
+    'notice_content_placeholder' => 'お知らせの内容を入力',
+    'notice_image' => '画像',
+    'notice_image_help' => 'JPG、PNG、GIF、WebPファイルのみ可能（最大5MB）',
+    'notice_pin' => 'トップに固定',
+    'notice_unpin' => '固定解除',
+    'notice_create' => 'お知らせ作成',
+    'create_notice' => '新しいお知らせを作成',
+    'existing_notices' => '既存のお知らせ',
+    'edit_notice' => 'お知らせ編集',
+    'current_image' => '現在の画像',
+    'no_current_image' => '現在の画像がありません',
+    'notice_delete_confirm' => 'このお知らせを削除しますか？',
 ];
