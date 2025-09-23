@@ -219,14 +219,16 @@ function calculateRoundInfo($events) {
     foreach ($name_groups as $name => $group) {
         $total_events = count($group);
         
-        // 같은 이벤트명을 가진 이벤트들을 순번 순으로 정렬
+        // 같은 이벤트명을 가진 이벤트들을 순번 순으로 정렬 (raw_no, detail_no 고려)
         usort($group, function($a, $b) {
             $raw_no_a = intval($a['event']['raw_no']);
             $raw_no_b = intval($b['event']['raw_no']);
             
-            // 순번이 같으면 이벤트명으로 정렬
+            // 순번이 같으면 세부번호로 정렬
             if ($raw_no_a === $raw_no_b) {
-                return strcmp($a['event']['name'], $b['event']['name']);
+                $detail_no_a = intval($a['event']['detail_no'] ?? 0);
+                $detail_no_b = intval($b['event']['detail_no'] ?? 0);
+                return $detail_no_a - $detail_no_b;
             }
             
             return $raw_no_a - $raw_no_b;
@@ -262,6 +264,11 @@ function calculateRoundInfo($events) {
             
             $round_info[$idx] = $stage_text;
             
+            // 디버깅용 로그
+            if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+                error_log("Calculated Round - Event: {$item['event']['name']}, Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Position: $pos, Total: $total_events, Round: $stage_text");
+            }
+            
             // 다음 이벤트 번호 자동 계산
             if ($pos < $total_events - 1) {
                 // 다음 라운드가 있는 경우
@@ -289,9 +296,6 @@ foreach ($events as $idx => &$event) {
     }
 }
 
-// 라운드 자동계산 강제 실행 (기존 데이터 덮어쓰기)
-// 주의: 이 부분을 주석 처리하면 기존 라운드 정보를 유지합니다
-/*
 // RunOrder_Tablet.txt에서 읽어온 라운드 정보를 사용
 foreach ($events as $idx => &$event) {
     // RunOrder_Tablet.txt에서 읽어온 라운드 정보가 있으면 사용
@@ -301,112 +305,6 @@ foreach ($events as $idx => &$event) {
     // RunOrder_Tablet.txt에서 읽어온 다음 이벤트 번호가 있으면 사용
     if (!empty($event['next_event'])) {
         $next_event_info[$idx] = $event['next_event'];
-    }
-}
-*/
-
-// ==== 7-2. 라운드 자동계산 실행 처리 ====
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['auto_calculate_rounds'])) {
-    // 기존 파일을 읽어서 라운드 정보를 자동계산으로 업데이트
-    if (file_exists($runorder_file)) {
-        $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        $updated_lines = [];
-        
-        foreach ($lines as $line) {
-            if (preg_match('/^bom/', $line)) {
-                $updated_lines[] = $line;
-                continue;
-            }
-            
-            $cols = array_map('trim', explode(',', $line));
-            if (count($cols) < 3) {
-                $updated_lines[] = $line;
-                continue;
-            }
-            
-            // 이벤트명이 있는 경우에만 라운드 자동계산 적용
-            if (!empty($cols[1])) {
-                // 라운드 자동계산을 위해 임시로 이벤트 배열 생성
-                $temp_events = [];
-                foreach ($lines as $temp_line) {
-                    if (preg_match('/^bom/', $temp_line)) continue;
-                    $temp_cols = array_map('trim', explode(',', $temp_line));
-                    if (count($temp_cols) >= 3 && !empty($temp_cols[1])) {
-                        $temp_events[] = [
-                            'raw_no' => $temp_cols[0] ?? '',
-                            'name' => $temp_cols[1] ?? '',
-                            'round_type' => $temp_cols[2] ?? ''
-                        ];
-                    }
-                }
-                
-                // 같은 이벤트명의 이벤트들 찾기
-                $same_name_events = array_filter($temp_events, function($e) use ($cols) {
-                    return $e['name'] === $cols[1];
-                });
-                
-                // 같은 이벤트명의 이벤트들을 순번 순으로 정렬
-                usort($same_name_events, function($a, $b) {
-                    return intval($a['raw_no']) - intval($b['raw_no']);
-                });
-                
-                // 현재 이벤트의 위치 찾기
-                $current_pos = -1;
-                foreach ($same_name_events as $pos => $event) {
-                    if ($event['raw_no'] === $cols[0]) {
-                        $current_pos = $pos;
-                        break;
-                    }
-                }
-                
-                // 라운드 자동계산
-                $total_events = count($same_name_events);
-                $stage_text = '';
-                
-                if ($total_events === 1) {
-                    $stage_text = 'Final';
-                } else if ($total_events === 2) {
-                    if ($current_pos === 0) $stage_text = 'Semi-Final';
-                    else $stage_text = 'Final';
-                } else if ($total_events === 3) {
-                    if ($current_pos === 0) $stage_text = 'Round 1';
-                    else if ($current_pos === 1) $stage_text = 'Semi-Final';
-                    else $stage_text = 'Final';
-                } else if ($total_events === 4) {
-                    if ($current_pos === 0) $stage_text = 'Round 1';
-                    else if ($current_pos === 1) $stage_text = 'Round 2';
-                    else if ($current_pos === 2) $stage_text = 'Semi-Final';
-                    else $stage_text = 'Final';
-                } else if ($total_events === 5) {
-                    if ($current_pos === 0) $stage_text = 'Round 1';
-                    else if ($current_pos === 1) $stage_text = 'Round 2';
-                    else if ($current_pos === 2) $stage_text = 'Round 3';
-                    else if ($current_pos === 3) $stage_text = 'Semi-Final';
-                    else $stage_text = 'Final';
-                } else {
-                    $stage_text = ($current_pos + 1) . '/' . $total_events;
-                }
-                
-                // 라운드 정보 업데이트
-                $cols[2] = $stage_text;
-                
-                // 다음 라운드 번호 자동계산
-                if ($current_pos < $total_events - 1) {
-                    $next_event = $same_name_events[$current_pos + 1]['raw_no'];
-                    $cols[5] = $next_event; // 다음라운드 컬럼
-                } else {
-                    $cols[5] = ''; // 마지막 라운드
-                }
-            }
-            
-            $updated_lines[] = implode(',', $cols);
-        }
-        
-        // 파일 저장
-        file_put_contents($runorder_file, implode("\n", $updated_lines) . "\n");
-        $msg = "라운드 자동계산이 완료되었습니다.";
-        header("Location: manage_events.php?comp_id=" . urlencode($comp_id) . "&msg=" . urlencode($msg));
-        exit;
     }
 }
 
@@ -1126,25 +1024,6 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         <b>세부번호는 멀티이벤트 결승전에서 사용되며, 자동 생성되지만 수정 가능합니다.</b>
     </div>
     
-    <!-- 라운드 자동계산 버튼 -->
-    <div style="margin-bottom:20px; background:#e3f2fd; padding:15px; border-radius:8px; border:1px solid #2196f3; text-align:center;">
-        <h4 style="color:#1976d2; margin:0 0 15px 0; display:flex; align-items:center; justify-content:center; gap:10px;">
-            <span class="material-symbols-rounded" style="font-size:20px;">auto_fix_high</span>
-            라운드 자동계산
-        </h4>
-        <p style="color:#424242; margin:0 0 15px 0; font-size:14px;">
-            기존 라운드 정보를 무시하고 이벤트명별로 자동으로 Round 1, Semi-Final, Final을 계산합니다.
-        </p>
-        <form method="post" style="display:inline;">
-            <button type="submit" name="auto_calculate_rounds" value="1" 
-                    style="background:#2196f3; color:white; border:none; padding:12px 24px; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px; box-shadow:0 2px 4px rgba(33,150,243,0.3);"
-                    onclick="return confirm('기존 라운드 정보를 모두 자동계산으로 덮어쓰시겠습니까?')">
-                <span class="material-symbols-rounded" style="font-size:18px; vertical-align:middle; margin-right:5px;">refresh</span>
-                라운드 자동계산 실행
-            </button>
-        </form>
-    </div>
-    
     <!-- 세부번호 수정 폼 -->
     <div style="margin-bottom:20px; background:#f8f9fa; padding:15px; border-radius:8px; border:1px solid #dee2e6;">
         <h4 style="color:#495057; margin:0 0 15px 0; display:flex; align-items:center; gap:10px;">
@@ -1199,15 +1078,22 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         $row_idx = 0;
         foreach ($grouped_events as $grp_no => $evts):
             foreach ($evts as $k => $e):
-                // 이벤트의 원본 인덱스 찾기
+                // 이벤트의 원본 인덱스 찾기 (raw_no, name, detail_no 모두 고려)
                 $original_idx = null;
                 foreach ($events as $orig_idx => $orig_evt) {
-                    if ($orig_evt['raw_no'] === $e['raw_no'] && $orig_evt['name'] === $e['name']) {
+                    if ($orig_evt['raw_no'] === $e['raw_no'] && 
+                        $orig_evt['name'] === $e['name'] && 
+                        ($orig_evt['detail_no'] ?? '') === ($e['detail_no'] ?? '')) {
                         $original_idx = $orig_idx;
                         break;
                     }
                 }
                 $calculated_round = $original_idx !== null ? ($round_info[$original_idx] ?? '-') : '-';
+                
+                // 디버깅용 로그 (개발 시에만 사용)
+                if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+                    error_log("Event: {$e['name']}, Raw: {$e['raw_no']}, Detail: {$e['detail_no']}, Original_idx: " . ($original_idx ?? 'null') . ", Round: $calculated_round");
+                }
         ?>
             <tr<?=($k==0 && count($evts)>1?' class="event-group-row"':'')?>>
                 <?php if ($k==0): ?>
