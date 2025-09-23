@@ -435,7 +435,7 @@ $results = getCompetitionResults($comp_data_path);
                             대회 현황
                         </h3>
                         <p><strong>공지사항:</strong> <?= count($notices) ?>건</p>
-                        <p><strong>경기일정:</strong> <?= isset($schedule['events']) ? count($schedule['events']) : count($schedule) ?>개 종목</p>
+                        <p><strong>경기일정:</strong> <?= isset($schedule['timetable_rows']) ? count($schedule['timetable_rows']) : (isset($schedule['events']) ? count($schedule['events']) : count($schedule)) ?>개 종목</p>
                         <p><strong>결과:</strong> <?= count($results) ?>개 종목 완료</p>
                         <p><strong>생성일:</strong> <?= isset($competition['created_at']) ? date('Y-m-d', strtotime($competition['created_at'])) : '정보없음' ?></p>
                     </div>
@@ -455,18 +455,86 @@ $results = getCompetitionResults($comp_data_path);
                         <p>대회 시간표는 대회 관리자가 등록할 예정입니다.</p>
                     </div>
                 <?php else: ?>
-                    <?php if (isset($schedule['events'])): ?>
-                        <!-- 푸시된 타임테이블 데이터 표시 -->
+                    <?php if (isset($schedule['timetable_rows'])): ?>
+                        <!-- 푸시된 타임테이블 데이터 표시 (시간 포함) -->
                         <div class="timetable-info" style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
                             <h3 style="margin: 0 0 10px 0; color: #3b82f6;">
                                 <span class="material-symbols-rounded" style="vertical-align: middle;">info</span>
                                 타임테이블 정보
                             </h3>
                             <p style="margin: 5px 0;"><strong>마지막 업데이트:</strong> <?= htmlspecialchars($schedule['generated_at'] ?? '') ?></p>
+                            <p style="margin: 5px 0;"><strong>대회 시작:</strong> <?= htmlspecialchars($schedule['start_time'] ?? '09:00') ?></p>
+                            <p style="margin: 5px 0;"><strong>개회식 시간:</strong> <?= htmlspecialchars($schedule['opening_time'] ?? '10:30') ?></p>
+                            <p style="margin: 5px 0;"><strong>총 항목 수:</strong> <?= count($schedule['timetable_rows']) ?>개</p>
+                        </div>
+                        
+                        <div class="item-list">
+                            <?php foreach ($schedule['timetable_rows'] as $row): ?>
+                                <div class="item-card" style="<?= isset($row['is_opening']) && $row['is_opening'] ? 'border-left: 4px solid #f59e0b;' : (isset($row['is_special']) && $row['is_special'] ? 'border-left: 4px solid #10b981;' : 'border-left: 4px solid #3b82f6;') ?>">
+                                    <div class="item-header">
+                                        <h3 class="item-title">
+                                            <?php if (isset($row['is_opening']) && $row['is_opening']): ?>
+                                                <span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 8px;">
+                                                    개회식
+                                                </span>
+                                            <?php elseif (isset($row['is_special']) && $row['is_special']): ?>
+                                                <span style="background: #10b981; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 8px;">
+                                                    특별
+                                                </span>
+                                            <?php else: ?>
+                                                <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 8px;">
+                                                    <?= htmlspecialchars($row['no'] ?? '') ?>번
+                                                </span>
+                                            <?php endif; ?>
+                                            <?= htmlspecialchars($row['title'] ?? '경기 종목') ?>
+                                        </h3>
+                                        <span class="item-date" style="display: flex; flex-direction: column; align-items: flex-end;">
+                                            <strong style="color: #3b82f6; font-size: 1.1em;">
+                                                <?= htmlspecialchars($row['start_time'] ?? '') ?> - <?= htmlspecialchars($row['end_time'] ?? '') ?>
+                                            </strong>
+                                            <?php if (!empty($row['roundtype'])): ?>
+                                                <span style="font-size: 0.9em; color: #64748b;">
+                                                    <?= htmlspecialchars($row['roundtype']) ?>
+                                                    <?php if (!empty($row['roundnum'])): ?>
+                                                        <?= htmlspecialchars($row['roundnum']) ?>
+                                                    <?php endif; ?>
+                                                </span>
+                                            <?php endif; ?>
+                                        </span>
+                                    </div>
+                                    <div class="item-content">
+                                        <?php if (!empty($row['dances'])): ?>
+                                            <p><strong>댄스 종목:</strong> 
+                                                <?php
+                                                $dance_names = ['1' => 'W', '2' => 'T', '3' => 'V', '4' => 'F', '5' => 'Q', '6' => 'C', '7' => 'S', '8' => 'R', '9' => 'P', '10' => 'J'];
+                                                $dances = array_map(function($d) use ($dance_names) {
+                                                    return $dance_names[$d] ?? $d;
+                                                }, $row['dances']);
+                                                echo htmlspecialchars(implode(', ', $dances));
+                                                ?>
+                                            </p>
+                                        <?php endif; ?>
+                                        <?php if (isset($row['duration'])): ?>
+                                            <p><strong>예상 소요시간:</strong> <?= $row['duration'] ?>분
+                                                <?php if (isset($row['extra_time']) && $row['extra_time'] > 0): ?>
+                                                    (추가 <?= $row['extra_time'] ?>분)
+                                                <?php endif; ?>
+                                            </p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php elseif (isset($schedule['events'])): ?>
+                        <!-- 기존 이벤트 데이터 표시 (호환성) -->
+                        <div class="timetable-info" style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h3 style="margin: 0 0 10px 0; color: #3b82f6;">
+                                <span class="material-symbols-rounded" style="vertical-align: middle;">info</span>
+                                이벤트 목록
+                            </h3>
+                            <p style="margin: 5px 0;"><strong>마지막 업데이트:</strong> <?= htmlspecialchars($schedule['generated_at'] ?? '') ?></p>
                             <p style="margin: 5px 0;"><strong>총 이벤트 수:</strong> <?= count($schedule['events']) ?>개</p>
-                            <?php if (isset($schedule['special_events']) && !empty($schedule['special_events'])): ?>
-                                <p style="margin: 5px 0;"><strong>특별 이벤트:</strong> <?= count($schedule['special_events']) ?>개</p>
-                            <?php endif; ?>
+                            <p style="color: #f59e0b;"><strong>⚠️ 시간 정보가 없습니다. 다시 푸시해주세요.</strong></p>
                         </div>
                         
                         <div class="item-list">
