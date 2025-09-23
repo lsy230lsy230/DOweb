@@ -36,7 +36,17 @@ function getCompetitionNotices($comp_data_path) {
     return [];
 }
 
-function getCompetitionSchedule($comp_data_path) {
+function getCompetitionSchedule($comp_data_path, $comp_id) {
+    // 먼저 푸시된 타임테이블 데이터 확인
+    $timetable_file = __DIR__ . '/data/timetables/timetable_' . str_replace('comp_', '', $comp_id) . '.json';
+    if (file_exists($timetable_file)) {
+        $timetable_data = json_decode(file_get_contents($timetable_file), true);
+        if ($timetable_data && isset($timetable_data['events'])) {
+            return $timetable_data;
+        }
+    }
+    
+    // 기존 schedule.json 파일 확인 (호환성)
     if (!$comp_data_path) return [];
     
     $schedule_file = $comp_data_path . '/schedule.json';
@@ -61,7 +71,7 @@ $comp_data_path = isset($competition['comp_data_path']) ? $competition['comp_dat
 
 // 페이지별 데이터 로드
 $notices = getCompetitionNotices($comp_data_path);
-$schedule = getCompetitionSchedule($comp_data_path);
+$schedule = getCompetitionSchedule($comp_data_path, $comp_id);
 $results = getCompetitionResults($comp_data_path);
 
 ?>
@@ -425,7 +435,7 @@ $results = getCompetitionResults($comp_data_path);
                             대회 현황
                         </h3>
                         <p><strong>공지사항:</strong> <?= count($notices) ?>건</p>
-                        <p><strong>경기일정:</strong> <?= count($schedule) ?>개 종목</p>
+                        <p><strong>경기일정:</strong> <?= isset($schedule['events']) ? count($schedule['events']) : count($schedule) ?>개 종목</p>
                         <p><strong>결과:</strong> <?= count($results) ?>개 종목 완료</p>
                         <p><strong>생성일:</strong> <?= isset($competition['created_at']) ? date('Y-m-d', strtotime($competition['created_at'])) : '정보없음' ?></p>
                     </div>
@@ -445,19 +455,72 @@ $results = getCompetitionResults($comp_data_path);
                         <p>대회 시간표는 대회 관리자가 등록할 예정입니다.</p>
                     </div>
                 <?php else: ?>
-                    <div class="item-list">
-                        <?php foreach ($schedule as $item): ?>
-                            <div class="item-card">
-                                <div class="item-header">
-                                    <h3 class="item-title"><?= htmlspecialchars($item['title'] ?? '경기 종목') ?></h3>
-                                    <span class="item-date"><?= htmlspecialchars($item['time'] ?? '') ?></span>
+                    <?php if (isset($schedule['events'])): ?>
+                        <!-- 푸시된 타임테이블 데이터 표시 -->
+                        <div class="timetable-info" style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                            <h3 style="margin: 0 0 10px 0; color: #3b82f6;">
+                                <span class="material-symbols-rounded" style="vertical-align: middle;">info</span>
+                                타임테이블 정보
+                            </h3>
+                            <p style="margin: 5px 0;"><strong>마지막 업데이트:</strong> <?= htmlspecialchars($schedule['generated_at'] ?? '') ?></p>
+                            <p style="margin: 5px 0;"><strong>총 이벤트 수:</strong> <?= count($schedule['events']) ?>개</p>
+                            <?php if (isset($schedule['special_events']) && !empty($schedule['special_events'])): ?>
+                                <p style="margin: 5px 0;"><strong>특별 이벤트:</strong> <?= count($schedule['special_events']) ?>개</p>
+                            <?php endif; ?>
+                        </div>
+                        
+                        <div class="item-list">
+                            <?php foreach ($schedule['events'] as $event): ?>
+                                <div class="item-card">
+                                    <div class="item-header">
+                                        <h3 class="item-title">
+                                            <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 8px;">
+                                                <?= htmlspecialchars($event['no'] ?? '') ?>번
+                                            </span>
+                                            <?= htmlspecialchars($event['desc'] ?? '경기 종목') ?>
+                                        </h3>
+                                        <span class="item-date">
+                                            <?= htmlspecialchars($event['roundtype'] ?? '') ?>
+                                            <?php if (!empty($event['roundnum'])): ?>
+                                                <?= htmlspecialchars($event['roundnum']) ?>
+                                            <?php endif; ?>
+                                        </span>
+                                    </div>
+                                    <div class="item-content">
+                                        <?php if (!empty($event['dances'])): ?>
+                                            <p><strong>댄스 종목:</strong> 
+                                                <?php
+                                                $dance_names = ['1' => 'W', '2' => 'T', '3' => 'V', '4' => 'F', '5' => 'Q', '6' => 'C', '7' => 'S', '8' => 'R', '9' => 'P', '10' => 'J'];
+                                                $dances = array_map(function($d) use ($dance_names) {
+                                                    return $dance_names[$d] ?? $d;
+                                                }, $event['dances']);
+                                                echo htmlspecialchars(implode(', ', $dances));
+                                                ?>
+                                            </p>
+                                        <?php endif; ?>
+                                        <?php if (isset($event['extra_time']) && $event['extra_time'] > 0): ?>
+                                            <p><strong>추가 시간:</strong> <?= $event['extra_time'] ?>분</p>
+                                        <?php endif; ?>
+                                    </div>
                                 </div>
-                                <div class="item-content">
-                                    <?= htmlspecialchars($item['description'] ?? '') ?>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php else: ?>
+                        <!-- 기존 schedule 데이터 표시 (호환성) -->
+                        <div class="item-list">
+                            <?php foreach ($schedule as $item): ?>
+                                <div class="item-card">
+                                    <div class="item-header">
+                                        <h3 class="item-title"><?= htmlspecialchars($item['title'] ?? '경기 종목') ?></h3>
+                                        <span class="item-date"><?= htmlspecialchars($item['time'] ?? '') ?></span>
+                                    </div>
+                                    <div class="item-content">
+                                        <?= htmlspecialchars($item['description'] ?? '') ?>
+                                    </div>
                                 </div>
-                            </div>
-                        <?php endforeach; ?>
-                    </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
                 <?php endif; ?>
 
             <?php elseif ($page === 'notices'): ?>
