@@ -55,6 +55,7 @@ class CompetitionScheduler {
                         'location' => $info['place'],
                         'place' => $info['place'],
                         'host' => $info['host'],
+                        'country' => $info['country'] ?? 'KR',
                         'description' => $info['host'] . ' 주최',
                         'status' => $this->getCompetitionStatus($info['date']),
                         'our_system_id' => $comp_id,

@@ -9,8 +9,69 @@ $lang = Language::getInstance();
 require_once __DIR__ . '/data/scheduler.php';
 $scheduler = new CompetitionScheduler();
 
+// 국가 이름 매핑
+function getCountryName($code) {
+    $countries = [
+        'KR' => '대한민국',
+        'CN' => '중국',
+        'JP' => '일본',
+        'US' => '미국',
+        'DE' => '독일',
+        'UK' => '영국',
+        'FR' => '프랑스',
+        'IT' => '이탈리아',
+        'RU' => '러시아',
+        'AU' => '호주',
+        'CA' => '캐나다',
+        'SG' => '싱가포르',
+        'HK' => '홍콩',
+        'TW' => '대만',
+        'TH' => '태국',
+        'MY' => '말레이시아',
+        'VN' => '베트남',
+        'ID' => '인도네시아',
+        'PH' => '필리핀',
+        'IN' => '인도',
+        'BR' => '브라질',
+        'AR' => '아르헨티나',
+        'MX' => '멕시코',
+        'ES' => '스페인',
+        'NL' => '네덜란드',
+        'BE' => '벨기에',
+        'CH' => '스위스',
+        'AT' => '오스트리아',
+        'SE' => '스웨덴',
+        'NO' => '노르웨이',
+        'DK' => '덴마크',
+        'FI' => '핀란드',
+        'PL' => '폴란드',
+        'CZ' => '체코',
+        'OTHER' => '기타'
+    ];
+    return $countries[$code] ?? $code;
+}
+
 // 모든 대회 가져오기
 $all_competitions = $scheduler->getAllCompetitions();
+
+// 필터링
+$selected_country = $_GET['country'] ?? '';
+if ($selected_country) {
+    $all_competitions = array_filter($all_competitions, function($comp) use ($selected_country) {
+        return ($comp['country'] ?? 'KR') === $selected_country;
+    });
+}
+
+// 사용 가능한 국가 목록 생성
+$available_countries = [];
+$temp_competitions = $scheduler->getAllCompetitions();
+foreach ($temp_competitions as $comp) {
+    $country = $comp['country'] ?? 'KR';
+    if (!in_array($country, $available_countries)) {
+        $available_countries[] = $country;
+    }
+}
+sort($available_countries);
 
 // 상태별 분류
 $upcoming = [];
@@ -266,6 +327,96 @@ foreach ($all_competitions as $comp) {
             margin-bottom: 8px;
         }
 
+        /* 필터링 섹션 */
+        .filter-section {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .filter-form {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .filter-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+
+        .filter-group label .material-symbols-rounded {
+            color: #3b82f6;
+            font-size: 20px;
+        }
+
+        .filter-group select {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            color: #e2e8f0;
+            padding: 8px 16px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .filter-group select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .clear-filter {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-filter:hover {
+            background: rgba(239, 68, 68, 0.2);
+        }
+
+        .clear-filter .material-symbols-rounded {
+            font-size: 18px;
+        }
+
+        /* 국가 표시 */
+        .country-flag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .country-flag .material-symbols-rounded {
+            font-size: 16px;
+        }
+
         /* 모바일 대응 */
         @media (max-width: 768px) {
             .container {
@@ -287,6 +438,21 @@ foreach ($all_competitions as $comp) {
 
             .section-title {
                 font-size: 20px;
+            }
+
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+
+            .filter-group {
+                justify-content: space-between;
+            }
+
+            .filter-group select {
+                flex: 1;
+                min-width: 0;
             }
         }
     </style>
@@ -310,6 +476,32 @@ foreach ($all_competitions as $comp) {
                     댄스스포츠 대회 일정과 결과를 확인하세요
                 </p>
             </div>
+        </div>
+
+        <!-- 필터링 -->
+        <div class="filter-section">
+            <form method="get" class="filter-form">
+                <div class="filter-group">
+                    <label for="country">
+                        <span class="material-symbols-rounded">flag</span>
+                        개최국가
+                    </label>
+                    <select id="country" name="country" onchange="this.form.submit()">
+                        <option value="">모든 국가</option>
+                        <?php foreach ($available_countries as $country_code): ?>
+                            <option value="<?= $country_code ?>" <?= $selected_country === $country_code ? 'selected' : '' ?>>
+                                <?= getCountryName($country_code) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <?php if ($selected_country): ?>
+                    <a href="competitions.php" class="clear-filter">
+                        <span class="material-symbols-rounded">clear</span>
+                        필터 초기화
+                    </a>
+                <?php endif; ?>
+            </form>
         </div>
 
         <!-- 진행 예정 대회 -->
@@ -343,6 +535,12 @@ foreach ($all_competitions as $comp) {
                         <div class="info-item">
                             <span class="material-symbols-rounded">group</span>
                             <?= htmlspecialchars($comp['host']) ?>
+                        </div>
+                        <div class="info-item">
+                            <span class="country-flag">
+                                <span class="material-symbols-rounded">flag</span>
+                                <?= getCountryName($comp['country'] ?? 'KR') ?>
+                            </span>
                         </div>
                     </div>
                     <?php if (!empty($comp['description'])): ?>
@@ -388,6 +586,12 @@ foreach ($all_competitions as $comp) {
                             <span class="material-symbols-rounded">group</span>
                             <?= htmlspecialchars($comp['host']) ?>
                         </div>
+                        <div class="info-item">
+                            <span class="country-flag">
+                                <span class="material-symbols-rounded">flag</span>
+                                <?= getCountryName($comp['country'] ?? 'KR') ?>
+                            </span>
+                        </div>
                     </div>
                     <?php if (!empty($comp['description'])): ?>
                     <div class="card-description">
@@ -431,6 +635,12 @@ foreach ($all_competitions as $comp) {
                         <div class="info-item">
                             <span class="material-symbols-rounded">group</span>
                             <?= htmlspecialchars($comp['host']) ?>
+                        </div>
+                        <div class="info-item">
+                            <span class="country-flag">
+                                <span class="material-symbols-rounded">flag</span>
+                                <?= getCountryName($comp['country'] ?? 'KR') ?>
+                            </span>
                         </div>
                     </div>
                     <?php if (!empty($comp['description'])): ?>

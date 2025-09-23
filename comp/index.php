@@ -30,9 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_comp'])) {
     $date = trim($_POST['date'] ?? '');
     $place = trim($_POST['place'] ?? '');
     $host = trim($_POST['host'] ?? '');
+    $country = trim($_POST['country'] ?? '');
     $assigned_admin = trim($_POST['assigned_admin'] ?? '');
     
-    if ($title && $date && $place && $host && $assigned_admin) {
+    if ($title && $date && $place && $host && $country && $assigned_admin) {
         $today = date('Ymd');
         $seq = 1;
         do {
@@ -45,6 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['add_comp'])) {
             'date' => $date,
             'place' => $place,
             'host' => $host,
+            'country' => $country,
             'assigned_admin' => $assigned_admin,
             'created' => time()
         ];
@@ -566,6 +568,47 @@ $comps = load_competitions($data_dir);
                 <div class="form-group">
                     <label for="host">주최/주관</label>
                     <input type="text" id="host" name="host" placeholder="주최/주관을 입력하세요" required>
+                </div>
+                <div class="form-group">
+                    <label for="country">개최국가</label>
+                    <select id="country" name="country" required>
+                        <option value="">국가를 선택하세요</option>
+                        <option value="KR">대한민국 (South Korea)</option>
+                        <option value="CN">중국 (China)</option>
+                        <option value="JP">일본 (Japan)</option>
+                        <option value="US">미국 (United States)</option>
+                        <option value="DE">독일 (Germany)</option>
+                        <option value="UK">영국 (United Kingdom)</option>
+                        <option value="FR">프랑스 (France)</option>
+                        <option value="IT">이탈리아 (Italy)</option>
+                        <option value="RU">러시아 (Russia)</option>
+                        <option value="AU">호주 (Australia)</option>
+                        <option value="CA">캐나다 (Canada)</option>
+                        <option value="SG">싱가포르 (Singapore)</option>
+                        <option value="HK">홍콩 (Hong Kong)</option>
+                        <option value="TW">대만 (Taiwan)</option>
+                        <option value="TH">태국 (Thailand)</option>
+                        <option value="MY">말레이시아 (Malaysia)</option>
+                        <option value="VN">베트남 (Vietnam)</option>
+                        <option value="ID">인도네시아 (Indonesia)</option>
+                        <option value="PH">필리핀 (Philippines)</option>
+                        <option value="IN">인도 (India)</option>
+                        <option value="BR">브라질 (Brazil)</option>
+                        <option value="AR">아르헨티나 (Argentina)</option>
+                        <option value="MX">멕시코 (Mexico)</option>
+                        <option value="ES">스페인 (Spain)</option>
+                        <option value="NL">네덜란드 (Netherlands)</option>
+                        <option value="BE">벨기에 (Belgium)</option>
+                        <option value="CH">스위스 (Switzerland)</option>
+                        <option value="AT">오스트리아 (Austria)</option>
+                        <option value="SE">스웨덴 (Sweden)</option>
+                        <option value="NO">노르웨이 (Norway)</option>
+                        <option value="DK">덴마크 (Denmark)</option>
+                        <option value="FI">핀란드 (Finland)</option>
+                        <option value="PL">폴란드 (Poland)</option>
+                        <option value="CZ">체코 (Czech Republic)</option>
+                        <option value="OTHER">기타 (Other)</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="assigned_admin">담당 선임관리자</label>
