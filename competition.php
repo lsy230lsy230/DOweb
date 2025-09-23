@@ -537,15 +537,15 @@ $results = getCompetitionResults($comp_data_path);
                         </div>
                         
                         <!-- 전문적인 표 형태 타임테이블 -->
-                        <div class="professional-timetable" style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                        <div class="professional-timetable" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                             <table style="width: 100%; border-collapse: collapse; font-size: 0.9em;">
                                 <thead>
-                                    <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0;">
-                                        <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #374151; border-right: 1px solid #e2e8f0; width: 80px;">시간</th>
-                                        <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #374151; border-right: 1px solid #e2e8f0; width: 60px;">번호</th>
-                                        <th style="padding: 12px 8px; text-align: left; font-weight: 600; color: #374151; border-right: 1px solid #e2e8f0;">경기 종목</th>
-                                        <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #374151; border-right: 1px solid #e2e8f0; width: 120px;">댄스</th>
-                                        <th style="padding: 12px 8px; text-align: center; font-weight: 600; color: #374151; width: 80px;">라운드</th>
+                                    <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 90px; font-size: 0.95em;">⏰ 시간</th>
+                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 70px; font-size: 0.95em;">🔢 번호</th>
+                                        <th style="padding: 16px 12px; text-align: left; font-weight: 700; color: white; font-size: 0.95em;">🏆 경기 종목</th>
+                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 130px; font-size: 0.95em;">💃 댄스</th>
+                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 90px; font-size: 0.95em;">🎯 라운드</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -555,6 +555,30 @@ $results = getCompetitionResults($comp_data_path);
                                     usort($all_rows, function($a, $b) {
                                         return strcmp($a['start_time'] ?? '', $b['start_time'] ?? '');
                                     });
+                                    
+                                    // 라운드별 색상 정의
+                                    function getRoundColor($roundtype) {
+                                        $round = strtolower($roundtype ?? '');
+                                        if (strpos($round, 'round') !== false || strpos($round, '예선') !== false) {
+                                            return '#e3f2fd'; // 연한 파란색
+                                        } elseif (strpos($round, 'semi') !== false || strpos($round, '준결승') !== false) {
+                                            return '#fff3e0'; // 연한 오렌지색
+                                        } elseif (strpos($round, 'final') !== false || strpos($round, '결승') !== false) {
+                                            return '#e8f5e8'; // 연한 초록색
+                                        }
+                                        return '#f5f5f5'; // 기본 회색
+                                    }
+                                    
+                                    // 이벤트별 색상 정의 (번호에 따른 다양한 색상)
+                                    function getEventAccentColor($eventNo) {
+                                        $colors = [
+                                            '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57',
+                                            '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3', '#ff9f43',
+                                            '#10ac84', '#ee5253', '#0abde3', '#3867d6', '#8c7ae6'
+                                        ];
+                                        $index = (intval($eventNo) - 1) % count($colors);
+                                        return $colors[$index];
+                                    }
                                     
                                     $current_event_no = null;
                                     $event_row_count = 0;
@@ -572,65 +596,103 @@ $results = getCompetitionResults($comp_data_path);
                                             }
                                         }
                                         $is_first_in_event = $is_new_event;
+                                        
+                                        // 색상 결정
+                                        $bg_color = getRoundColor($row['roundtype']);
+                                        $accent_color = getEventAccentColor($current_event_no);
                                     ?>
-                                        <tr style="border-bottom: 1px solid #f1f5f9; <?= $is_first_in_event && $index > 0 ? 'border-top: 2px solid #e2e8f0;' : '' ?>">
+                                        <tr style="background: <?= $bg_color ?>; transition: all 0.2s ease; <?= $is_first_in_event && $index > 0 ? 'border-top: 3px solid ' . $accent_color . ';' : '' ?>" 
+                                            onmouseover="this.style.background='<?= $is_first_in_event ? '#f0f9ff' : $bg_color ?>'; this.style.transform='scale(1.01)'"
+                                            onmouseout="this.style.background='<?= $bg_color ?>'; this.style.transform='scale(1)'">
+                                            
                                             <!-- 시간 -->
-                                            <td style="padding: 8px; text-align: center; border-right: 1px solid #f1f5f9; color: #1e40af; font-weight: 600; <?= $is_first_in_event && $event_row_count > 1 ? 'border-bottom: 1px solid #f1f5f9;' : '' ?>">
+                                            <td style="padding: 12px 8px; text-align: center; color: #1e40af; font-weight: 700; font-size: 0.95em; <?= $is_first_in_event ? 'border-left: 4px solid ' . $accent_color . ';' : 'border-left: 4px solid transparent;' ?>">
                                                 <?php if ($is_first_in_event): ?>
-                                                    <?= htmlspecialchars(($row['start_time'] ?? '') . ($row['end_time'] ? '~' . $row['end_time'] : '')) ?>
+                                                    <div style="display: flex; flex-direction: column; align-items: center;">
+                                                        <span style="font-size: 1.1em; font-weight: 800; color: #1e40af;">
+                                                            <?= htmlspecialchars($row['start_time'] ?? '') ?>
+                                                        </span>
+                                                        <?php if (!empty($row['end_time'])): ?>
+                                                            <span style="font-size: 0.8em; color: #64748b; margin-top: 2px;">
+                                                                ~ <?= htmlspecialchars($row['end_time']) ?>
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    </div>
                                                 <?php endif; ?>
                                             </td>
                                             
                                             <!-- 이벤트 번호 -->
-                                            <td style="padding: 8px; text-align: center; border-right: 1px solid #f1f5f9; font-weight: 600;">
+                                            <td style="padding: 12px 8px; text-align: center; font-weight: 600;">
                                                 <?php if ($is_first_in_event): ?>
-                                                    <span style="background: #3b82f6; color: white; padding: 2px 6px; border-radius: 3px; font-size: 0.85em;">
+                                                    <span style="background: <?= $accent_color ?>; color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.9em; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                                         <?= htmlspecialchars($row['no'] ?? '') ?>
                                                     </span>
                                                 <?php endif; ?>
                                             </td>
                                             
                                             <!-- 경기 종목 -->
-                                            <td style="padding: 8px; border-right: 1px solid #f1f5f9;">
+                                            <td style="padding: 12px 8px;">
                                                 <div style="display: flex; align-items: center; gap: 8px;">
                                                     <?php if (!empty($row['detail_no'])): ?>
-                                                        <span style="background: #64748b; color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.8em; font-weight: 500; min-width: 30px; text-align: center;">
+                                                        <span style="background: linear-gradient(135deg, #64748b, #475569); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.8em; font-weight: 600; min-width: 35px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2);">
                                                             <?= htmlspecialchars($row['detail_no']) ?>
                                                         </span>
                                                     <?php endif; ?>
-                                                    <span style="color: #374151;">
+                                                    <span style="color: #1f2937; font-weight: 500; font-size: 0.95em;">
                                                         <?= htmlspecialchars($row['title'] ?? $row['desc'] ?? '경기 종목') ?>
                                                     </span>
                                                 </div>
                                             </td>
                                             
                                             <!-- 댄스 종목 -->
-                                            <td style="padding: 8px; text-align: center; border-right: 1px solid #f1f5f9; color: #64748b;">
+                                            <td style="padding: 12px 8px; text-align: center;">
                                                 <?php if (!empty($row['dances']) && is_array($row['dances'])): ?>
-                                                    <?php
-                                                    $dance_names = ['1' => 'W', '2' => 'T', '3' => 'V', '4' => 'F', '5' => 'Q', '6' => 'C', '7' => 'S', '8' => 'R', '9' => 'P', '10' => 'J'];
-                                                    $dances = array_map(function($d) use ($dance_names) {
-                                                        return $dance_names[$d] ?? $d;
-                                                    }, $row['dances']);
-                                                    echo htmlspecialchars(implode(' ', $dances));
-                                                    ?>
+                                                    <div style="display: flex; gap: 4px; justify-content: center; flex-wrap: wrap;">
+                                                        <?php
+                                                        $dance_names = ['1' => 'W', '2' => 'T', '3' => 'V', '4' => 'F', '5' => 'Q', '6' => 'C', '7' => 'S', '8' => 'R', '9' => 'P', '10' => 'J'];
+                                                        foreach ($row['dances'] as $dance):
+                                                        ?>
+                                                            <span style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.8em; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+                                                                <?= htmlspecialchars($dance_names[$dance] ?? $dance) ?>
+                                                            </span>
+                                                        <?php endforeach; ?>
+                                                    </div>
                                                 <?php endif; ?>
                                             </td>
                                             
                                             <!-- 라운드 -->
-                                            <td style="padding: 8px; text-align: center; color: #059669;">
+                                            <td style="padding: 12px 8px; text-align: center;">
                                                 <?php if (!empty($row['roundtype'])): ?>
                                                     <?php 
                                                     $roundtype = $row['roundtype'];
                                                     $roundnum = $row['roundnum'] ?? '';
                                                     
+                                                    // 라운드별 아이콘
+                                                    $round_icon = '🏁';
+                                                    $round_color = '#059669';
+                                                    if (strpos(strtolower($roundtype), 'round') !== false) {
+                                                        $round_icon = '1️⃣';
+                                                        $round_color = '#1d4ed8';
+                                                    } elseif (strpos(strtolower($roundtype), 'semi') !== false) {
+                                                        $round_icon = '🥈';
+                                                        $round_color = '#d97706';
+                                                    } elseif (strpos(strtolower($roundtype), 'final') !== false) {
+                                                        $round_icon = '🏆';
+                                                        $round_color = '#059669';
+                                                    }
+                                                    
                                                     // roundtype에 이미 숫자가 포함되어 있으면 roundnum 추가하지 않음
+                                                    $display_text = $roundtype;
                                                     if (!empty($roundnum) && $roundnum !== '' && !preg_match('/\d/', $roundtype)) {
-                                                        echo htmlspecialchars($roundtype . ' ' . $roundnum);
-                                                    } else {
-                                                        echo htmlspecialchars($roundtype);
+                                                        $display_text = $roundtype . ' ' . $roundnum;
                                                     }
                                                     ?>
+                                                    <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                                                        <span style="font-size: 1.1em;"><?= $round_icon ?></span>
+                                                        <span style="color: <?= $round_color ?>; font-weight: 700; font-size: 0.9em;">
+                                                            <?= htmlspecialchars($display_text) ?>
+                                                        </span>
+                                                    </div>
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
