@@ -272,8 +272,8 @@ $results = getCompetitionResults($comp_data_path);
                 display: none !important;
             }
             
-            /* 인쇄 시 번호 컬럼에 "No." 텍스트 추가 */
-            .professional-timetable th:first-child::before {
+            /* 인쇄 시 번호 컬럼에 "No." 텍스트 추가 (세 번째 컬럼) */
+            .professional-timetable th:nth-child(3)::before {
                 content: "No." !important;
                 display: inline !important;
             }
@@ -283,8 +283,14 @@ $results = getCompetitionResults($comp_data_path);
                 display: none !important;
             }
             
-            /* 인쇄 시 시간 정렬 개선 */
-            .professional-timetable td:first-child {
+            /* 댄스 컬럼 글씨 진하게 */
+            .professional-timetable td:nth-child(5) {
+                font-weight: bold !important;
+                color: #000 !important;
+            }
+            
+            /* 인쇄 시 시간 정렬 개선 (두 번째 컬럼) */
+            .professional-timetable td:nth-child(2) {
                 text-align: center !important;
                 vertical-align: middle !important;
             }
