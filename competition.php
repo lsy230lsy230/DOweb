@@ -636,27 +636,33 @@ $results = getCompetitionResults($comp_data_path);
                                         }
                                     }
                                     
-                                    $current_event_no = null;
-                                    $event_row_index = 0;
+                                    // 각 이벤트의 첫 번째 행 인덱스 찾기
+                                    $first_row_indices = [];
+                                    $event_first_occurrence = [];
+                                    
+                                    foreach ($all_rows as $index => $row) {
+                                        $event_no = $row['no'] ?? '';
+                                        if (!empty($event_no) && is_numeric($event_no)) {
+                                            if (!isset($event_first_occurrence[$event_no])) {
+                                                $event_first_occurrence[$event_no] = $index;
+                                                $first_row_indices[$index] = true;
+                                            }
+                                        } else {
+                                            // 특별 이벤트는 모두 첫 번째 행
+                                            $first_row_indices[$index] = true;
+                                        }
+                                    }
                                     
                                     foreach ($all_rows as $index => $row): 
                                         $event_no = $row['no'] ?? '';
                                         $is_numeric_event = !empty($event_no) && is_numeric($event_no);
+                                        $is_first_in_event = isset($first_row_indices[$index]);
                                         
-                                        // 숫자 이벤트만 그룹화 처리
                                         if ($is_numeric_event) {
-                                            $is_new_event = $event_no !== $current_event_no;
-                                            if ($is_new_event) {
-                                                $current_event_no = $event_no;
-                                                $event_row_index = 0;
-                                            }
-                                            $is_first_in_event = $is_new_event;
-                                            $event_row_count = $event_rows[$current_event_no] ?? 1;
+                                            $event_row_count = $event_rows[$event_no] ?? 1;
                                         } else {
                                             // 특별 이벤트는 개별 처리
-                                            $is_first_in_event = true;
                                             $event_row_count = 1;
-                                            $current_event_no = null; // 리셋
                                         }
                                         
                                         // 모든 행을 흰색 배경으로 통일
@@ -756,9 +762,7 @@ $results = getCompetitionResults($comp_data_path);
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
-                                    <?php 
-                                        $event_row_index++;
-                                    endforeach; ?>
+                                    <?php endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
