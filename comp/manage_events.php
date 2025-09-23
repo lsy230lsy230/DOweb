@@ -118,29 +118,34 @@ foreach ($events as $evt) {
 }
 
 // ==== 7-1. 세부번호 자동 생성 ====
-// 모든 이벤트에 대해 세부번호를 새로 계산
-foreach ($events as $idx => &$event) {
-    // 같은 raw_no를 가진 이벤트들 찾기
-    $same_raw_no_events = array_filter($events, function($e) use ($event) {
-        return $e['raw_no'] === $event['raw_no'];
-    });
-    $event_count = count($same_raw_no_events);
-    
-    // 이벤트가 2개 이상인 경우에만 세부번호 할당
-    if ($event_count > 1) {
-        // 같은 raw_no를 가진 이벤트들을 순서대로 정렬
-        $sorted_events = $same_raw_no_events;
-        usort($sorted_events, function($a, $b) {
-            return strcmp($a['name'], $b['name']);
+// 이벤트명별로 그룹화하여 세부번호 생성
+$event_groups = [];
+foreach ($events as $idx => $event) {
+    $event_name = $event['name'];
+    if (!isset($event_groups[$event_name])) {
+        $event_groups[$event_name] = [];
+    }
+    $event_groups[$event_name][] = ['idx' => $idx, 'event' => $event];
+}
+
+// 각 그룹별로 세부번호 할당
+foreach ($event_groups as $group_name => $group_events) {
+    if (count($group_events) > 1) {
+        // 같은 이벤트명을 가진 이벤트들을 raw_no 순으로 정렬
+        usort($group_events, function($a, $b) {
+            return intval($a['event']['raw_no']) - intval($b['event']['raw_no']);
         });
         
-        $event_index = array_search($event, $sorted_events);
-        if ($event_index !== false) {
-            $event['detail_no'] = $event['raw_no'] . '-' . ($event_index + 1);
+        // 세부번호 할당
+        foreach ($group_events as $pos => $item) {
+            $idx = $item['idx'];
+            $raw_no = $item['event']['raw_no'];
+            $events[$idx]['detail_no'] = $raw_no . '-' . ($pos + 1);
         }
     } else {
         // 이벤트가 1개인 경우 세부번호를 빈 문자열로 설정
-        $event['detail_no'] = '';
+        $idx = $group_events[0]['idx'];
+        $events[$idx]['detail_no'] = '';
     }
 }
 
@@ -202,39 +207,14 @@ if (file_exists($runorder_file)) {
 
 // ==== 7-1. 라운드 자동 계산 함수 ====
 function calculateRoundInfo($events) {
-    // 이벤트명별로 그룹화하되, Raw 번호와 세부번호를 조합한 고유 키 사용
+    // 이벤트명별로 그룹화
     $name_groups = [];
     foreach ($events as $idx => $evt) {
         $name = $evt['name'];
-        $raw_no = $evt['raw_no'];
-        $detail_no = $evt['detail_no'] ?? '';
-        
-        // 고유 키 생성: 이벤트명 + Raw번호 + 세부번호
-        $unique_key = $name . '|' . $raw_no . '|' . $detail_no;
-        
         if (!isset($name_groups[$name])) {
             $name_groups[$name] = [];
         }
-        $name_groups[$name][] = ['idx' => $idx, 'event' => $evt, 'unique_key' => $unique_key];
-        
-        // 디버깅: 이벤트 그룹화 과정 출력
-        if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-            echo "<!-- DEBUG: Adding event to group '$name' - Raw: $raw_no, Detail: '$detail_no', Index: $idx, Unique: $unique_key -->\n";
-        }
-    }
-    
-    // 이미 전역에서 중복 제거된 데이터를 사용하므로 추가 중복 제거 불필요
-    // 각 그룹의 이벤트들을 그대로 사용
-    
-    // 디버깅: 최종 그룹 정보 출력
-    if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-        echo "<!-- DEBUG: Final groups after deduplication: -->\n";
-        foreach ($name_groups as $name => $group) {
-            echo "<!-- DEBUG: Group '$name' has " . count($group) . " events -->\n";
-            foreach ($group as $item) {
-                echo "<!-- DEBUG:   - Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Index: {$item['idx']} -->\n";
-            }
-        }
+        $name_groups[$name][] = ['idx' => $idx, 'event' => $evt];
     }
     
     // 각 그룹별로 라운드 정보 계산
@@ -244,90 +224,48 @@ function calculateRoundInfo($events) {
     foreach ($name_groups as $name => $group) {
         $total_events = count($group);
         
-        // 같은 이벤트명을 가진 이벤트들을 순번 순으로 정렬 (raw_no, detail_no 고려)
+        // 같은 이벤트명을 가진 이벤트들을 raw_no 순으로 정렬
         usort($group, function($a, $b) {
             $raw_no_a = intval($a['event']['raw_no']);
             $raw_no_b = intval($b['event']['raw_no']);
-            
-            // 순번이 같으면 세부번호로 정렬
-            if ($raw_no_a === $raw_no_b) {
-                $detail_no_a = intval($a['event']['detail_no'] ?? 0);
-                $detail_no_b = intval($b['event']['detail_no'] ?? 0);
-                return $detail_no_a - $detail_no_b;
-            }
-            
             return $raw_no_a - $raw_no_b;
         });
-        
-        // 디버깅: 그룹 정보 출력
-        if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-            echo "<!-- DEBUG: Group '$name' has $total_events events -->\n";
-            error_log("Group '$name' has $total_events events:");
-            foreach ($group as $pos => $item) {
-                echo "<!-- DEBUG: Position $pos: Raw={$item['event']['raw_no']}, Detail={$item['event']['detail_no']}, Index={$item['idx']} -->\n";
-                error_log("  Position $pos: Raw={$item['event']['raw_no']}, Detail={$item['event']['detail_no']}, Index={$item['idx']}");
-            }
-        }
         
         foreach ($group as $pos => $item) {
             $idx = $item['idx'];
             $stage_text = '';
             
-            // 디버깅: 라운드 계산 전 상태 출력
-            if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-                echo "<!-- DEBUG: Before calculation - pos=$pos, total_events=$total_events, idx=$idx -->\n";
-            }
-            
-            if ($total_events === 1) {
-                $stage_text = 'Final';
-            } else if ($total_events === 2) {
-                if ($pos === 0) $stage_text = 'Semi-Final';
-                else $stage_text = 'Final';
-            } else if ($total_events === 3) {
-                if ($pos === 0) $stage_text = 'Round 1';
-                else if ($pos === 1) $stage_text = 'Semi-Final';
-                else $stage_text = 'Final';
-                
-                // 디버깅: 3개 이벤트 케이스 상세 출력
-                if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-                    echo "<!-- DEBUG: 3 events case - pos=$pos, condition check -->\n";
-                    if ($pos === 0) echo "<!-- DEBUG: pos=0 → Round 1 -->\n";
-                    else if ($pos === 1) echo "<!-- DEBUG: pos=1 → Semi-Final -->\n";
-                    else echo "<!-- DEBUG: pos=$pos → Final (else case) -->\n";
-                }
-            } else if ($total_events === 4) {
-                if ($pos === 0) $stage_text = 'Round 1';
-                else if ($pos === 1) $stage_text = 'Round 2';
-                else if ($pos === 2) $stage_text = 'Semi-Final';
-                else $stage_text = 'Final';
-            } else if ($total_events === 5) {
-                if ($pos === 0) $stage_text = 'Round 1';
-                else if ($pos === 1) $stage_text = 'Round 2';
-                else if ($pos === 2) $stage_text = 'Round 3';
-                else if ($pos === 3) $stage_text = 'Semi-Final';
-                else $stage_text = 'Final';
+            // 라운드 타입이 이미 설정되어 있으면 그대로 사용
+            if (!empty($item['event']['round_type'])) {
+                $stage_text = $item['event']['round_type'];
             } else {
-                $stage_text = ($pos + 1) . '/' . $total_events;
-            }
-            
-            // 디버깅: 라운드 계산 후 상태 출력
-            if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-                echo "<!-- DEBUG: After calculation - pos=$pos, stage_text=$stage_text -->\n";
+                // 자동 계산
+                if ($total_events === 1) {
+                    $stage_text = 'Final';
+                } else if ($total_events === 2) {
+                    if ($pos === 0) $stage_text = 'Semi-Final';
+                    else $stage_text = 'Final';
+                } else if ($total_events === 3) {
+                    if ($pos === 0) $stage_text = 'Round 1';
+                    else if ($pos === 1) $stage_text = 'Semi-Final';
+                    else $stage_text = 'Final';
+                } else if ($total_events === 4) {
+                    if ($pos === 0) $stage_text = 'Round 1';
+                    else if ($pos === 1) $stage_text = 'Round 2';
+                    else if ($pos === 2) $stage_text = 'Semi-Final';
+                    else $stage_text = 'Final';
+                } else if ($total_events === 5) {
+                    if ($pos === 0) $stage_text = 'Round 1';
+                    else if ($pos === 1) $stage_text = 'Round 2';
+                    else if ($pos === 2) $stage_text = 'Round 3';
+                    else if ($pos === 3) $stage_text = 'Semi-Final';
+                    else $stage_text = 'Final';
+                } else {
+                    $stage_text = ($pos + 1) . '/' . $total_events;
+                }
             }
             
             $round_info[$idx] = $stage_text;
-            
-            // 디버깅용 로그
-            if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-                echo "<!-- DEBUG: Calculated Round - Event: {$item['event']['name']}, Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Position: $pos, Total: $total_events, Round: $stage_text -->\n";
-                error_log("Calculated Round - Event: {$item['event']['name']}, Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Position: $pos, Total: $total_events, Round: $stage_text");
-                
-                // 라운드 계산 조건 상세 출력
-                echo "<!-- DEBUG: Round calculation details - total_events=$total_events, pos=$pos -->\n";
-                if ($total_events === 3) {
-                    echo "<!-- DEBUG: 3 events case - pos 0=Round 1, pos 1=Semi-Final, pos 2=Final -->\n";
-                }
-            }
             
             // 다음 이벤트 번호 자동 계산
             if ($pos < $total_events - 1) {
@@ -344,65 +282,20 @@ function calculateRoundInfo($events) {
     return ['round_info' => $round_info, 'next_event_info' => $next_event_info];
 }
 
-// 먼저 중복 제거된 이벤트 데이터를 생성
-$unique_events = [];
-$seen_keys = [];
-$seen_raw_numbers = []; // Raw 번호 기준 중복 제거
-
-foreach ($events as $evt) {
-    $unique_key = $evt['name'] . '|' . $evt['raw_no'] . '|' . ($evt['detail_no'] ?? '');
-    $raw_no = $evt['raw_no'];
-    
-    // Raw 번호 기준으로도 중복 제거 (같은 Raw 번호가 있으면 제외)
-    if (!in_array($unique_key, $seen_keys) && !in_array($raw_no, $seen_raw_numbers)) {
-        $unique_events[] = $evt;
-        $seen_keys[] = $unique_key;
-        $seen_raw_numbers[] = $raw_no;
-        
-        // 디버깅: 추가된 이벤트 출력
-        if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-            echo "<!-- DEBUG: Added unique event - Raw: $raw_no, Name: {$evt['name']}, Detail: {$evt['detail_no']} -->\n";
-        }
-    } else {
-        // 디버깅: 중복 제거된 이벤트 출력
-        if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-            echo "<!-- DEBUG: Duplicate removed - Raw: $raw_no, Name: {$evt['name']}, Detail: {$evt['detail_no']} -->\n";
-        }
-    }
-}
-
-// 중복 제거된 데이터로 라운드 정보 계산
-$round_calculation = calculateRoundInfo($unique_events);
+// 라운드 정보 계산
+$round_calculation = calculateRoundInfo($events);
 $round_info = $round_calculation['round_info'];
 $next_event_info = $round_calculation['next_event_info'];
 
-// 디버깅: 전역 중복 제거된 이벤트 정보 출력
-if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-    echo "<!-- DEBUG: Global unique events: -->\n";
-    foreach ($unique_events as $evt) {
-        echo "<!-- DEBUG: Raw={$evt['raw_no']}, Name={$evt['name']}, Detail={$evt['detail_no']} -->\n";
-    }
-}
-
-// 디버깅: 라운드 정보 출력
-if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-    echo "<!-- DEBUG: Round info calculated -->\n";
-    echo "<!-- DEBUG: Total events: " . count($events) . " -->\n";
-    echo "<!-- DEBUG: Round info count: " . count($round_info) . " -->\n";
-    foreach ($round_info as $idx => $round) {
-        echo "<!-- DEBUG: Round info[$idx] = $round -->\n";
-    }
-}
-
-// 다음 이벤트 번호를 중복 제거된 이벤트에 적용
-foreach ($unique_events as $idx => &$event) {
+// 다음 이벤트 번호를 이벤트에 적용
+foreach ($events as $idx => &$event) {
     if (isset($next_event_info[$idx])) {
         $event['next_event'] = $next_event_info[$idx];
     }
 }
 
-// RunOrder_Tablet.txt에서 읽어온 라운드 정보를 사용
-foreach ($unique_events as $idx => &$event) {
+// RunOrder_Tablet.txt에서 읽어온 라운드 정보를 사용하되, 비어있으면 자동 계산된 값 사용
+foreach ($events as $idx => &$event) {
     // RunOrder_Tablet.txt에서 읽어온 라운드 정보가 있으면 사용
     if (!empty($event['round_type'])) {
         $round_info[$idx] = $event['round_type'];
@@ -410,6 +303,20 @@ foreach ($unique_events as $idx => &$event) {
     // RunOrder_Tablet.txt에서 읽어온 다음 이벤트 번호가 있으면 사용
     if (!empty($event['next_event'])) {
         $next_event_info[$idx] = $event['next_event'];
+    }
+}
+
+// 라운드 정보 강제 재계산 (디버깅용)
+if (isset($_GET['recalculate_rounds'])) {
+    $round_calculation = calculateRoundInfo($events);
+    $round_info = $round_calculation['round_info'];
+    $next_event_info = $round_calculation['next_event_info'];
+    
+    // 다음 이벤트 번호를 이벤트에 적용
+    foreach ($events as $idx => &$event) {
+        if (isset($next_event_info[$idx])) {
+            $event['next_event'] = $next_event_info[$idx];
+        }
     }
 }
 
@@ -943,43 +850,52 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         const inputs = document.querySelectorAll('input[name^="detail_numbers["]');
         console.log('찾은 입력 필드 수:', inputs.length);
         
-        const groupCounters = {};
+        // 이벤트명별로 그룹화
+        const eventGroups = {};
+        const inputData = [];
         
         inputs.forEach((input, index) => {
             const name = input.getAttribute('name');
-            console.log(`입력 필드 ${index}:`, name);
+            const match = name.match(/detail_numbers\[([^|]+)\|(.+)\]/);
             
-            // 더 유연한 정규식 패턴 사용 (숫자가 아닌 raw_no도 처리)
-            const match = name.match(/detail_numbers\[([^|]+)\|/);
-            
-            if (match && match.length > 1 && match[1]) {
-                const rawNo = match[1].trim(); // 공백 문자 제거
-                console.log(`매칭된 raw_no: "${rawNo}" (길이: ${rawNo.length})`);
+            if (match && match.length >= 3) {
+                const rawNo = match[1].trim();
+                const eventName = match[2].trim();
                 
-                // raw_no가 "1"인 경우 특별히 디버깅
-                if (rawNo === "1" || rawNo.includes("1")) {
-                    console.log(`raw_no "1" 발견:`, {
-                        original: match[1],
-                        trimmed: rawNo,
-                        charCodes: Array.from(rawNo).map(c => c.charCodeAt(0))
-                    });
+                if (!eventGroups[eventName]) {
+                    eventGroups[eventName] = [];
                 }
                 
-                if (!groupCounters[rawNo]) {
-                    groupCounters[rawNo] = 0;
-                }
-                groupCounters[rawNo]++;
-                
-                const newValue = rawNo + '-' + groupCounters[rawNo];
-                input.value = newValue;
-                console.log(`설정된 값: ${newValue}`);
-            } else {
-                console.warn('세부번호 입력 필드의 name 속성을 파싱할 수 없습니다:', name);
-                console.log('Input element:', input);
+                eventGroups[eventName].push({
+                    input: input,
+                    rawNo: rawNo,
+                    eventName: eventName
+                });
             }
         });
         
-        console.log('자동 생성 완료. 그룹별 카운터:', groupCounters);
+        // 각 이벤트 그룹별로 세부번호 생성
+        Object.keys(eventGroups).forEach(eventName => {
+            const group = eventGroups[eventName];
+            
+            // raw_no 순으로 정렬
+            group.sort((a, b) => {
+                const rawNoA = parseInt(a.rawNo) || 0;
+                const rawNoB = parseInt(b.rawNo) || 0;
+                return rawNoA - rawNoB;
+            });
+            
+            // 세부번호 할당
+            group.forEach((item, index) => {
+                if (group.length > 1) {
+                    item.input.value = item.rawNo + '-' + (index + 1);
+                } else {
+                    item.input.value = '';
+                }
+            });
+        });
+        
+        console.log('자동 생성 완료. 이벤트 그룹:', eventGroups);
         
         // 자동 생성 후 자동으로 저장
         setTimeout(() => {
@@ -1036,29 +952,6 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
     <?php if ($msg): ?>
         <div style="color:#03c75a; margin-bottom:1em;"><?= h($msg) ?></div>
     <?php endif; ?>
-    
-    <?php if (isset($_GET['debug']) && $_GET['debug'] === '1'): ?>
-    <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
-        <h3 style="color: #495057; margin: 0 0 10px 0;">🔍 디버깅 정보</h3>
-        <div style="font-size: 12px; color: #6c757d;">
-            <p><strong>총 이벤트 수:</strong> <?= count($unique_events) ?></p>
-            <p><strong>라운드 정보 수:</strong> <?= count($round_info) ?></p>
-            <p><strong>라운드 정보:</strong></p>
-            <ul style="margin: 5px 0; padding-left: 20px;">
-                <?php foreach ($round_info as $idx => $round): ?>
-                    <li>Index <?= $idx ?>: <?= $round ?></li>
-                <?php endforeach; ?>
-            </ul>
-            
-            <p><strong>이벤트 상세 정보:</strong></p>
-            <ul style="margin: 5px 0; padding-left: 20px;">
-                <?php foreach ($unique_events as $idx => $event): ?>
-                    <li>Index <?= $idx ?>: Raw=<?= $event['raw_no'] ?>, Name=<?= htmlspecialchars($event['name']) ?>, Detail=<?= $event['detail_no'] ?></li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    </div>
-    <?php endif; ?>
 
     <!-- 예제파일 다운로드 & 업로드 폼 -->
     <div style="margin-bottom:1.2em; display:flex; gap:1.2em; align-items:center; flex-wrap:wrap;">
@@ -1073,6 +966,10 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         <button onclick="saveRoundInfo()" style="background:#FF6B35; color:#fff; border:none; border-radius:8px; padding:0.4em 1.5em; font-weight:700; cursor:pointer;">
             라운드 정보 저장
         </button>
+        <a href="?comp_id=<?=urlencode($comp_id)?>&recalculate_rounds=1" 
+           style="display:inline-block; background:#6c757d; color:#fff; border-radius:8px; padding:0.4em 1.5em; font-weight:700; text-decoration:none;">
+           라운드 재계산
+        </a>
     </div>
     
     <!-- 웹 직접 입력: 한 줄 추가 폼 또는 수정 폼 -->
@@ -1160,11 +1057,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         </h4>
         <form method="post">
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:10px; max-height:300px; overflow-y:auto;">
-                <?php 
-                // 전역 변수 $unique_events 사용 (라운드 계산과 동일한 데이터)
-                // 이렇게 하면 라운드 계산과 세부번호 수정이 동일한 데이터를 사용
-                
-                foreach ($unique_events as $evt): ?>
+                <?php foreach ($events as $evt): ?>
                     <div style="display:flex; align-items:center; gap:10px; padding:8px; background:white; border-radius:4px; border:1px solid #e9ecef;">
                         <label style="min-width:60px; font-size:12px; color:#495057; font-weight:600;">
                             <?= h($evt['raw_no']) ?>
@@ -1210,30 +1103,15 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         $row_idx = 0;
         foreach ($grouped_events as $grp_no => $evts):
             foreach ($evts as $k => $e):
-                // 이벤트의 원본 인덱스 찾기 (raw_no, name, detail_no 모두 고려)
+                // 이벤트의 원본 인덱스 찾기
                 $original_idx = null;
-                foreach ($unique_events as $orig_idx => $orig_evt) {
-                    if ($orig_evt['raw_no'] === $e['raw_no'] && 
-                        $orig_evt['name'] === $e['name'] && 
-                        ($orig_evt['detail_no'] ?? '') === ($e['detail_no'] ?? '')) {
+                foreach ($events as $orig_idx => $orig_evt) {
+                    if ($orig_evt['raw_no'] === $e['raw_no'] && $orig_evt['name'] === $e['name']) {
                         $original_idx = $orig_idx;
                         break;
                     }
                 }
                 $calculated_round = $original_idx !== null ? ($round_info[$original_idx] ?? '-') : '-';
-                
-                // 디버깅용 로그 (개발 시에만 사용)
-                if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-                    echo "<!-- DEBUG: Display Event: {$e['name']}, Raw: {$e['raw_no']}, Detail: {$e['detail_no']}, Original_idx: " . ($original_idx ?? 'null') . ", Round: $calculated_round -->\n";
-                    error_log("Display Event: {$e['name']}, Raw: {$e['raw_no']}, Detail: {$e['detail_no']}, Original_idx: " . ($original_idx ?? 'null') . ", Round: $calculated_round");
-                    
-                    // 원본 이벤트 정보도 출력
-                    if ($original_idx !== null) {
-                        $orig_evt = $unique_events[$original_idx];
-                        echo "<!-- DEBUG: Original Event: Raw={$orig_evt['raw_no']}, Detail={$orig_evt['detail_no']}, Name={$orig_evt['name']} -->\n";
-                        error_log("  Original Event: Raw={$orig_evt['raw_no']}, Detail={$orig_evt['detail_no']}, Name={$orig_evt['name']}");
-                    }
-                }
         ?>
             <tr<?=($k==0 && count($evts)>1?' class="event-group-row"':'')?>>
                 <?php if ($k==0): ?>
