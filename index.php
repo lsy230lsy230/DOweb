@@ -32,17 +32,19 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>댄스스포츠 대회 실시간 정보 - danceoffice.net</title>
+    <title>DanceOffice - International DanceSport Competition Management System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/style.css">
     <style>
         /* PC 버전 스타일 */
         @media (min-width: 1024px) {
             body {
-                background: #181B20;
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
                 min-height: 100vh;
                 font-size: 14px;
-                line-height: 1.5;
+                line-height: 1.6;
+                font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color: #1e293b;
             }
             
             .main-container {
@@ -62,13 +64,13 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             
             .main-header {
                 grid-area: header;
-                background: linear-gradient(135deg, #1a1d21 0%, #181B20 100%);
-                border-radius: 15px;
-                padding: 20px;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.15);
+                background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+                border-radius: 20px;
+                padding: 30px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
                 position: relative;
                 overflow: hidden;
-                border: 2px solid #03C75A;
+                border: 1px solid #e2e8f0;
             }
             
             .main-header::before {
@@ -78,7 +80,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                 right: -50%;
                 width: 200%;
                 height: 200%;
-                background: radial-gradient(circle, rgba(3, 199, 90, 0.08) 0%, transparent 70%);
+                background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
                 animation: float 6s ease-in-out infinite;
             }
             
@@ -132,11 +134,11 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             }
             
             .sidebar-left .logo-nav {
-                background: linear-gradient(135deg, #1a1d21 0%, #181B20 100%);
-                border-radius: 15px;
-                padding: 20px;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.15);
-                border: 2px solid #03C75A;
+                background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+                border-radius: 20px;
+                padding: 25px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+                border: 1px solid #e2e8f0;
                 text-align: center;
             }
             
@@ -153,23 +155,25 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             }
             
             .sidebar-left .main-nav a {
-                color: white;
+                color: #475569;
                 text-decoration: none;
-                font-weight: 600;
+                font-weight: 500;
                 font-size: 14px;
                 padding: 12px 20px;
-                border-radius: 20px;
+                border-radius: 12px;
                 transition: all 0.3s ease;
-                background: rgba(3, 199, 90, 0.1);
+                background: rgba(59, 130, 246, 0.05);
                 backdrop-filter: blur(10px);
                 text-align: center;
+                border: 1px solid rgba(59, 130, 246, 0.1);
             }
             
             .sidebar-left .main-nav a:hover {
-                background: #03C75A;
-                color: #222;
+                background: #3b82f6;
+                color: #ffffff;
                 transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(3, 199, 90, 0.3);
+                box-shadow: 0 8px 25px rgba(59, 130, 246, 0.25);
+                border-color: #3b82f6;
             }
             
             .ad-side {
@@ -198,11 +202,12 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             }
             
             .info-section {
-                background: #222;
-                border-radius: 15px;
-                padding: 25px;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.08);
-                border: 1px solid #31343a;
+                background: #ffffff;
+                border-radius: 20px;
+                padding: 32px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+                border: 1px solid #e2e8f0;
+                margin-bottom: 24px;
             }
             
             .info-cards {
@@ -212,14 +217,15 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             }
             
             .info-card {
-                background: linear-gradient(135deg, #181B20 0%, #1E2126 100%);
-                color: white;
-                padding: 20px;
-                border-radius: 15px;
+                background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+                color: #1e293b;
+                padding: 24px;
+                border-radius: 16px;
                 position: relative;
                 overflow: hidden;
-                transition: transform 0.3s ease;
-                border: 2px solid #03C75A;
+                transition: all 0.3s ease;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             }
             
             .info-card:hover {
@@ -233,78 +239,84 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                 right: -50%;
                 width: 200%;
                 height: 200%;
-                background: radial-gradient(circle, rgba(3, 199, 90, 0.08) 0%, transparent 70%);
+                background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
                 animation: float 8s ease-in-out infinite;
             }
             
             .card-icon {
-                font-size: 36px;
-                margin-bottom: 15px;
+                font-size: 40px;
+                margin-bottom: 16px;
                 position: relative;
                 z-index: 2;
-                color: #03C75A;
+                color: #3b82f6;
             }
             
             .info-card h2 {
-                font-size: 18px;
-                margin-bottom: 15px;
+                font-size: 20px;
+                margin-bottom: 16px;
                 position: relative;
                 z-index: 2;
-                color: #03C75A;
+                color: #1e293b;
+                font-weight: 600;
             }
             
             .notice-preview, .schedule-preview {
-                background: rgba(3, 199, 90, 0.08);
-                padding: 15px;
+                background: rgba(59, 130, 246, 0.05);
+                padding: 18px;
                 border-radius: 12px;
-                margin-bottom: 15px;
+                margin-bottom: 16px;
                 backdrop-filter: blur(10px);
                 position: relative;
                 z-index: 2;
                 min-height: 80px;
-                border: 1px solid rgba(3, 199, 90, 0.2);
-                font-size: 13px;
-                line-height: 1.4;
+                border: 1px solid rgba(59, 130, 246, 0.1);
+                font-size: 14px;
+                line-height: 1.5;
+                color: #475569;
             }
             
             .button {
                 display: inline-block;
-                background: linear-gradient(90deg, #03C75A 70%, #00BFAE 100%);
-                color: #222;
+                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+                color: #ffffff;
                 padding: 12px 24px;
-                border-radius: 20px;
+                border-radius: 12px;
                 text-decoration: none;
-                font-weight: 600;
+                font-weight: 500;
                 transition: all 0.3s ease;
                 position: relative;
                 z-index: 2;
                 backdrop-filter: blur(10px);
-                font-size: 13px;
+                font-size: 14px;
+                border: 1px solid rgba(59, 130, 246, 0.2);
             }
             
             .button:hover {
-                background: linear-gradient(90deg, #00BFAE 60%, #03C75A 100%);
-                color: white;
+                background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+                color: #ffffff;
                 transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(59, 130, 246, 0.25);
             }
             
             .results-section {
-                background: #1E2126;
-                border-radius: 15px;
-                padding: 25px;
+                background: #ffffff;
+                border-radius: 20px;
+                padding: 32px;
                 text-align: center;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.08);
-                border: 1px solid #31343a;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+                border: 1px solid #e2e8f0;
+                margin-bottom: 24px;
             }
             
             .results-section h2 {
-                color: #03C75A;
-                font-size: 20px;
-                margin-bottom: 20px;
+                color: #1e293b;
+                font-size: 24px;
+                margin-bottom: 24px;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 gap: 12px;
+                font-weight: 600;
             }
             
             .results-cta .button {
@@ -324,20 +336,22 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             }
             
             .competitions-section {
-                background: #1E2126;
-                border-radius: 15px;
-                padding: 25px;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.08);
-                border: 1px solid #31343a;
+                background: #ffffff;
+                border-radius: 20px;
+                padding: 32px;
+                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+                border: 1px solid #e2e8f0;
+                margin-bottom: 24px;
             }
             
             .competitions-section h2 {
-                color: #03C75A;
-                font-size: 20px;
-                margin-bottom: 20px;
+                color: #1e293b;
+                font-size: 24px;
+                margin-bottom: 24px;
                 display: flex;
                 align-items: center;
                 gap: 12px;
+                font-weight: 600;
             }
             
             .competitions-grid {
@@ -347,18 +361,20 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             }
             
             .competition-card {
-                background: linear-gradient(135deg, #181B20 0%, #1E2126 100%);
-                border-radius: 15px;
-                padding: 20px;
-                border: 2px solid #03C75A;
-                transition: transform 0.3s ease;
+                background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+                border-radius: 16px;
+                padding: 24px;
+                border: 1px solid #e2e8f0;
+                transition: all 0.3s ease;
                 position: relative;
                 overflow: hidden;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             }
             
             .competition-card:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.2);
+                transform: translateY(-4px);
+                box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
+                border-color: #3b82f6;
             }
             
             .competition-card.upcoming {
@@ -377,34 +393,36 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             }
             
             .comp-header h3 {
-                color: #03C75A;
-                font-size: 16px;
+                color: #1e293b;
+                font-size: 18px;
                 margin: 0;
                 flex: 1;
+                font-weight: 600;
             }
             
             .comp-date {
-                background: rgba(3, 199, 90, 0.2);
-                color: #03C75A;
-                padding: 4px 12px;
-                border-radius: 20px;
+                background: rgba(59, 130, 246, 0.1);
+                color: #3b82f6;
+                padding: 6px 14px;
+                border-radius: 12px;
                 font-size: 12px;
-                font-weight: 600;
+                font-weight: 500;
                 white-space: nowrap;
+                border: 1px solid rgba(59, 130, 246, 0.2);
             }
             
             .comp-details p {
-                color: #ccc;
+                color: #64748b;
                 font-size: 14px;
-                margin: 8px 0;
+                margin: 10px 0;
                 display: flex;
                 align-items: center;
                 gap: 8px;
             }
             
             .comp-details .material-symbols-rounded {
-                font-size: 16px;
-                color: #03C75A;
+                font-size: 18px;
+                color: #3b82f6;
             }
             
             .comp-actions {
@@ -448,24 +466,27 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             .main-footer {
                 grid-area: footer;
                 text-align: center;
-                color: #03C75A;
-                padding: 15px;
-                background: #222;
-                border-radius: 12px;
-                box-shadow: 0 4px 12px rgba(3, 199, 90, 0.08);
-                border: 1px solid #31343a;
-                font-size: 13px;
+                color: #64748b;
+                padding: 20px;
+                background: #ffffff;
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+                border: 1px solid #e2e8f0;
+                font-size: 14px;
+                margin-top: 24px;
             }
         }
         
         /* 모바일 버전 스타일 */
         @media (max-width: 1023px) {
             body {
-                background: #181B20;
+                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
                 min-height: 100vh;
                 margin: 0;
                 padding: 0;
                 padding-bottom: 80px; /* 하단 네비게이션 공간 */
+                font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                color: #1e293b;
             }
             
             .main-container {
@@ -475,13 +496,14 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             }
             
             .main-header {
-                background: rgba(26, 29, 33, 0.9);
+                background: rgba(255, 255, 255, 0.95);
                 backdrop-filter: blur(20px);
                 padding: 20px;
                 position: sticky;
                 top: 0;
                 z-index: 100;
-                border-bottom: 2px solid #03C75A;
+                border-bottom: 2px solid #3b82f6;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             }
             
             .logo-nav {
@@ -510,24 +532,25 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                 bottom: 0;
                 left: 0;
                 right: 0;
-                background: rgba(26, 29, 33, 0.95);
+                background: rgba(255, 255, 255, 0.95);
                 backdrop-filter: blur(20px);
-                border-top: 2px solid #03C75A;
+                border-top: 2px solid #3b82f6;
                 padding: 10px 0;
                 z-index: 1000;
                 display: flex;
                 justify-content: space-around;
                 align-items: center;
+                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
             }
             
             .bottom-nav a {
-                color: white;
+                color: #64748b;
                 text-decoration: none;
-                font-weight: 600;
+                font-weight: 500;
                 font-size: 12px;
                 padding: 8px 12px;
-                border-radius: 15px;
-                background: rgba(3, 199, 90, 0.1);
+                border-radius: 12px;
+                background: rgba(59, 130, 246, 0.05);
                 backdrop-filter: blur(10px);
                 transition: all 0.3s ease;
                 text-align: center;
@@ -540,9 +563,10 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             
             .bottom-nav a:hover,
             .bottom-nav a.active {
-                background: #03C75A;
-                color: #222;
+                background: #3b82f6;
+                color: #ffffff;
                 transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
             }
             
             .bottom-nav .nav-icon {
@@ -558,12 +582,13 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             }
             
             .info-section {
-                background: rgba(34, 34, 34, 0.95);
+                background: rgba(255, 255, 255, 0.95);
                 border-radius: 20px;
                 padding: 25px;
-                box-shadow: 0 10px 30px rgba(3, 199, 90, 0.1);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
                 backdrop-filter: blur(20px);
-                border: 1px solid #31343a;
+                border: 1px solid #e2e8f0;
+                margin-bottom: 20px;
             }
             
             .info-cards {
@@ -573,25 +598,27 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             }
             
             .info-card {
-                background: linear-gradient(135deg, #181B20 0%, #1E2126 100%);
-                color: white;
+                background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+                color: #1e293b;
                 padding: 25px;
                 border-radius: 20px;
                 position: relative;
                 overflow: hidden;
-                border: 2px solid #03C75A;
+                border: 1px solid #e2e8f0;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
             }
             
             .card-icon {
-                font-size: 36px;
-                margin-bottom: 15px;
-                color: #03C75A;
+                font-size: 40px;
+                margin-bottom: 16px;
+                color: #3b82f6;
             }
             
             .info-card h2 {
-                font-size: 20px;
-                margin-bottom: 15px;
-                color: #03C75A;
+                font-size: 22px;
+                margin-bottom: 16px;
+                color: #1e293b;
+                font-weight: 600;
             }
             
             .notice-preview, .schedule-preview {
