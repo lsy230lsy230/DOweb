@@ -109,4 +109,7 @@ return [
     'banner_left_desc' => '左侧垂直横幅（仅PC屏幕可见）',
     'banner_right_desc' => '右侧垂直横幅（仅PC屏幕可见）',
     'banner_main_desc' => '主要/活动区域（可变大小）',
+    
+    // 公共
+    'or' => '或',
 ];

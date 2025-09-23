@@ -109,4 +109,7 @@ return [
     'banner_left_desc' => 'Left vertical banner (PC screen only)',
     'banner_right_desc' => 'Right vertical banner (PC screen only)',
     'banner_main_desc' => 'Main/event area (variable size)',
+    
+    // Common
+    'or' => 'or',
 ];

@@ -109,4 +109,7 @@ return [
     'banner_left_desc' => '좌측 세로 배너 (PC 화면만 노출)',
     'banner_right_desc' => '우측 세로 배너 (PC 화면만 노출)',
     'banner_main_desc' => '메인/이벤트 영역 (크기 가변)',
+    
+    // 공통
+    'or' => '또는',
 ];

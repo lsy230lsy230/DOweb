@@ -109,4 +109,7 @@ return [
     'banner_left_desc' => '左側縦バナー（PC画面のみ表示）',
     'banner_right_desc' => '右側縦バナー（PC画面のみ表示）',
     'banner_main_desc' => 'メイン/イベントエリア（可変サイズ）',
+    
+    // 共通
+    'or' => 'または',
 ];
