@@ -138,6 +138,27 @@ class CompetitionScheduler {
         return array_slice($recent, 0, $limit);
     }
     
+    public function getRecentResultsCompetitions() {
+        $today = date('Y-m-d');
+        $yesterday = date('Y-m-d', strtotime('-1 day'));
+        $seven_days_ago = date('Y-m-d', strtotime('-7 days'));
+        
+        // 대회 전날부터 7일간의 대회들 (완료되었거나 진행 중인 대회)
+        $recent = array_filter($this->competitions, function($comp) use ($yesterday, $seven_days_ago) {
+            $comp_date = $comp['date'];
+            return $comp_date >= $seven_days_ago && 
+                   $comp_date <= $yesterday && 
+                   ($comp['status'] === 'completed' || $comp['status'] === 'ongoing');
+        });
+        
+        // 날짜 기준으로 최신순 정렬
+        usort($recent, function($a, $b) {
+            return strtotime($b['date']) - strtotime($a['date']);
+        });
+        
+        return $recent;
+    }
+    
     public function getCompetitionsByYear($year) {
         return array_filter($this->competitions, function($comp) use ($year) {
             return date('Y', strtotime($comp['date'])) == $year;

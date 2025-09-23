@@ -31,7 +31,10 @@ $scheduler = new CompetitionScheduler();
 // 다가오는 대회 (최대 3개)
 $upcoming_competitions = $scheduler->getUpcomingCompetitions(3);
 
-// 최근 완료된 대회 (최대 2개)
+// 최근 결과 대회 (대회 전날부터 7일간)
+$recent_results_competitions = $scheduler->getRecentResultsCompetitions();
+
+// 최근 완료된 대회 (최대 2개) - 기존 통계용
 $recent_competitions = $scheduler->getRecentCompetitions(2);
 ?>
 <!DOCTYPE html>
@@ -349,6 +352,93 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             border-color: rgba(59, 130, 246, 0.3);
         }
 
+        /* Recent Results 스타일 */
+        .recent-result-item {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .result-info h3.result-title {
+            color: #f1f5f9;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 8px 0;
+        }
+
+        .result-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .result-date {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            padding: 3px 8px;
+            border-radius: 8px;
+        }
+
+        .result-location {
+            background: rgba(100, 116, 139, 0.1);
+            color: #64748b;
+            padding: 3px 8px;
+            border-radius: 8px;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .result-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .result-btn .material-symbols-rounded {
+            font-size: 16px;
+        }
+
+        .btn-results {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .btn-results:hover {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: rgba(34, 197, 94, 0.3);
+        }
+
+        .btn-live {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .btn-live:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
         .comp-header {
             display: flex;
             justify-content: between;
@@ -617,37 +707,39 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                             <span class="material-symbols-rounded widget-icon">history</span>
                             <?= t('widget_recent_results') ?>
                         </h2>
-                        <a href="/results/" class="widget-action"><?= t('action_view_all') ?></a>
+                        <a href="/results.php" class="widget-action"><?= t('action_view_all') ?></a>
                     </div>
                     
                     <div class="widget-content">
-                        <?php if (!empty($recent_competitions)): ?>
-                            <?php foreach ($recent_competitions as $comp): ?>
-                                <a href="/competition.php?id=<?= urlencode($comp['id']) ?>" style="text-decoration: none; color: inherit;">
-                                    <div class="competition-item">
-                                        <div class="comp-header">
-                                            <h3 class="comp-title"><?= htmlspecialchars($comp['name']) ?></h3>
-                                            <span class="comp-status status-completed"><?= t('status_completed') ?></span>
-                                        </div>
-                                        <div class="comp-details">
-                                            <?= htmlspecialchars($comp['description']) ?>
-                                        </div>
-                                        <div class="comp-meta">
-                                            <div class="meta-item">
-                                                <span class="material-symbols-rounded">schedule</span>
-                                                <?= $lang->formatDate($comp['date']) ?>
-                                            </div>
-                                            <div class="meta-item">
-                                                <span class="material-symbols-rounded">location_on</span>
-                                                <?= htmlspecialchars($comp['location']) ?>
+                        <?php if (!empty($recent_results_competitions)): ?>
+                            <?php foreach ($recent_results_competitions as $comp): ?>
+                                <div class="recent-result-item">
+                                    <div class="result-header">
+                                        <div class="result-info">
+                                            <h3 class="result-title"><?= htmlspecialchars($comp['name'] ?? $comp['title']) ?></h3>
+                                            <div class="result-meta">
+                                                <span class="result-date"><?= $lang->formatDate($comp['date']) ?></span>
+                                                <span class="result-location"><?= htmlspecialchars($comp['location'] ?? $comp['place']) ?></span>
                                             </div>
                                         </div>
+                                        <span class="comp-status status-<?= $comp['status'] ?>"><?= t('status_' . $comp['status']) ?></span>
                                     </div>
-                                </a>
+                                    
+                                    <div class="result-actions">
+                                        <a href="/competition.php?id=<?= urlencode($comp['id']) ?>&page=results" class="result-btn btn-results">
+                                            <span class="material-symbols-rounded">trophy</span>
+                                            종합결과
+                                        </a>
+                                        <a href="/competition.php?id=<?= urlencode($comp['id']) ?>&page=live" class="result-btn btn-live">
+                                            <span class="material-symbols-rounded">live_tv</span>
+                                            실시간 결과
+                                        </a>
+                                    </div>
+                                </div>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <p style="color: #64748b; text-align: center; padding: 20px;">
-                                <?= t('no_recent_competitions') ?>
+                                최근 7일간 완료된 대회가 없습니다
                             </p>
                         <?php endif; ?>
                     </div>

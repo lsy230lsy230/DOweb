@@ -9,8 +9,9 @@ $lang = Language::getInstance();
 require_once __DIR__ . '/data/scheduler.php';
 $scheduler = new CompetitionScheduler();
 
-// 국가 이름 매핑
-function getCountryName($code) {
+// 국가 이름 매핑 (전역 함수로 이동)
+if (!function_exists('getCountryName')) {
+    function getCountryName($code) {
     $countries = [
         'KR' => '대한민국',
         'CN' => '중국',
@@ -49,6 +50,7 @@ function getCountryName($code) {
         'OTHER' => '기타'
     ];
     return $countries[$code] ?? $code;
+    }
 }
 
 // 모든 대회 가져오기
