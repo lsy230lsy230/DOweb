@@ -223,36 +223,8 @@ function calculateRoundInfo($events) {
         }
     }
     
-    // 중복 제거: 같은 Raw 번호와 세부번호를 가진 이벤트를 하나로 합치기
-    foreach ($name_groups as $name => &$group) {
-        $unique_events = [];
-        $seen_keys = [];
-        $seen_raw_numbers = []; // Raw 번호 기준 중복 제거
-        
-        foreach ($group as $item) {
-            $unique_key = $item['unique_key'];
-            $raw_no = $item['event']['raw_no'];
-            
-            // Raw 번호 기준으로도 중복 제거
-            if (!in_array($unique_key, $seen_keys) && !in_array($raw_no, $seen_raw_numbers)) {
-                $unique_events[] = $item;
-                $seen_keys[] = $unique_key;
-                $seen_raw_numbers[] = $raw_no;
-                
-                // 디버깅: 추가된 이벤트 출력
-                if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-                    echo "<!-- DEBUG: Round calc - Added unique event - Raw: $raw_no, Name: {$item['event']['name']}, Detail: {$item['event']['detail_no']}, Index: {$item['idx']} -->\n";
-                }
-            } else {
-                // 디버깅: 중복 제거된 이벤트 출력
-                if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-                    echo "<!-- DEBUG: Round calc - Duplicate removed - Raw: $raw_no, Name: {$item['event']['name']}, Detail: {$item['event']['detail_no']}, Index: {$item['idx']} -->\n";
-                }
-            }
-        }
-        
-        $group = $unique_events;
-    }
+    // 이미 전역에서 중복 제거된 데이터를 사용하므로 추가 중복 제거 불필요
+    // 각 그룹의 이벤트들을 그대로 사용
     
     // 디버깅: 최종 그룹 정보 출력
     if (isset($_GET['debug']) && $_GET['debug'] === '1') {
@@ -372,12 +344,7 @@ function calculateRoundInfo($events) {
     return ['round_info' => $round_info, 'next_event_info' => $next_event_info];
 }
 
-// 라운드 정보 계산
-$round_calculation = calculateRoundInfo($events);
-$round_info = $round_calculation['round_info'];
-$next_event_info = $round_calculation['next_event_info'];
-
-// 중복 제거된 이벤트 데이터를 전역 변수로 저장 (일관성 보장)
+// 먼저 중복 제거된 이벤트 데이터를 생성
 $unique_events = [];
 $seen_keys = [];
 $seen_raw_numbers = []; // Raw 번호 기준 중복 제거
@@ -403,6 +370,11 @@ foreach ($events as $evt) {
         }
     }
 }
+
+// 중복 제거된 데이터로 라운드 정보 계산
+$round_calculation = calculateRoundInfo($unique_events);
+$round_info = $round_calculation['round_info'];
+$next_event_info = $round_calculation['next_event_info'];
 
 // 디버깅: 전역 중복 제거된 이벤트 정보 출력
 if (isset($_GET['debug']) && $_GET['debug'] === '1') {
