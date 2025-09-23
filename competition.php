@@ -556,29 +556,45 @@ $results = getCompetitionResults($comp_data_path);
                                         return strcmp($a['start_time'] ?? '', $b['start_time'] ?? '');
                                     });
                                     
-                                    // 라운드별 색상 정의
-                                    function getRoundColor($roundtype) {
-                                        $round = strtolower($roundtype ?? '');
-                                        if (strpos($round, 'round') !== false || strpos($round, '예선') !== false) {
-                                            return '#e3f2fd'; // 연한 파란색
-                                        } elseif (strpos($round, 'semi') !== false || strpos($round, '준결승') !== false) {
-                                            return '#fff3e0'; // 연한 오렌지색
-                                        } elseif (strpos($round, 'final') !== false || strpos($round, '결승') !== false) {
-                                            return '#e8f5e8'; // 연한 초록색
+                                    // 같은 경기의 여러 라운드 그룹 찾기
+                                    $multi_round_groups = [];
+                                    $event_count = [];
+                                    
+                                    // 각 경기명별로 몇 개의 라운드가 있는지 계산
+                                    foreach ($all_rows as $row) {
+                                        $event_name = $row['desc'] ?? $row['title'] ?? '';
+                                        if (!empty($event_name)) {
+                                            if (!isset($event_count[$event_name])) {
+                                                $event_count[$event_name] = 0;
+                                            }
+                                            $event_count[$event_name]++;
                                         }
-                                        return '#f5f5f5'; // 기본 회색
                                     }
                                     
-                                    // 이벤트별 색상 정의 (번호에 따른 다양한 색상)
-                                    function getEventAccentColor($eventNo) {
-                                        $colors = [
-                                            '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57',
-                                            '#ff9ff3', '#54a0ff', '#5f27cd', '#00d2d3', '#ff9f43',
-                                            '#10ac84', '#ee5253', '#0abde3', '#3867d6', '#8c7ae6'
-                                        ];
-                                        $index = (intval($eventNo) - 1) % count($colors);
-                                        return $colors[$index];
+                                    // 여러 라운드를 가진 경기들만 색상 할당
+                                    $multi_round_colors = [
+                                        '#ffebee', '#e3f2fd', '#e8f5e8', '#fff3e0', '#f3e5f5',
+                                        '#e0f2f1', '#fce4ec', '#e1f5fe', '#f1f8e9', '#fff8e1',
+                                        '#f9fbe7', '#e8eaf6', '#efebe9', '#fafafa', '#eceff1'
+                                    ];
+                                    
+                                    $accent_colors = [
+                                        '#f44336', '#2196f3', '#4caf50', '#ff9800', '#9c27b0',
+                                        '#009688', '#e91e63', '#03a9f4', '#8bc34a', '#ffc107',
+                                        '#cddc39', '#3f51b5', '#795548', '#607d8b', '#9e9e9e'
+                                    ];
+                                    
+                                    $color_index = 0;
+                                    foreach ($event_count as $event_name => $count) {
+                                        if ($count > 1) { // 여러 라운드가 있는 경기만
+                                            $multi_round_groups[$event_name] = [
+                                                'bg_color' => $multi_round_colors[$color_index % count($multi_round_colors)],
+                                                'accent_color' => $accent_colors[$color_index % count($accent_colors)]
+                                            ];
+                                            $color_index++;
+                                        }
                                     }
+                                    
                                     
                                     $current_event_no = null;
                                     $event_row_count = 0;
@@ -598,8 +614,15 @@ $results = getCompetitionResults($comp_data_path);
                                         $is_first_in_event = $is_new_event;
                                         
                                         // 색상 결정
-                                        $bg_color = getRoundColor($row['roundtype']);
-                                        $accent_color = getEventAccentColor($current_event_no);
+                                        $event_name = $row['desc'] ?? $row['title'] ?? '';
+                                        if (isset($multi_round_groups[$event_name])) {
+                                            $bg_color = $multi_round_groups[$event_name]['bg_color'];
+                                            $accent_color = $multi_round_groups[$event_name]['accent_color'];
+                                        } else {
+                                            // 단일 라운드는 흰 배경
+                                            $bg_color = 'white';
+                                            $accent_color = '#3b82f6';
+                                        }
                                     ?>
                                         <tr style="background: <?= $bg_color ?>; transition: all 0.2s ease; <?= $is_first_in_event && $index > 0 ? 'border-top: 3px solid ' . $accent_color . ';' : '' ?>" 
                                             onmouseover="this.style.background='<?= $is_first_in_event ? '#f0f9ff' : $bg_color ?>'; this.style.transform='scale(1.01)'"
