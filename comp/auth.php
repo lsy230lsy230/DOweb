@@ -79,6 +79,3 @@ function getRoleDisplayName($role) {
     ];
     return $role_names[$role] ?? $role;
 }
-?>
-
-
