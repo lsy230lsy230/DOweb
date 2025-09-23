@@ -14,7 +14,7 @@
             "desc": "프로 라틴",
             "roundtype": "Round 1",
             "roundnum": "",
-            "detail_no": "",
+            "detail_no": "1-1",
             "dances": [
                 "C",
                 "SA",
@@ -31,7 +31,7 @@
                     "desc": "프로 라틴",
                     "roundtype": "Round 1",
                     "roundnum": "",
-                    "detail_no": "",
+                    "detail_no": "1-1",
                     "dances": [
                         "C",
                         "SA",
@@ -45,11 +45,11 @@
             ]
         },
         {
-            "no": "5",
+            "no": "10",
             "desc": "프로 라틴",
             "roundtype": "Semi-Final",
             "roundnum": "",
-            "detail_no": "",
+            "detail_no": "10-2",
             "dances": [
                 "C",
                 "SA",
@@ -62,11 +62,11 @@
             "extra_time": 0,
             "group_events": [
                 {
-                    "no": "5",
+                    "no": "10",
                     "desc": "프로 라틴",
                     "roundtype": "Semi-Final",
                     "roundnum": "",
-                    "detail_no": "",
+                    "detail_no": "10-2",
                     "dances": [
                         "C",
                         "SA",
@@ -84,7 +84,7 @@
             "desc": "프로 라틴",
             "roundtype": "Final",
             "roundnum": "",
-            "detail_no": "",
+            "detail_no": "20-3",
             "dances": [
                 "C",
                 "SA",
@@ -101,7 +101,7 @@
                     "desc": "프로 라틴",
                     "roundtype": "Final",
                     "roundnum": "",
-                    "detail_no": "",
+                    "detail_no": "20-3",
                     "dances": [
                         "C",
                         "SA",
@@ -120,7 +120,7 @@
         {
             "type": "event",
             "no": "1",
-            "detail_no": "",
+            "detail_no": "1-1",
             "title": "프로 라틴",
             "desc": "프로 라틴",
             "roundtype": "Round 1",
@@ -144,8 +144,8 @@
         },
         {
             "type": "event",
-            "no": "5",
-            "detail_no": "",
+            "no": "10",
+            "detail_no": "10-2",
             "title": "프로 라틴",
             "desc": "프로 라틴",
             "roundtype": "Semi-Final",
@@ -170,7 +170,7 @@
         {
             "type": "event",
             "no": "20",
-            "detail_no": "",
+            "detail_no": "20-3",
             "title": "프로 라틴",
             "desc": "프로 라틴",
             "roundtype": "Final",
@@ -195,6 +195,6 @@
     ],
     "start_time": "09:00",
     "opening_time": "10:30",
-    "generated_at": "2025-09-24 01:40:32",
+    "generated_at": "2025-09-24 01:48:21",
     "generated_by": "lsy230"
 }

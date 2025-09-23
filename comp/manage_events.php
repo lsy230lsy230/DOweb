@@ -118,28 +118,27 @@ foreach ($events as $evt) {
 }
 
 // ==== 7-1. 세부번호 자동 생성 ====
-// 이벤트명별로 그룹화하여 세부번호 생성
-$event_groups = [];
+// 같은 순번(raw_no)을 가진 이벤트들에만 세부번호 할당
+$raw_no_groups = [];
 foreach ($events as $idx => $event) {
-    $event_name = $event['name'];
-    if (!isset($event_groups[$event_name])) {
-        $event_groups[$event_name] = [];
+    $raw_no = $event['raw_no'];
+    if (!isset($raw_no_groups[$raw_no])) {
+        $raw_no_groups[$raw_no] = [];
     }
-    $event_groups[$event_name][] = ['idx' => $idx, 'event' => $event];
+    $raw_no_groups[$raw_no][] = ['idx' => $idx, 'event' => $event];
 }
 
-// 각 그룹별로 세부번호 할당
-foreach ($event_groups as $group_name => $group_events) {
+// 각 순번별로 세부번호 할당
+foreach ($raw_no_groups as $raw_no => $group_events) {
     if (count($group_events) > 1) {
-        // 같은 이벤트명을 가진 이벤트들을 raw_no 순으로 정렬
+        // 같은 순번을 가진 이벤트들을 이름 순으로 정렬
         usort($group_events, function($a, $b) {
-            return intval($a['event']['raw_no']) - intval($b['event']['raw_no']);
+            return strcmp($a['event']['name'], $b['event']['name']);
         });
         
         // 세부번호 할당
         foreach ($group_events as $pos => $item) {
             $idx = $item['idx'];
-            $raw_no = $item['event']['raw_no'];
             $events[$idx]['detail_no'] = $raw_no . '-' . ($pos + 1);
         }
     } else {
@@ -169,11 +168,11 @@ foreach ($event_groups as $group_name => $group_events) {
                     $event = $events[$event_counter];
                     $raw_no = $event['raw_no'];
                     
-                    // 같은 이벤트명을 가진 이벤트 개수 확인
-                    $same_name_events = array_filter($events, function($e) use ($event) {
-                        return $e['name'] === $event['name'];
+                    // 같은 순번을 가진 이벤트 개수 확인
+                    $same_raw_no_events = array_filter($events, function($e) use ($raw_no) {
+                        return $e['raw_no'] === $raw_no;
                     });
-                    $event_count = count($same_name_events);
+                    $event_count = count($same_raw_no_events);
                     
                     // 이벤트가 2개 이상인 경우에만 세부번호 사용
                     if ($event_count > 1) {
@@ -457,11 +456,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_detail_numbers
                     $event = $events[$event_counter];
                     $raw_no = $event['raw_no'];
                     
-                    // 같은 이벤트명을 가진 이벤트 개수 확인
-                    $same_name_events = array_filter($events, function($e) use ($event) {
-                        return $e['name'] === $event['name'];
+                    // 같은 순번을 가진 이벤트 개수 확인
+                    $same_raw_no_events = array_filter($events, function($e) use ($raw_no) {
+                        return $e['raw_no'] === $raw_no;
                     });
-                    $event_count = count($same_name_events);
+                    $event_count = count($same_raw_no_events);
                     
                     // 이벤트가 2개 이상인 경우에만 세부번호 사용
                     if ($event_count > 1) {
@@ -857,9 +856,8 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         const inputs = document.querySelectorAll('input[name^="detail_numbers["]');
         console.log('찾은 입력 필드 수:', inputs.length);
         
-        // 이벤트명별로 그룹화
-        const eventGroups = {};
-        const inputData = [];
+        // 순번별로 그룹화
+        const rawNoGroups = {};
         
         inputs.forEach((input, index) => {
             const name = input.getAttribute('name');
@@ -869,11 +867,11 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                 const rawNo = match[1].trim();
                 const eventName = match[2].trim();
                 
-                if (!eventGroups[eventName]) {
-                    eventGroups[eventName] = [];
+                if (!rawNoGroups[rawNo]) {
+                    rawNoGroups[rawNo] = [];
                 }
                 
-                eventGroups[eventName].push({
+                rawNoGroups[rawNo].push({
                     input: input,
                     rawNo: rawNo,
                     eventName: eventName
@@ -881,15 +879,13 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
             }
         });
         
-        // 각 이벤트 그룹별로 세부번호 생성
-        Object.keys(eventGroups).forEach(eventName => {
-            const group = eventGroups[eventName];
+        // 각 순번별로 세부번호 생성
+        Object.keys(rawNoGroups).forEach(rawNo => {
+            const group = rawNoGroups[rawNo];
             
-            // raw_no 순으로 정렬
+            // 이벤트명 순으로 정렬
             group.sort((a, b) => {
-                const rawNoA = parseInt(a.rawNo) || 0;
-                const rawNoB = parseInt(b.rawNo) || 0;
-                return rawNoA - rawNoB;
+                return a.eventName.localeCompare(b.eventName);
             });
             
             // 세부번호 할당
@@ -902,7 +898,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
             });
         });
         
-        console.log('자동 생성 완료. 이벤트 그룹:', eventGroups);
+        console.log('자동 생성 완료. 순번 그룹:', rawNoGroups);
         
         // 자동 생성 후 자동으로 저장
         setTimeout(() => {
