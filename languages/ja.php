@@ -71,6 +71,20 @@ return [
     'success_updated' => '更新されました',
     'success_deleted' => '削除されました',
     
+    // 관리자 로그イン
+    'admin_login' => '管理者ログイン',
+    'admin_login_subtitle' => '管理者アカウントでログインしてください',
+    'username' => 'ユーザー名',
+    'username_placeholder' => 'ユーザー名を入力してください',
+    'password' => 'パスワード',
+    'password_placeholder' => 'パスワードを入力してください',
+    'login_button' => 'ログイン',
+    'demo_accounts' => 'デモアカウント',
+    'super_admin' => 'スーパー管理者',
+    'admin' => '管理者',
+    'judge' => '審査員',
+    'back_to_home' => 'ホームに戻る',
+    
     // 기타
     'loading' => '読み込み中...',
     'no_data' => 'データがありません',

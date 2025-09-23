@@ -1,113 +1,14 @@
 <?php
 session_start();
-if (!isset($_SESSION['admin'])) {
-    if ($_POST['pw'] ?? '' === 'adminpw') {
-        $_SESSION['admin'] = true;
-    } else {
-        ?>
-        <!DOCTYPE html>
-        <html lang="ko">
-        <head>
-            <meta charset="UTF-8">
-            <title>관리자 로그인 - danceoffice.net</title>
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
-            <style>
-                body {
-                    background: #181B20;
-                    min-height: 100vh;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    margin: 0;
-                    padding: 0;
-                    font-family: 'Noto Sans KR', sans-serif;
-                }
-                .login-container {
-                    background: linear-gradient(135deg, #1a1d21 0%, #181B20 100%);
-                    border-radius: 20px;
-                    padding: 40px;
-                    box-shadow: 0 20px 40px rgba(3, 199, 90, 0.2);
-                    border: 2px solid #03C75A;
-                    text-align: center;
-                    max-width: 400px;
-                    width: 90%;
-                }
-                .login-title {
-                    color: #03C75A;
-                    font-size: 24px;
-                    margin-bottom: 10px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 10px;
-                }
-                .login-subtitle {
-                    color: #00BFAE;
-                    font-size: 16px;
-                    margin-bottom: 30px;
-                }
-                .form-group {
-                    margin-bottom: 20px;
-                    text-align: left;
-                }
-                .form-group label {
-                    display: block;
-                    color: #F5F7FA;
-                    font-size: 14px;
-                    margin-bottom: 8px;
-                    font-weight: 600;
-                }
-                .form-group input {
-                    width: 100%;
-                    padding: 12px;
-                    border: 1px solid #31343a;
-                    border-radius: 10px;
-                    background: #222;
-                    color: #F5F7FA;
-                    font-size: 14px;
-                    box-sizing: border-box;
-                }
-                .btn {
-                    background: linear-gradient(90deg, #03C75A 70%, #00BFAE 100%);
-                    color: #222;
-                    border: none;
-                    padding: 12px 30px;
-                    border-radius: 25px;
-                    font-weight: 600;
-                    font-size: 14px;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    width: 100%;
-                }
-                .btn:hover {
-                    background: linear-gradient(90deg, #00BFAE 60%, #03C75A 100%);
-                    color: white;
-                    transform: translateY(-2px);
-                }
-            </style>
-        </head>
-        <body>
-            <div class="login-container">
-                <h1 class="login-title">
-                    <span class="material-symbols-rounded">admin_panel_settings</span>
-                    관리자 로그인
-                </h1>
-                <p class="login-subtitle">danceoffice.net 관리 시스템</p>
-        <form method="post">
-                    <div class="form-group">
-                        <label for="pw">관리자 비밀번호</label>
-                        <input type="password" id="pw" name="pw" placeholder="비밀번호를 입력하세요" required>
-                    </div>
-                    <button type="submit" class="btn">로그인</button>
-        </form>
-            </div>
-        </body>
-        </html>
-        <?php
-        exit;
-    }
-}
+
+// 다국어 지원 시스템 로드
+require_once __DIR__ . '/../includes/language.php';
+require_once __DIR__ . '/../includes/auth.php';
+
+// 로그인 확인
+$auth->requireLogin();
+// 현재 사용자 정보
+$current_user = $auth->getCurrentUser();
 
 // 광고 위치별 안내/권장 사이즈 정보
 $positions = [
@@ -185,10 +86,10 @@ $current_notice = file_exists($notice_file) ? file_get_contents($notice_file) : 
 $current_schedule = file_exists($schedule_file) ? file_get_contents($schedule_file) : "";
 ?>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="<?= $lang->getCurrentLanguage() ?>">
 <head>
     <meta charset="UTF-8">
-    <title>관리자 페이지 - danceoffice.net</title>
+    <title><?= __('admin_panel') ?> - danceoffice.net</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
     <style>

@@ -71,6 +71,20 @@ return [
     'success_updated' => '업데이트되었습니다',
     'success_deleted' => '삭제되었습니다',
     
+    // 관리자 로그인
+    'admin_login' => '관리자 로그인',
+    'admin_login_subtitle' => '관리자 계정으로 로그인하세요',
+    'username' => '사용자명',
+    'username_placeholder' => '사용자명을 입력하세요',
+    'password' => '비밀번호',
+    'password_placeholder' => '비밀번호를 입력하세요',
+    'login_button' => '로그인',
+    'demo_accounts' => '데모 계정',
+    'super_admin' => '최고 관리자',
+    'admin' => '관리자',
+    'judge' => '심사위원',
+    'back_to_home' => '홈으로 돌아가기',
+    
     // 기타
     'loading' => '로딩 중...',
     'no_data' => '데이터가 없습니다',
