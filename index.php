@@ -498,7 +498,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                     <span class="material-symbols-rounded">dashboard</span>
                     <?= t('nav_dashboard') ?>
                 </a></li>
-                <li><a href="/comp/">
+                <li><a href="/competitions.php">
                     <span class="material-symbols-rounded">event</span>
                     <?= t('nav_competitions') ?>
                 </a></li>
