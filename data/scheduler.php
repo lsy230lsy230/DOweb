@@ -7,17 +7,65 @@
 class CompetitionScheduler {
     private $scheduleFile;
     private $competitions;
+    private $compDataDir;
     
     public function __construct() {
         $this->scheduleFile = __DIR__ . '/competitions.json';
+        $this->compDataDir = __DIR__ . '/../comp/data';
         $this->loadCompetitions();
     }
     
     private function loadCompetitions() {
+        // 기존 competitions.json에서 로드
         if (file_exists($this->scheduleFile)) {
             $this->competitions = json_decode(file_get_contents($this->scheduleFile), true) ?: [];
         } else {
             $this->competitions = [];
+        }
+        
+        // comp/data에서 실제 대회 정보 추가
+        $this->loadCompetitionsFromCompData();
+    }
+    
+    private function loadCompetitionsFromCompData() {
+        if (!is_dir($this->compDataDir)) return;
+        
+        foreach (glob($this->compDataDir . "/*/info.json") as $info_file) {
+            $comp_id = basename(dirname($info_file));
+            $info = json_decode(file_get_contents($info_file), true);
+            
+            if ($info) {
+                // 이미 존재하는지 확인 (our_system_id로)
+                $exists = false;
+                foreach ($this->competitions as $existing) {
+                    if (isset($existing['our_system_id']) && $existing['our_system_id'] === $comp_id) {
+                        $exists = true;
+                        break;
+                    }
+                }
+                
+                if (!$exists) {
+                    // comp/data의 정보를 스케줄러 형식으로 변환
+                    $competition = [
+                        'id' => 'comp_' . $comp_id,
+                        'name' => $info['title'],
+                        'title' => $info['title'],
+                        'subtitle' => '',
+                        'date' => $info['date'],
+                        'location' => $info['place'],
+                        'place' => $info['place'],
+                        'host' => $info['host'],
+                        'description' => $info['host'] . ' 주최',
+                        'status' => $this->getCompetitionStatus($info['date']),
+                        'our_system_id' => $comp_id,
+                        'comp_data_path' => dirname($info_file),
+                        'created_at' => date('Y-m-d H:i:s', $info['created']),
+                        'updated_at' => date('Y-m-d H:i:s', $info['created'])
+                    ];
+                    
+                    $this->competitions[] = $competition;
+                }
+            }
         }
     }
     
