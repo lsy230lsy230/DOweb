@@ -129,13 +129,13 @@ $results = getCompetitionResults($comp_data_path);
             }
             
             .professional-timetable th:nth-child(3) { /* 경기 종목 */
-                min-width: 180px !important;
-                max-width: 250px !important;
+                min-width: 150px !important;
+                max-width: 200px !important;
             }
             
             .professional-timetable th:nth-child(4) { /* 댄스 */
-                width: 80px !important;
-                max-width: 120px !important;
+                min-width: 200px !important;
+                max-width: 300px !important;
             }
             
             .professional-timetable th:nth-child(5) { /* 라운드 */
@@ -690,9 +690,9 @@ $results = getCompetitionResults($comp_data_path);
                                     <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                                         <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 120px; font-size: 0.95em;">⏰ 시간</th>
                                         <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 90px; font-size: 0.95em;">🔢 번호</th>
-                                        <th style="padding: 16px 12px; text-align: left; font-weight: 700; color: white; font-size: 0.95em;">🏆 경기 종목</th>
-                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 130px; font-size: 0.95em;">💃 댄스</th>
-                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 130px; font-size: 0.95em;">🎯 라운드</th>
+                                        <th style="padding: 16px 12px; text-align: left; font-weight: 700; color: white; width: 200px; font-size: 0.95em;">🏆 경기 종목</th>
+                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 250px; font-size: 0.95em;">💃 댄스</th>
+                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 140px; font-size: 0.95em;">🎯 라운드</th>
                                     </tr>
                                 </thead>
                                 <tbody>
