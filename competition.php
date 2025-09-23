@@ -476,7 +476,7 @@ $results = getCompetitionResults($comp_data_path);
                                 $is_first_in_group = isset($row['is_first_in_group']) && $row['is_first_in_group'];
                                 
                                 // 멀티이벤트 처리
-                                if ($is_multi) {
+                                if ($is_multi && isset($row['no'])) {
                                     $group_key = $row['no'] . '_' . $row['start_time'];
                                     if (in_array($group_key, $processed_groups)) {
                                         continue; // 이미 처리된 그룹은 건너뛰기
@@ -485,13 +485,16 @@ $results = getCompetitionResults($comp_data_path);
                                     
                                     // 같은 그룹의 모든 이벤트 찾기
                                     $group_rows = array_filter($schedule['timetable_rows'], function($r) use ($row) {
-                                        return $r['no'] === $row['no'] && $r['start_time'] === $row['start_time'] && isset($r['is_multi_event']) && $r['is_multi_event'];
+                                        return isset($r['no']) && isset($row['no']) && 
+                                               $r['no'] === $row['no'] && 
+                                               $r['start_time'] === $row['start_time'] && 
+                                               isset($r['is_multi_event']) && $r['is_multi_event'];
                                     });
                                 }
                             ?>
                                 <div class="item-card" style="<?= isset($row['is_opening']) && $row['is_opening'] ? 'border-left: 4px solid #f59e0b;' : (isset($row['is_special']) && $row['is_special'] ? 'border-left: 4px solid #10b981;' : 'border-left: 4px solid #3b82f6;') ?>">
                                     <div class="item-header" style="display: flex; align-items: center; gap: 15px;">
-                                        <?php if ($is_multi): ?>
+                                        <?php if ($is_multi && isset($row['no'])): ?>
                                             <!-- 멀티이벤트: 시간은 한 번만 표시 -->
                                             <div class="time-info" style="min-width: 120px; text-align: center;">
                                                 <div style="color: #3b82f6; font-weight: bold; font-size: 1.1em;">
@@ -504,7 +507,7 @@ $results = getCompetitionResults($comp_data_path);
                                             <div class="event-info" style="flex: 1;">
                                                 <h3 class="item-title" style="margin: 0; display: flex; align-items: center; gap: 8px;">
                                                     <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em;">
-                                                        <?= htmlspecialchars($row['no']) ?>번
+                                                        <?= htmlspecialchars($row['no'] ?? '') ?>번
                                                     </span>
                                                     <span>멀티이벤트 (<?= count($group_rows) ?>개 세부 종목)</span>
                                                 </h3>
