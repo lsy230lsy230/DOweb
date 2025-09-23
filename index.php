@@ -35,847 +35,569 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
     <title>DanceOffice - International DanceSport Competition Management System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/assets/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
     <style>
-        /* PC 버전 스타일 */
-        @media (min-width: 1024px) {
-            body {
-                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-                min-height: 100vh;
-                font-size: 14px;
-                line-height: 1.6;
-                font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                color: #1e293b;
-            }
-            
-            .main-container {
-                display: grid;
-                grid-template-columns: 200px 1fr 180px;
-                grid-template-rows: auto 1fr auto;
-                grid-template-areas: 
-                    "sidebar-left header sidebar-right"
-                    "sidebar-left main sidebar-right"
-                    "footer footer footer";
-                min-height: 100vh;
-                gap: 15px;
-                padding: 15px;
-                max-width: 1200px;
-                margin: 0 auto;
-            }
-            
-            .main-header {
-                grid-area: header;
-                background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
-                border-radius: 20px;
-                padding: 30px;
-                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-                position: relative;
-                overflow: hidden;
-                border: 1px solid #e2e8f0;
-            }
-            
-            .main-header::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                right: -50%;
-                width: 200%;
-                height: 200%;
-                background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
-                animation: float 6s ease-in-out infinite;
-            }
-            
-            @keyframes float {
-                0%, 100% { transform: translateY(0px) rotate(0deg); }
-                50% { transform: translateY(-15px) rotate(180deg); }
-            }
-            
-            .logo-nav {
-                position: relative;
-                z-index: 2;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-            }
-            
-            .main-logo {
-                height: 40px;
-                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-            }
-            
-            .main-nav {
-                display: flex;
-                gap: 20px;
-            }
-            
-            .main-nav a {
-                color: white;
-                text-decoration: none;
-                font-weight: 600;
-                font-size: 14px;
-                padding: 10px 20px;
-                border-radius: 20px;
-                transition: all 0.3s ease;
-                background: rgba(3, 199, 90, 0.1);
-                backdrop-filter: blur(10px);
-            }
-            
-            .main-nav a:hover {
-                background: #03C75A;
-                color: #222;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(3, 199, 90, 0.3);
-            }
-            
-            .sidebar-left {
-                grid-area: sidebar-left;
-                display: flex;
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .sidebar-left .logo-nav {
-                background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-                border-radius: 20px;
-                padding: 25px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                border: 1px solid #e2e8f0;
-                text-align: center;
-            }
-            
-            .sidebar-left .main-logo {
-                height: 50px;
-                margin-bottom: 20px;
-                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-            }
-            
-            .sidebar-left .main-nav {
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-            
-            .sidebar-left .main-nav a {
-                color: #475569;
-                text-decoration: none;
-                font-weight: 500;
-                font-size: 14px;
-                padding: 12px 20px;
-                border-radius: 12px;
-                transition: all 0.3s ease;
-                background: rgba(59, 130, 246, 0.05);
-                backdrop-filter: blur(10px);
-                text-align: center;
-                border: 1px solid rgba(59, 130, 246, 0.1);
-            }
-            
-            .sidebar-left .main-nav a:hover {
-                background: #3b82f6;
-                color: #ffffff;
-                transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(59, 130, 246, 0.25);
-                border-color: #3b82f6;
-            }
-            
-            .ad-side {
-                grid-area: sidebar-right;
-                display: flex;
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .ad-side img {
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* 새로운 대시보드 레이아웃 */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 사이드바 */
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 24px 20px;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            overflow-y: auto;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            padding: 16px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            border-radius: 16px;
+            color: white;
+        }
+
+        .sidebar-logo img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .sidebar-logo h1 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav .material-symbols-rounded {
+            font-size: 20px;
+        }
+
+        /* 메인 콘텐츠 */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 24px;
+        }
+
+        /* 히어로 섹션 */
+        .hero-section {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 24px;
+            padding: 48px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 48px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: #64748b;
+            margin-bottom: 32px;
+            max-width: 600px;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 32px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #3b82f6;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+
+        /* 대시보드 그리드 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        /* 위젯 카드 */
+        .widget-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            padding: 24px;
+            transition: all 0.3s ease;
+        }
+
+        .widget-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.1);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        .widget-header {
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            margin-bottom: 20px;
+        }
+
+        .widget-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #f1f5f9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .widget-icon {
+            color: #3b82f6;
+            font-size: 24px;
+        }
+
+        .widget-action {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .widget-action:hover {
+            color: #60a5fa;
+        }
+
+        /* 대회 카드 */
+        .competition-item {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .competition-item:hover {
+            background: rgba(59, 130, 246, 0.05);
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .comp-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .comp-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .comp-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-upcoming {
+            background: rgba(34, 197, 94, 0.1);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.2);
+        }
+
+        .status-completed {
+            background: rgba(100, 116, 139, 0.1);
+            color: #64748b;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+        }
+
+        .comp-details {
+            color: #94a3b8;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .comp-meta {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .meta-item .material-symbols-rounded {
+            font-size: 16px;
+        }
+
+        /* 액션 버튼 */
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        /* 모바일 대응 */
+        @media (max-width: 768px) {
+            .sidebar {
                 width: 100%;
-                border-radius: 12px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                transition: transform 0.3s ease;
+                height: auto;
+                position: relative;
+                padding: 16px;
             }
-            
-            .ad-side img:hover {
-                transform: scale(1.03);
+
+            .main-content {
+                margin-left: 0;
+                padding: 16px;
             }
-            
-            main {
-                grid-area: main;
-                display: flex;
+
+            .dashboard-container {
                 flex-direction: column;
-                gap: 20px;
             }
-            
-            .info-section {
-                background: #ffffff;
-                border-radius: 20px;
-                padding: 32px;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-                border: 1px solid #e2e8f0;
-                margin-bottom: 24px;
+
+            .hero-title {
+                font-size: 32px;
             }
-            
-            .info-cards {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
+
+            .hero-section {
+                padding: 32px 24px;
             }
-            
-            .info-card {
-                background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-                color: #1e293b;
-                padding: 24px;
-                border-radius: 16px;
-                position: relative;
-                overflow: hidden;
-                transition: all 0.3s ease;
-                border: 1px solid #e2e8f0;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
             }
-            
-            .info-card:hover {
-                transform: translateY(-3px);
-            }
-            
-            .info-card::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                right: -50%;
-                width: 200%;
-                height: 200%;
-                background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
-                animation: float 8s ease-in-out infinite;
-            }
-            
-            .card-icon {
-                font-size: 40px;
-                margin-bottom: 16px;
-                position: relative;
-                z-index: 2;
-                color: #3b82f6;
-            }
-            
-            .info-card h2 {
-                font-size: 20px;
-                margin-bottom: 16px;
-                position: relative;
-                z-index: 2;
-                color: #1e293b;
-                font-weight: 600;
-            }
-            
-            .notice-preview, .schedule-preview {
-                background: rgba(59, 130, 246, 0.05);
-                padding: 18px;
-                border-radius: 12px;
-                margin-bottom: 16px;
-                backdrop-filter: blur(10px);
-                position: relative;
-                z-index: 2;
-                min-height: 80px;
-                border: 1px solid rgba(59, 130, 246, 0.1);
-                font-size: 14px;
-                line-height: 1.5;
-                color: #475569;
-            }
-            
-            .button {
-                display: inline-block;
-                background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-                color: #ffffff;
-                padding: 12px 24px;
-                border-radius: 12px;
-                text-decoration: none;
-                font-weight: 500;
-                transition: all 0.3s ease;
-                position: relative;
-                z-index: 2;
-                backdrop-filter: blur(10px);
-                font-size: 14px;
-                border: 1px solid rgba(59, 130, 246, 0.2);
-            }
-            
-            .button:hover {
-                background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-                color: #ffffff;
-                transform: translateY(-2px);
-                box-shadow: 0 8px 25px rgba(59, 130, 246, 0.25);
-            }
-            
-            .results-section {
-                background: #ffffff;
-                border-radius: 20px;
-                padding: 32px;
-                text-align: center;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-                border: 1px solid #e2e8f0;
-                margin-bottom: 24px;
-            }
-            
-            .results-section h2 {
-                color: #1e293b;
-                font-size: 24px;
-                margin-bottom: 24px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 12px;
-                font-weight: 600;
-            }
-            
-            .results-cta .button {
-                background: linear-gradient(90deg, #03C75A 70%, #00BFAE 100%);
-                color: #222;
-                padding: 15px 30px;
-                font-size: 14px;
-            }
-            
-            .ad-section {
-                background: #1E2126;
-                border-radius: 15px;
-                padding: 25px;
-                text-align: center;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.08);
-                border: 1px solid #31343a;
-            }
-            
-            .competitions-section {
-                background: #ffffff;
-                border-radius: 20px;
-                padding: 32px;
-                box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-                border: 1px solid #e2e8f0;
-                margin-bottom: 24px;
-            }
-            
-            .competitions-section h2 {
-                color: #1e293b;
-                font-size: 24px;
-                margin-bottom: 24px;
-                display: flex;
-                align-items: center;
-                gap: 12px;
-                font-weight: 600;
-            }
-            
-            .competitions-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 20px;
-            }
-            
-            .competition-card {
-                background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-                border-radius: 16px;
-                padding: 24px;
-                border: 1px solid #e2e8f0;
-                transition: all 0.3s ease;
-                position: relative;
-                overflow: hidden;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            }
-            
-            .competition-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);
-                border-color: #3b82f6;
-            }
-            
-            .competition-card.upcoming {
-                border-color: #00BFAE;
-            }
-            
-            .competition-card.completed {
-                border-color: #FFD700;
-            }
-            
-            .comp-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                margin-bottom: 15px;
-            }
-            
-            .comp-header h3 {
-                color: #1e293b;
-                font-size: 18px;
-                margin: 0;
-                flex: 1;
-                font-weight: 600;
-            }
-            
-            .comp-date {
-                background: rgba(59, 130, 246, 0.1);
-                color: #3b82f6;
-                padding: 6px 14px;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: 500;
-                white-space: nowrap;
-                border: 1px solid rgba(59, 130, 246, 0.2);
-            }
-            
-            .comp-details p {
-                color: #64748b;
-                font-size: 14px;
-                margin: 10px 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-            
-            .comp-details .material-symbols-rounded {
-                font-size: 18px;
-                color: #3b82f6;
-            }
-            
-            .comp-actions {
-                display: flex;
-                gap: 10px;
-                margin-top: 15px;
-            }
-            
-            .comp-actions .button {
-                flex: 1;
-                text-align: center;
-                font-size: 12px;
-                padding: 8px 16px;
-            }
-            
-            .comp-actions .button.secondary {
-                background: rgba(3, 199, 90, 0.1);
-                color: #03C75A;
-            }
-            
-            .comp-actions .button.secondary:hover {
-                background: rgba(3, 199, 90, 0.2);
-            }
-            
-            .ad-section h2 {
-                color: #00BFAE;
-                font-size: 18px;
-                margin-bottom: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 12px;
-            }
-            
-            .ad-main img {
-                max-width: 100%;
-                border-radius: 12px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            }
-            
-            .main-footer {
-                grid-area: footer;
-                text-align: center;
-                color: #64748b;
-                padding: 20px;
-                background: #ffffff;
-                border-radius: 16px;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-                border: 1px solid #e2e8f0;
-                font-size: 14px;
-                margin-top: 24px;
-            }
-        }
-        
-        /* 모바일 버전 스타일 */
-        @media (max-width: 1023px) {
-            body {
-                background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-                min-height: 100vh;
-                margin: 0;
-                padding: 0;
-                padding-bottom: 80px; /* 하단 네비게이션 공간 */
-                font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                color: #1e293b;
-            }
-            
-            .main-container {
-                display: flex;
+
+            .hero-stats {
                 flex-direction: column;
-                min-height: 100vh;
-            }
-            
-            .main-header {
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(20px);
-                padding: 20px;
-                position: sticky;
-                top: 0;
-                z-index: 100;
-                border-bottom: 2px solid #3b82f6;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            }
-            
-            .logo-nav {
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-            }
-            
-            .main-logo {
-                height: 40px;
-                filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-            }
-            
-            .main-nav {
-                display: none; /* 상단 네비게이션 숨김 */
-            }
-            
-            .ad-side {
-                display: none;
-            }
-            
-            /* 하단 네비게이션 */
-            .bottom-nav {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background: rgba(255, 255, 255, 0.95);
-                backdrop-filter: blur(20px);
-                border-top: 2px solid #3b82f6;
-                padding: 10px 0;
-                z-index: 1000;
-                display: flex;
-                justify-content: space-around;
-                align-items: center;
-                box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
-            }
-            
-            .bottom-nav a {
-                color: #64748b;
-                text-decoration: none;
-                font-weight: 500;
-                font-size: 12px;
-                padding: 8px 12px;
-                border-radius: 12px;
-                background: rgba(59, 130, 246, 0.05);
-                backdrop-filter: blur(10px);
-                transition: all 0.3s ease;
-                text-align: center;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                gap: 4px;
-                min-width: 60px;
-            }
-            
-            .bottom-nav a:hover,
-            .bottom-nav a.active {
-                background: #3b82f6;
-                color: #ffffff;
-                transform: translateY(-2px);
-                box-shadow: 0 4px 15px rgba(59, 130, 246, 0.25);
-            }
-            
-            .bottom-nav .nav-icon {
-                font-size: 20px;
-            }
-            
-            main {
-                flex: 1;
-                padding: 20px;
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .info-section {
-                background: rgba(255, 255, 255, 0.95);
-                border-radius: 20px;
-                padding: 25px;
-                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-                backdrop-filter: blur(20px);
-                border: 1px solid #e2e8f0;
-                margin-bottom: 20px;
-            }
-            
-            .info-cards {
-                display: flex;
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .info-card {
-                background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
-                color: #1e293b;
-                padding: 25px;
-                border-radius: 20px;
-                position: relative;
-                overflow: hidden;
-                border: 1px solid #e2e8f0;
-                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            }
-            
-            .card-icon {
-                font-size: 40px;
-                margin-bottom: 16px;
-                color: #3b82f6;
-            }
-            
-            .info-card h2 {
-                font-size: 22px;
-                margin-bottom: 16px;
-                color: #1e293b;
-                font-weight: 600;
-            }
-            
-            .notice-preview, .schedule-preview {
-                background: rgba(3, 199, 90, 0.1);
-                padding: 15px;
-                border-radius: 15px;
-                margin-bottom: 15px;
-                backdrop-filter: blur(10px);
-                min-height: 80px;
-                font-size: 14px;
-                border: 1px solid rgba(3, 199, 90, 0.2);
-            }
-            
-            .button {
-                display: inline-block;
-                background: linear-gradient(90deg, #03C75A 70%, #00BFAE 100%);
-                color: #222;
-                padding: 12px 24px;
-                border-radius: 20px;
-                text-decoration: none;
-                font-weight: 600;
-                transition: all 0.3s ease;
-                backdrop-filter: blur(10px);
-                font-size: 14px;
-            }
-            
-            .button:hover {
-                background: linear-gradient(90deg, #00BFAE 60%, #03C75A 100%);
-                color: white;
-            }
-            
-            .results-section {
-                background: rgba(30, 33, 38, 0.95);
-                border-radius: 20px;
-                padding: 25px;
-                text-align: center;
-                box-shadow: 0 10px 30px rgba(3, 199, 90, 0.1);
-                backdrop-filter: blur(20px);
-                border: 1px solid #31343a;
-            }
-            
-            .results-section h2 {
-                color: #03C75A;
-                font-size: 22px;
-                margin-bottom: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-            }
-            
-            .results-cta .button {
-                background: linear-gradient(90deg, #03C75A 70%, #00BFAE 100%);
-                color: #222;
-                padding: 15px 30px;
-                font-size: 16px;
-            }
-            
-            .ad-section {
-                background: rgba(30, 33, 38, 0.95);
-                border-radius: 20px;
-                padding: 25px;
-                text-align: center;
-                box-shadow: 0 10px 30px rgba(3, 199, 90, 0.1);
-                backdrop-filter: blur(20px);
-                border: 1px solid #31343a;
-            }
-            
-            .ad-section h2 {
-                color: #00BFAE;
-                font-size: 20px;
-                margin-bottom: 20px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-            }
-            
-            .ad-main img {
-                max-width: 100%;
-                border-radius: 15px;
-                box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            }
-            
-            .main-footer {
-                text-align: center;
-                color: #03C75A;
-                padding: 20px;
-                background: rgba(34, 34, 34, 0.9);
-                backdrop-filter: blur(20px);
-                border-top: 2px solid #03C75A;
-            }
-            
-            .ad-top, .ad-bottom {
-                padding: 10px 20px;
+                gap: 16px;
                 text-align: center;
             }
-            
-            .ad-top img, .ad-bottom img {
-                max-width: 100%;
-                border-radius: 10px;
-            }
-        }
-        
-        /* 공통 스타일 */
-        .material-symbols-rounded {
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
     </style>
 </head>
 <body>
-    <div class="main-container">
-        <aside class="sidebar-left">
-            <div class="logo-nav">
-                <img src="/assets/danceoffice-logo.png" alt="Danceoffice Logo" class="main-logo">
-                <nav class="main-nav">
-                    <a href="/">홈</a>
-                    <a href="/results/">경기 결과</a>
-                    <a href="/comprehensive/">종합결과</a>
-                    <a href="/notice/">공지사항</a>
-                    <a href="/manage/">관리자</a>
-                </nav>
+    <div class="dashboard-container">
+        <!-- 사이드바 -->
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                <img src="/assets/danceoffice-logo.png" alt="DanceOffice">
+                <h1>DanceOffice</h1>
             </div>
-        </aside>
-        
-        <header class="main-header">
-            <div class="ad-top">
-                <?= read_banner("top") ?>
-            </div>
-        </header>
-        
-        <aside class="ad-side">
-            <?= read_banner("right") ?>
-        </aside>
-        
-        <main>
-            <section class="info-section">
-                <div class="info-cards">
-                    <div class="info-card notice-card">
-                        <div class="card-icon"><span class="material-symbols-rounded">campaign</span></div>
-                        <h2>공지사항</h2>
-                        <div class="notice-preview">
+            
+            <ul class="sidebar-nav">
+                <li><a href="/" class="active">
+                    <span class="material-symbols-rounded">dashboard</span>
+                    Dashboard
+                </a></li>
+                <li><a href="/comp/">
+                    <span class="material-symbols-rounded">event</span>
+                    Competitions
+                </a></li>
+                <li><a href="/results/">
+                    <span class="material-symbols-rounded">trophy</span>
+                    Results
+                </a></li>
+                <li><a href="/manage/">
+                    <span class="material-symbols-rounded">settings</span>
+                    Management
+                </a></li>
+                <li><a href="/notice/">
+                    <span class="material-symbols-rounded">notifications</span>
+                    Notices
+                </a></li>
+            </ul>
+        </nav>
+
+        <!-- 메인 콘텐츠 -->
+        <main class="main-content">
+            <!-- 히어로 섹션 -->
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1 class="hero-title">DanceOffice</h1>
+                    <p class="hero-subtitle">
+                        International DanceSport Competition Management System
+                        <br>Professional judging platform for global dance competitions
+                    </p>
+                    
+                    <div class="hero-stats">
+                        <div class="stat-item">
+                            <span class="stat-number"><?= count($upcoming_competitions) + count($recent_competitions) ?></span>
+                            <span class="stat-label">Total Competitions</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number"><?= count($upcoming_competitions) ?></span>
+                            <span class="stat-label">Upcoming Events</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number"><?= count($recent_competitions) ?></span>
+                            <span class="stat-label">Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 대시보드 그리드 -->
+            <div class="dashboard-grid">
+                <!-- 다가오는 대회 위젯 -->
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <h2 class="widget-title">
+                            <span class="material-symbols-rounded widget-icon">upcoming</span>
+                            Upcoming Competitions
+                        </h2>
+                        <a href="/comp/" class="widget-action">View All</a>
+                    </div>
+                    
+                    <div class="widget-content">
+                        <?php if (!empty($upcoming_competitions)): ?>
+                            <?php foreach ($upcoming_competitions as $comp): ?>
+                                <div class="competition-item">
+                                    <div class="comp-header">
+                                        <h3 class="comp-title"><?= htmlspecialchars($comp['name']) ?></h3>
+                                        <span class="comp-status status-upcoming">Upcoming</span>
+                                    </div>
+                                    <div class="comp-details">
+                                        <?= htmlspecialchars($comp['description']) ?>
+                                    </div>
+                                    <div class="comp-meta">
+                                        <div class="meta-item">
+                                            <span class="material-symbols-rounded">schedule</span>
+                                            <?= date('M d, Y', strtotime($comp['date'])) ?>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="material-symbols-rounded">location_on</span>
+                                            <?= htmlspecialchars($comp['location']) ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p style="color: #64748b; text-align: center; padding: 20px;">
+                                No upcoming competitions scheduled
+                            </p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- 최근 결과 위젯 -->
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <h2 class="widget-title">
+                            <span class="material-symbols-rounded widget-icon">history</span>
+                            Recent Results
+                        </h2>
+                        <a href="/results/" class="widget-action">View All</a>
+                    </div>
+                    
+                    <div class="widget-content">
+                        <?php if (!empty($recent_competitions)): ?>
+                            <?php foreach ($recent_competitions as $comp): ?>
+                                <div class="competition-item">
+                                    <div class="comp-header">
+                                        <h3 class="comp-title"><?= htmlspecialchars($comp['name']) ?></h3>
+                                        <span class="comp-status status-completed">Completed</span>
+                                    </div>
+                                    <div class="comp-details">
+                                        <?= htmlspecialchars($comp['description']) ?>
+                                    </div>
+                                    <div class="comp-meta">
+                                        <div class="meta-item">
+                                            <span class="material-symbols-rounded">schedule</span>
+                                            <?= date('M d, Y', strtotime($comp['date'])) ?>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span class="material-symbols-rounded">location_on</span>
+                                            <?= htmlspecialchars($comp['location']) ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <p style="color: #64748b; text-align: center; padding: 20px;">
+                                No recent competitions
+                            </p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <!-- 공지사항 위젯 -->
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <h2 class="widget-title">
+                            <span class="material-symbols-rounded widget-icon">campaign</span>
+                            Announcements
+                        </h2>
+                        <a href="/notice/" class="widget-action">Manage</a>
+                    </div>
+                    
+                    <div class="widget-content">
+                        <div style="color: #94a3b8; line-height: 1.6; font-size: 14px;">
                             <?= $notice_preview ?>
                         </div>
-                        <a class="button" href="/notice/">공지/현장 안내 바로가기</a>
                     </div>
-                    <div class="info-card schedule-card">
-                        <div class="card-icon"><span class="material-symbols-rounded">calendar_month</span></div>
-                        <h2>대회 일정</h2>
-                        <div class="schedule-preview">
+                </div>
+
+                <!-- 일정 위젯 -->
+                <div class="widget-card">
+                    <div class="widget-header">
+                        <h2 class="widget-title">
+                            <span class="material-symbols-rounded widget-icon">calendar_month</span>
+                            Schedule
+                        </h2>
+                        <a href="/manage/" class="widget-action">Edit</a>
+                    </div>
+                    
+                    <div class="widget-content">
+                        <div style="color: #94a3b8; line-height: 1.6; font-size: 14px;">
                             <?= $schedule_preview ?>
                         </div>
-                        <a class="button" href="/notice/">전체 일정 보기</a>
                     </div>
                 </div>
-            </section>
-            
-            <!-- 다가오는 대회 카드들 -->
-            <?php if (!empty($upcoming_competitions)): ?>
-            <section class="competitions-section">
-                <h2><span class="material-symbols-rounded">event</span> 다가오는 대회</h2>
-                <div class="competitions-grid">
-                    <?php foreach ($upcoming_competitions as $comp): ?>
-                    <div class="competition-card upcoming">
-                        <div class="comp-header">
-                            <h3><?= htmlspecialchars($comp['title']) ?></h3>
-                            <div class="comp-date"><?= date('Y.m.d', strtotime($comp['date'])) ?></div>
-                        </div>
-                        <div class="comp-details">
-                            <p><span class="material-symbols-rounded">location_on</span> <?= htmlspecialchars($comp['place']) ?></p>
-                            <?php if ($comp['subtitle']): ?>
-                            <p><span class="material-symbols-rounded">info</span> <?= htmlspecialchars($comp['subtitle']) ?></p>
-                            <?php endif; ?>
-                        </div>
-                        <div class="comp-actions">
-                            <a href="/comprehensive/?comp=<?= $comp['id'] ?>" class="button">대회 정보</a>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </section>
-            <?php endif; ?>
-            
-            <!-- 최근 완료된 대회 카드들 -->
-            <?php if (!empty($recent_competitions)): ?>
-            <section class="competitions-section">
-                <h2><span class="material-symbols-rounded">history</span> 최근 대회 결과</h2>
-                <div class="competitions-grid">
-                    <?php foreach ($recent_competitions as $comp): ?>
-                    <div class="competition-card completed">
-                        <div class="comp-header">
-                            <h3><?= htmlspecialchars($comp['title']) ?></h3>
-                            <div class="comp-date"><?= date('Y.m.d', strtotime($comp['date'])) ?></div>
-                        </div>
-                        <div class="comp-details">
-                            <p><span class="material-symbols-rounded">location_on</span> <?= htmlspecialchars($comp['place']) ?></p>
-                        </div>
-                        <div class="comp-actions">
-                            <a href="/results/?comp=<?= $comp['id'] ?>" class="button">결과 보기</a>
-                            <a href="/comprehensive/?comp=<?= $comp['id'] ?>" class="button secondary">상세 정보</a>
-                        </div>
-                    </div>
-                    <?php endforeach; ?>
-                </div>
-            </section>
-            <?php endif; ?>
-            
-            <section class="results-section">
-                <h2><span class="material-symbols-rounded">sports_score</span> 실시간 경기 결과</h2>
-                <div class="results-cta">
-                    <a class="button" href="/results/">전체 결과 보기</a>
-                    <a class="button" href="/comprehensive/">종합 결과 보기</a>
-                </div>
-            </section>
-            
-            <section class="ad-section">
-                <h2><span class="material-symbols-rounded">star</span> 광고 및 이벤트</h2>
-                <div class="ad-main">
-                    <?= read_banner("main") ?>
-                </div>
-            </section>
+            </div>
+
+            <!-- 액션 버튼 -->
+            <div class="action-buttons">
+                <a href="/comp/" class="btn btn-primary">
+                    <span class="material-symbols-rounded">add</span>
+                    New Competition
+                </a>
+                <a href="/results/" class="btn btn-secondary">
+                    <span class="material-symbols-rounded">visibility</span>
+                    View Results
+                </a>
+                <a href="/manage/" class="btn btn-secondary">
+                    <span class="material-symbols-rounded">tune</span>
+                    Settings
+                </a>
+            </div>
         </main>
-        
-        <div class="ad-bottom">
-            <?= read_banner("bottom") ?>
-        </div>
-        
-        <footer class="main-footer">
-            &copy; 2025 danceoffice.net | Powered by Seyoung Lee
-        </footer>
     </div>
-    
-    <!-- 모바일 하단 네비게이션 -->
-    <nav class="bottom-nav">
-        <a href="/">
-            <span class="nav-icon material-symbols-rounded">home</span>
-            <span>홈</span>
-        </a>
-        <a href="/results/">
-            <span class="nav-icon material-symbols-rounded">sports_score</span>
-            <span>경기결과</span>
-        </a>
-        <a href="/comprehensive/">
-            <span class="nav-icon material-symbols-rounded">analytics</span>
-            <span>종합결과</span>
-        </a>
-        <a href="/notice/">
-            <span class="nav-icon material-symbols-rounded">campaign</span>
-            <span>공지사항</span>
-        </a>
-        <a href="/manage/">
-            <span class="nav-icon material-symbols-rounded">settings</span>
-            <span>관리자</span>
-        </a>
-    </nav>
-    
-    <!-- 구글 머티리얼 아이콘 로드 -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
 </body>
 </html>
