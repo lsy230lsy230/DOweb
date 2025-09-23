@@ -394,15 +394,15 @@ if (isset($_GET['debug']) && $_GET['debug'] === '1') {
     }
 }
 
-// 다음 이벤트 번호를 이벤트에 적용
-foreach ($events as $idx => &$event) {
+// 다음 이벤트 번호를 중복 제거된 이벤트에 적용
+foreach ($unique_events as $idx => &$event) {
     if (isset($next_event_info[$idx])) {
         $event['next_event'] = $next_event_info[$idx];
     }
 }
 
 // RunOrder_Tablet.txt에서 읽어온 라운드 정보를 사용
-foreach ($events as $idx => &$event) {
+foreach ($unique_events as $idx => &$event) {
     // RunOrder_Tablet.txt에서 읽어온 라운드 정보가 있으면 사용
     if (!empty($event['round_type'])) {
         $round_info[$idx] = $event['round_type'];
@@ -1041,7 +1041,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
     <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
         <h3 style="color: #495057; margin: 0 0 10px 0;">🔍 디버깅 정보</h3>
         <div style="font-size: 12px; color: #6c757d;">
-            <p><strong>총 이벤트 수:</strong> <?= count($events) ?></p>
+            <p><strong>총 이벤트 수:</strong> <?= count($unique_events) ?></p>
             <p><strong>라운드 정보 수:</strong> <?= count($round_info) ?></p>
             <p><strong>라운드 정보:</strong></p>
             <ul style="margin: 5px 0; padding-left: 20px;">
@@ -1052,7 +1052,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
             
             <p><strong>이벤트 상세 정보:</strong></p>
             <ul style="margin: 5px 0; padding-left: 20px;">
-                <?php foreach ($events as $idx => $event): ?>
+                <?php foreach ($unique_events as $idx => $event): ?>
                     <li>Index <?= $idx ?>: Raw=<?= $event['raw_no'] ?>, Name=<?= htmlspecialchars($event['name']) ?>, Detail=<?= $event['detail_no'] ?></li>
                 <?php endforeach; ?>
             </ul>
@@ -1212,7 +1212,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
             foreach ($evts as $k => $e):
                 // 이벤트의 원본 인덱스 찾기 (raw_no, name, detail_no 모두 고려)
                 $original_idx = null;
-                foreach ($events as $orig_idx => $orig_evt) {
+                foreach ($unique_events as $orig_idx => $orig_evt) {
                     if ($orig_evt['raw_no'] === $e['raw_no'] && 
                         $orig_evt['name'] === $e['name'] && 
                         ($orig_evt['detail_no'] ?? '') === ($e['detail_no'] ?? '')) {
@@ -1229,7 +1229,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                     
                     // 원본 이벤트 정보도 출력
                     if ($original_idx !== null) {
-                        $orig_evt = $events[$original_idx];
+                        $orig_evt = $unique_events[$original_idx];
                         echo "<!-- DEBUG: Original Event: Raw={$orig_evt['raw_no']}, Detail={$orig_evt['detail_no']}, Name={$orig_evt['name']} -->\n";
                         error_log("  Original Event: Raw={$orig_evt['raw_no']}, Detail={$orig_evt['detail_no']}, Name={$orig_evt['name']}");
                     }
