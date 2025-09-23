@@ -261,6 +261,11 @@ function calculateRoundInfo($events) {
             $idx = $item['idx'];
             $stage_text = '';
             
+            // 디버깅: 라운드 계산 전 상태 출력
+            if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+                echo "<!-- DEBUG: Before calculation - pos=$pos, total_events=$total_events, idx=$idx -->\n";
+            }
+            
             if ($total_events === 1) {
                 $stage_text = 'Final';
             } else if ($total_events === 2) {
@@ -283,6 +288,11 @@ function calculateRoundInfo($events) {
                 else $stage_text = 'Final';
             } else {
                 $stage_text = ($pos + 1) . '/' . $total_events;
+            }
+            
+            // 디버깅: 라운드 계산 후 상태 출력
+            if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+                echo "<!-- DEBUG: After calculation - pos=$pos, stage_text=$stage_text -->\n";
             }
             
             $round_info[$idx] = $stage_text;
