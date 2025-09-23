@@ -1,0 +1,161 @@
+/* 프리스타일 채점 시스템 스타일 */
+input[type="text"], input[type="password"], select, textarea {
+    background: #1E2126;
+    color: #F5F7FA;
+    border: 1px solid #31343a;
+    border-radius: 10px;
+    padding: 0.6em 0.8em;
+    font-size: 1em;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input[type="text"]:focus, input[type="password"]:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: #03C75A;
+    box-shadow: 0 0 0 2px rgba(3,199,90,0.2);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1em 0;
+}
+
+th, td {
+    padding: 0.7em 0.5em;
+    border-bottom: 1px solid #31343a;
+    text-align: left;
+}
+
+th {
+    background: #181B20;
+    color: #03C75A;
+    font-weight: 700;
+}
+
+td {
+    color: #F5F7FA;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+/* 숫자 정렬 */
+td[style*="text-align:right"] {
+    text-align: right !important;
+}
+
+/* 배지 스타일 */
+.badge {
+    display: inline-block;
+    padding: 0.2em 0.6em;
+    border-radius: 8px;
+    background: #2a2d31;
+    font-size: 0.9em;
+    color: #cfe8da;
+    font-weight: 500;
+}
+
+/* 모달 패널 */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal .panel {
+    background: #1E2126;
+    border: 1px solid #31343a;
+    border-radius: 12px;
+    padding: 1.5em;
+    width: min(520px, 95vw);
+    box-shadow: 0 6px 28px rgba(0,0,0,0.35);
+}
+
+/* 점수 선택 그리드 */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin: 1em 0;
+}
+
+.grid button {
+    padding: 0.6em;
+    border-radius: 10px;
+    border: 1px solid #31343a;
+    background: #222;
+    color: #F5F7FA;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+    font-size: 0.95em;
+}
+
+.grid button:hover {
+    background: #262a30;
+    box-shadow: 0 2px 8px rgba(3,199,90,0.18);
+}
+
+.grid button.active {
+    background: #03C75A;
+    color: #222;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(3,199,90,0.3);
+}
+
+/* 제출된 행 하이라이트 */
+.tr-submitted {
+    background: #1f2a22 !important;
+}
+
+/* 자동 저장 인디케이터 */
+#autosave-ind {
+    display: none;
+    margin-top: 0.8em;
+    color: #03C75A;
+    font-size: 0.95em;
+    text-align: center;
+    align-items: center;
+    gap: 0.4em;
+    justify-content: center;
+}
+
+#autosave-ind .material-symbols-rounded {
+    font-size: 1.2em;
+    vertical-align: middle;
+}
+
+/* 반응형 */
+@media (max-width: 700px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .modal .panel {
+        padding: 1em;
+        margin: 1em;
+    }
+    
+    table {
+        font-size: 0.9em;
+    }
+    
+    th, td {
+        padding: 0.5em 0.3em;
+    }
+}
+
+@media (max-width: 480px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    table {
+        font-size: 0.8em;
+    }
+}

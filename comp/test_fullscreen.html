@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>풀스크린 테스트 - 댄스스포츠 결과</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .container {
+            background: rgba(255,255,255,0.1);
+            padding: 60px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            max-width: 1000px;
+            width: 90%;
+        }
+        
+        .title {
+            font-size: 4.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+        
+        .subtitle {
+            font-size: 2.2em;
+            margin-bottom: 50px;
+            opacity: 0.9;
+        }
+        
+        .event-group {
+            background: rgba(255,255,255,0.15);
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .group-title {
+            font-size: 3.2em;
+            margin-bottom: 25px;
+            color: #ffeb3b;
+            font-weight: bold;
+        }
+        
+        .event-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .event-item {
+            font-size: 2.2em;
+            margin-bottom: 20px;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .event-item:last-child {
+            border-bottom: none;
+        }
+        
+        .controls {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .controls:hover {
+            opacity: 1;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .btn.danger {
+            background: #dc3545;
+        }
+        
+        .status {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        
+        .test-info {
+            margin-top: 30px;
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+        
+        .keyboard-hint {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls" id="controls">
+        <button class="btn" onclick="toggleFullscreen()">🖥️ 전체화면</button>
+        <button class="btn" onclick="showResult()">📊 결과보기</button>
+        <button class="btn danger" onclick="exitFullscreen()">❌ 종료</button>
+    </div>
+    
+    <div class="container">
+        <div class="title">🏆 2025 경기도지사배 전국장애인댄스스포츠선수권대회</div>
+        <div class="subtitle">DanceOffice 댄스스포츠 관리 시스템</div>
+        
+        <div class="event-group">
+            <div class="group-title">이벤트 1</div>
+            <ul class="event-list">
+                <li class="event-item">지적 라틴 차차차</li>
+                <li class="event-item">시각 라틴 차차차</li>
+                <li class="event-item">청각 라틴 차차차</li>
+            </ul>
+        </div>
+        
+        <div class="test-info">
+            <p>✅ 풀스크린 테스트 페이지</p>
+            <p>F11 키를 누르거나 "전체화면" 버튼을 클릭하세요</p>
+        </div>
+    </div>
+    
+    <div class="status" id="status">
+        모드: 대기화면 | F11: 전체화면 | ESC: 종료
+    </div>
+    
+    <div class="keyboard-hint">
+        키보드 단축키<br>
+        F11: 전체화면<br>
+        ESC: 종료<br>
+        R: 결과보기
+    </div>
+
+    <script>
+        let isFullscreen = false;
+        
+        function toggleFullscreen() {
+            if (!isFullscreen) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            } else {
+                exitFullscreen();
+            }
+        }
+        
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+        
+        function showResult() {
+            window.open('combined_result_1A.html', '_blank');
+        }
+        
+        // 전체화면 상태 감지
+        document.addEventListener('fullscreenchange', updateFullscreenStatus);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenStatus);
+        document.addEventListener('mozfullscreenchange', updateFullscreenStatus);
+        document.addEventListener('MSFullscreenChange', updateFullscreenStatus);
+        
+        function updateFullscreenStatus() {
+            isFullscreen = !!(document.fullscreenElement || 
+                            document.webkitFullscreenElement || 
+                            document.mozFullScreenElement || 
+                            document.msFullscreenElement);
+            
+            const status = document.getElementById('status');
+            if (isFullscreen) {
+                status.textContent = '모드: 전체화면 | F11: 종료 | ESC: 종료';
+            } else {
+                status.textContent = '모드: 대기화면 | F11: 전체화면 | ESC: 종료';
+            }
+        }
+        
+        // 키보드 단축키
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'F11':
+                    e.preventDefault();
+                    toggleFullscreen();
+                    break;
+                case 'Escape':
+                    if (isFullscreen) {
+                        exitFullscreen();
+                    }
+                    break;
+                case 'r':
+                case 'R':
+                    showResult();
+                    break;
+            }
+        });
+        
+        // 마우스 움직임으로 컨트롤 표시
+        let mouseTimer;
+        document.addEventListener('mousemove', function() {
+            document.getElementById('controls').style.opacity = '1';
+            clearTimeout(mouseTimer);
+            mouseTimer = setTimeout(() => {
+                document.getElementById('controls').style.opacity = '0';
+            }, 3000);
+        });
+        
+        // 3초 후 컨트롤 숨기기
+        setTimeout(() => {
+            document.getElementById('controls').style.opacity = '0';
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+@# 사용자 관리 파일
+# 형식: username,password,role,created_by,created_at
+# role: owner, senior_admin, admin
+# created_by: 이 사용자를 생성한 사용자 (owner는 'system')
+
+admin,adminpw,admin,system,2025-01-01
+lsy230,Lsy2312-!,owner,system,2025-01-01
+senior1,senior123,senior_admin,lsy230,2025-01-01
+senior2,senior456,senior_admin,lsy230,2025-01-01
+abc,abc123,senior_admin,lsy230,2025-09-13 00:47:05
+30

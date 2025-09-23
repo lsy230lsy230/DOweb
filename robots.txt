@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# 사이트맵
+Sitemap: https://www.danceoffice.net/sitemap.xml
+
+# 크롤링 제한
+Disallow: /comp/
+Disallow: /04_scripts/
+Disallow: /05_documents/
+Disallow: /BACKUP_*/
+Disallow: /data/
+
+# 허용된 경로
+Allow: /results/
+Allow: /notice/
+Allow: /manage/
+Allow: /assets/

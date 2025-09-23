@@ -1,0 +1,64 @@
+# 시스템 파일
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+
+# 로그 파일
+*.log
+watcher.log
+
+# 백업 파일
+BACKUP_*/
+*.bak
+*.backup
+
+# 임시 파일
+*.swp
+*.swo
+*~
+
+# IDE 파일
+.vscode/
+.idea/
+*.sublime-*
+
+# 환경 설정 파일
+.env
+config.local.php
+
+# 업로드 파일 (민감한 데이터 제외)
+uploads/
+data/competitions.json
+
+# 채점 데이터 (민감한 정보)
+comp/data/*/
+comp/uploads/
+comp/watcher.log
+
+# 결과 파일 (너무 많은 파일들)
+results/results/*.html
+results/results/*.pdf
+results/results/*.txt
+
+# PHP 세션 파일
+sessions/
+
+# 캐시 파일
+cache/
+tmp/
+
+# 데이터베이스 파일
+*.db
+*.sqlite
+*.sqlite3
+
+# 압축 파일
+*.zip
+*.rar
+*.7z
+
+# 이미지 파일 (광고용)
+ads/*.jpg
+ads/*.png
+ads/*.gif

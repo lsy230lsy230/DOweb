@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>결과 풀스크린 테스트</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #000;
+            color: #fff;
+        }
+        
+        .screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+        }
+        
+        .screen.active {
+            display: block;
+        }
+        
+        /* 대기화면 */
+        .waiting-screen {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .competition-title {
+            font-size: 4em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: bold;
+        }
+        
+        .competition-subtitle {
+            font-size: 2em;
+            margin-bottom: 50px;
+            opacity: 0.9;
+        }
+        
+        .event-group {
+            background: rgba(255,255,255,0.1);
+            padding: 40px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            min-width: 600px;
+            max-width: 800px;
+            text-align: center;
+            margin: 0 auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        
+        .group-title {
+            font-size: 3.5em;
+            margin-bottom: 30px;
+            font-weight: bold;
+            color: #ffeb3b;
+            text-align: center;
+        }
+        
+        .event-list {
+            list-style: none;
+            padding: 0;
+            text-align: center;
+        }
+        
+        .event-item {
+            font-size: 2.5em;
+            margin-bottom: 25px;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+        }
+        
+        .event-item:last-child {
+            border-bottom: none;
+        }
+        
+        .event-name {
+            color: #fff;
+            font-weight: 500;
+            display: block;
+            text-align: center;
+        }
+        
+        /* 결과 화면 */
+        .results-screen {
+            background: #f5f5f5;
+            color: #333;
+            overflow: hidden;
+        }
+        
+        .results-content {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+            transform: scale(0.8);
+            transform-origin: top left;
+            overflow: hidden;
+        }
+        
+        /* 결과 화면 전체화면 최적화 */
+        .results-screen.fullscreen-optimized .results-content {
+            transform: scale(0.7);
+            width: 142.86%; /* 100 / 0.7 */
+            height: 142.86%; /* 100 / 0.7 */
+        }
+        
+        /* 제어 패널 */
+        .control-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            gap: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .control-panel:hover {
+            opacity: 1;
+        }
+        
+        .control-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .control-btn:hover {
+            background: #5a6fd8;
+        }
+        
+        .control-btn.active {
+            background: #28a745;
+        }
+        
+        .control-btn.danger {
+            background: #dc3545;
+        }
+        
+        /* 상태 표시 */
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 대기화면 -->
+    <div id="waitingScreen" class="screen waiting-screen active">
+        <div class="competition-title">🏆 2025 경기도지사배 전국장애인댄스스포츠선수권대회</div>
+        <div class="competition-subtitle">DanceOffice 댄스스포츠 관리 시스템</div>
+        
+        <div class="event-group">
+            <div class="group-title">이벤트 1</div>
+            <ul class="event-list">
+                <li class="event-item">
+                    <span class="event-name">지적 라틴 차차차</span>
+                </li>
+                <li class="event-item">
+                    <span class="event-name">시각 라틴 차차차</span>
+                </li>
+                <li class="event-item">
+                    <span class="event-name">청각 라틴 차차차</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- 결과 화면 -->
+    <div id="resultsScreen" class="screen results-screen">
+        <iframe src="combined_result_1A.html" class="results-content" id="resultFrame"></iframe>
+    </div>
+    
+    <!-- 제어 패널 -->
+    <div class="control-panel" id="controlPanel">
+        <button class="control-btn" onclick="showMode('waiting')">⏳ 대기화면</button>
+        <button class="control-btn" onclick="showMode('results')">📊 결과</button>
+        <button class="control-btn" onclick="toggleResultScale()">🔍 크기조절</button>
+        <button class="control-btn" onclick="toggleFullscreen()">🖥️ 전체화면</button>
+        <button class="control-btn danger" onclick="exitFullscreen()">❌ 종료</button>
+    </div>
+    
+    <!-- 상태 표시 -->
+    <div class="status-bar" id="statusBar">
+        모드: <span id="currentMode">대기화면</span> | 
+        단축키: S(크기조절) F11(전체화면) 1(대기) 2(결과)
+    </div>
+
+    <script>
+        let currentMode = 'waiting';
+        let isFullscreen = false;
+        
+        // 모드 전환
+        function showMode(mode) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            currentMode = mode;
+            document.getElementById('currentMode').textContent = mode;
+            
+            switch(mode) {
+                case 'waiting':
+                    document.getElementById('waitingScreen').classList.add('active');
+                    break;
+                case 'results':
+                    document.getElementById('resultsScreen').classList.add('active');
+                    break;
+            }
+        }
+        
+        // 결과 화면 크기 조절
+        function toggleResultScale() {
+            const resultsScreen = document.getElementById('resultsScreen');
+            const resultFrame = document.getElementById('resultFrame');
+            
+            if (resultsScreen.classList.contains('fullscreen-optimized')) {
+                // 일반 크기로 복원
+                resultsScreen.classList.remove('fullscreen-optimized');
+                resultFrame.style.transform = 'scale(0.8)';
+                resultFrame.style.width = '100%';
+                resultFrame.style.height = '100%';
+            } else {
+                // 전체화면 최적화
+                resultsScreen.classList.add('fullscreen-optimized');
+                resultFrame.style.transform = 'scale(0.7)';
+                resultFrame.style.width = '142.86%';
+                resultFrame.style.height = '142.86%';
+            }
+        }
+        
+        // 전체화면 토글
+        function toggleFullscreen() {
+            if (!isFullscreen) {
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                }
+            } else {
+                exitFullscreen();
+            }
+        }
+        
+        // 전체화면 종료
+        function exitFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+        
+        // 전체화면 상태 감지
+        document.addEventListener('fullscreenchange', updateFullscreenStatus);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenStatus);
+        document.addEventListener('mozfullscreenchange', updateFullscreenStatus);
+        document.addEventListener('MSFullscreenChange', updateFullscreenStatus);
+        
+        function updateFullscreenStatus() {
+            isFullscreen = !!(document.fullscreenElement || 
+                            document.webkitFullscreenElement || 
+                            document.mozFullScreenElement || 
+                            document.msFullscreenElement);
+        }
+        
+        // 키보드 단축키
+        document.addEventListener('keydown', function(e) {
+            switch(e.key) {
+                case 'F11':
+                    e.preventDefault();
+                    toggleFullscreen();
+                    break;
+                case '1':
+                    showMode('waiting');
+                    break;
+                case '2':
+                    showMode('results');
+                    break;
+                case 'S':
+                case 's':
+                    toggleResultScale();
+                    break;
+                case 'Escape':
+                    if (isFullscreen) {
+                        exitFullscreen();
+                    }
+                    break;
+            }
+        });
+        
+        // 마우스 움직임으로 제어 패널 표시
+        let mouseTimer;
+        document.addEventListener('mousemove', function() {
+            document.getElementById('controlPanel').style.opacity = '1';
+            clearTimeout(mouseTimer);
+            mouseTimer = setTimeout(() => {
+                document.getElementById('controlPanel').style.opacity = '0';
+            }, 3000);
+        });
+        
+        // 3초 후 제어 패널 숨기기
+        setTimeout(() => {
+            document.getElementById('controlPanel').style.opacity = '0';
+        }, 3000);
+    </script>
+</body>
+</html>

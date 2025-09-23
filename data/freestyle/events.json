@@ -1,0 +1,19 @@
+﻿{
+  "events": [
+    {
+      "id": "EVT001",
+      "name": "콤비 프리스타일 Class2",
+      "competition": "2025 대한장애인체육회장배",
+      "athletes": [
+        {"number": "101", "name": "홍길동", "affiliation": "부산"},
+        {"number": "102", "name": "김영희", "affiliation": "서울"},
+        {"number": "103", "name": "이민호", "affiliation": "경기"}
+      ]
+    }
+  ],
+  "judges": [
+    {"id": "J1", "name": "심사A", "password": "passA"},
+    {"id": "J2", "name": "심사B", "password": "passB"},
+    {"id": "J3", "name": "심사C", "password": "passC"}
+  ]
+}
