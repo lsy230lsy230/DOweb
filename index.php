@@ -580,25 +580,27 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                     <div class="widget-content">
                         <?php if (!empty($upcoming_competitions)): ?>
                             <?php foreach ($upcoming_competitions as $comp): ?>
-                                <div class="competition-item">
-                                    <div class="comp-header">
-                                        <h3 class="comp-title"><?= htmlspecialchars($comp['name']) ?></h3>
-                                        <span class="comp-status status-upcoming"><?= t('status_upcoming') ?></span>
-                                    </div>
-                                    <div class="comp-details">
-                                        <?= htmlspecialchars($comp['description']) ?>
-                                    </div>
-                                    <div class="comp-meta">
-                                        <div class="meta-item">
-                                            <span class="material-symbols-rounded">schedule</span>
-                                            <?= $lang->formatDate($comp['date']) ?>
+                                <a href="/competition.php?id=<?= urlencode($comp['id']) ?>" style="text-decoration: none; color: inherit;">
+                                    <div class="competition-item">
+                                        <div class="comp-header">
+                                            <h3 class="comp-title"><?= htmlspecialchars($comp['name']) ?></h3>
+                                            <span class="comp-status status-upcoming"><?= t('status_upcoming') ?></span>
                                         </div>
-                                        <div class="meta-item">
-                                            <span class="material-symbols-rounded">location_on</span>
-                                            <?= htmlspecialchars($comp['location']) ?>
+                                        <div class="comp-details">
+                                            <?= htmlspecialchars($comp['description']) ?>
+                                        </div>
+                                        <div class="comp-meta">
+                                            <div class="meta-item">
+                                                <span class="material-symbols-rounded">schedule</span>
+                                                <?= $lang->formatDate($comp['date']) ?>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span class="material-symbols-rounded">location_on</span>
+                                                <?= htmlspecialchars($comp['location']) ?>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <p style="color: #64748b; text-align: center; padding: 20px;">
@@ -621,25 +623,27 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                     <div class="widget-content">
                         <?php if (!empty($recent_competitions)): ?>
                             <?php foreach ($recent_competitions as $comp): ?>
-                                <div class="competition-item">
-                                    <div class="comp-header">
-                                        <h3 class="comp-title"><?= htmlspecialchars($comp['name']) ?></h3>
-                                        <span class="comp-status status-completed"><?= t('status_completed') ?></span>
-                                    </div>
-                                    <div class="comp-details">
-                                        <?= htmlspecialchars($comp['description']) ?>
-                                    </div>
-                                    <div class="comp-meta">
-                                        <div class="meta-item">
-                                            <span class="material-symbols-rounded">schedule</span>
-                                            <?= $lang->formatDate($comp['date']) ?>
+                                <a href="/competition.php?id=<?= urlencode($comp['id']) ?>" style="text-decoration: none; color: inherit;">
+                                    <div class="competition-item">
+                                        <div class="comp-header">
+                                            <h3 class="comp-title"><?= htmlspecialchars($comp['name']) ?></h3>
+                                            <span class="comp-status status-completed"><?= t('status_completed') ?></span>
                                         </div>
-                                        <div class="meta-item">
-                                            <span class="material-symbols-rounded">location_on</span>
-                                            <?= htmlspecialchars($comp['location']) ?>
+                                        <div class="comp-details">
+                                            <?= htmlspecialchars($comp['description']) ?>
+                                        </div>
+                                        <div class="comp-meta">
+                                            <div class="meta-item">
+                                                <span class="material-symbols-rounded">schedule</span>
+                                                <?= $lang->formatDate($comp['date']) ?>
+                                            </div>
+                                            <div class="meta-item">
+                                                <span class="material-symbols-rounded">location_on</span>
+                                                <?= htmlspecialchars($comp['location']) ?>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                </a>
                             <?php endforeach; ?>
                         <?php else: ?>
                             <p style="color: #64748b; text-align: center; padding: 20px;">

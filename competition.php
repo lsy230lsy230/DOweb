@@ -25,9 +25,6 @@ if (!$competition) {
     exit;
 }
 
-// 대회 데이터 디렉토리 경로
-$comp_data_path = isset($competition['comp_data_path']) ? $competition['comp_data_path'] : null;
-
 // 대회별 기능 함수들
 function getCompetitionNotices($comp_data_path) {
     if (!$comp_data_path) return [];
@@ -58,6 +55,9 @@ function getCompetitionResults($comp_data_path) {
     }
     return [];
 }
+
+// 대회 데이터 디렉토리 경로
+$comp_data_path = isset($competition['comp_data_path']) ? $competition['comp_data_path'] : null;
 
 // 페이지별 데이터 로드
 $notices = getCompetitionNotices($comp_data_path);
@@ -253,7 +253,7 @@ $results = getCompetitionResults($comp_data_path);
 
         .item-header {
             display: flex;
-            justify-content: between;
+            justify-content: space-between;
             align-items: center;
             margin-bottom: 12px;
         }
