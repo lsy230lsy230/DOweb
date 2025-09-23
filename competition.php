@@ -99,6 +99,72 @@ $results = getCompetitionResults($comp_data_path);
             }
         }
         
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .professional-timetable {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .professional-timetable table {
+                min-width: 800px;
+                font-size: 0.75em !important;
+            }
+            
+            .professional-timetable th {
+                padding: 8px 4px !important;
+                font-size: 0.8em !important;
+            }
+            
+            .professional-timetable td {
+                padding: 8px 4px !important;
+                font-size: 0.8em !important;
+            }
+            
+            /* 시간 표시 최적화 */
+            .professional-timetable td span {
+                font-size: 0.9em !important;
+            }
+            
+            /* 댄스 배지 최적화 */
+            .professional-timetable td div span[style*="background: linear-gradient(135deg, #f59e0b"] {
+                padding: 1px 3px !important;
+                font-size: 0.65em !important;
+                margin: 1px !important;
+            }
+            
+            /* 이벤트 번호 배지 최적화 */
+            .professional-timetable td span[style*="background: #3b82f6"] {
+                padding: 4px 6px !important;
+                font-size: 0.75em !important;
+            }
+            
+            /* 라운드 아이콘 최적화 */
+            .professional-timetable td div span[style*="font-size: 1em"] {
+                font-size: 0.8em !important;
+            }
+            
+            .professional-timetable td div span[style*="font-size: 0.85em"] {
+                font-size: 0.7em !important;
+            }
+            
+            /* 상세 번호 배지 최적화 */
+            .professional-timetable td span[style*="background: linear-gradient(135deg, #64748b"] {
+                padding: 2px 4px !important;
+                font-size: 0.65em !important;
+                min-width: 25px !important;
+            }
+            
+            /* 시간 정보 최적화 */
+            .professional-timetable td div[style*="flex-direction: column"] span:first-child {
+                font-size: 0.9em !important;
+            }
+            
+            .professional-timetable td div[style*="flex-direction: column"] span:last-child {
+                font-size: 0.7em !important;
+            }
+        }
+        
         @media print {
             .competition-header.print-only {
                 display: block !important;
@@ -585,8 +651,8 @@ $results = getCompetitionResults($comp_data_path);
                         </div>
                         
                         <!-- 전문적인 표 형태 타임테이블 -->
-                        <div class="professional-timetable" style="background: white; border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden;">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9em; table-layout: fixed; background: white;">
+                        <div class="professional-timetable" style="background: white; border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden; overflow-x: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9em; table-layout: fixed; background: white; min-width: 800px;">
                                 <thead>
                                     <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                                         <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 120px; font-size: 0.95em;">⏰ 시간</th>
