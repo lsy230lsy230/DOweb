@@ -124,8 +124,8 @@ $results = getCompetitionResults($comp_data_path);
             }
             
             .professional-timetable th:nth-child(2) { /* 번호 */
-                width: 40px !important;
-                max-width: 40px !important;
+                width: 30px !important;
+                max-width: 30px !important;
             }
             
             .professional-timetable th:nth-child(3) { /* 경기 종목 */
@@ -689,7 +689,7 @@ $results = getCompetitionResults($comp_data_path);
                                 <thead>
                                     <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                                         <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 120px; font-size: 0.95em;">⏰ 시간</th>
-                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 90px; font-size: 0.95em;">🔢 번호</th>
+                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 60px; font-size: 0.95em;">🔢 번호</th>
                                         <th style="padding: 16px 12px; text-align: left; font-weight: 700; color: white; width: 200px; font-size: 0.95em;">🏆 경기 종목</th>
                                         <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 250px; font-size: 0.95em;">💃 댄스</th>
                                         <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 140px; font-size: 0.95em;">🎯 라운드</th>
