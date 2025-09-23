@@ -63,7 +63,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             box-sizing: border-box;
         }
 
-        body {
+            body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
             color: #e2e8f0;
@@ -73,7 +73,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
         /* 새로운 대시보드 레이아웃 */
         .dashboard-container {
             display: flex;
-            min-height: 100vh;
+                min-height: 100vh;
         }
 
         /* 사이드바 */
@@ -119,8 +119,8 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
         }
 
         .sidebar-nav a {
-            display: flex;
-            align-items: center;
+                display: flex;
+                align-items: center;
             gap: 12px;
             padding: 12px 16px;
             color: #94a3b8;
@@ -153,7 +153,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
         }
 
         .language-toggle {
-            display: flex;
+                display: flex;
             align-items: center;
             gap: 8px;
             padding: 12px 16px;
@@ -180,7 +180,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             background: rgba(15, 23, 42, 0.95);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 12px;
+                border-radius: 12px;
             margin-bottom: 8px;
             opacity: 0;
             visibility: hidden;
@@ -196,7 +196,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
         }
 
         .language-option {
-            display: flex;
+                display: flex;
             align-items: center;
             gap: 8px;
             padding: 12px 16px;
@@ -230,14 +230,14 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             border-radius: 24px;
             padding: 48px;
             margin-bottom: 32px;
-            position: relative;
-            overflow: hidden;
+                position: relative;
+                overflow: hidden;
             border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
         .hero-section::before {
-            content: '';
-            position: absolute;
+                content: '';
+                position: absolute;
             top: 0;
             left: 0;
             right: 0;
@@ -247,8 +247,8 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
         }
 
         .hero-content {
-            position: relative;
-            z-index: 2;
+                position: relative;
+                z-index: 2;
         }
 
         .hero-title {
@@ -303,9 +303,9 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(59, 130, 246, 0.2);
-            border-radius: 20px;
+                border-radius: 20px;
             padding: 24px;
-            transition: all 0.3s ease;
+                transition: all 0.3s ease;
         }
 
         .widget-card:hover {
@@ -325,8 +325,8 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             font-size: 18px;
             font-weight: 600;
             color: #f1f5f9;
-            display: flex;
-            align-items: center;
+                display: flex;
+                align-items: center;
             gap: 8px;
         }
 
@@ -338,7 +338,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
         .widget-action {
             color: #3b82f6;
             text-decoration: none;
-            font-size: 14px;
+                font-size: 14px;
             font-weight: 500;
             transition: color 0.3s ease;
         }
@@ -366,7 +366,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
         .recent-result-item {
             background: rgba(15, 23, 42, 0.6);
             border: 1px solid rgba(59, 130, 246, 0.1);
-            border-radius: 12px;
+                border-radius: 12px;
             padding: 20px;
             margin-bottom: 16px;
         }
@@ -407,7 +407,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
         }
 
         .result-actions {
-            display: flex;
+                display: flex;
             gap: 8px;
         }
 
@@ -417,12 +417,12 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             gap: 6px;
             padding: 8px 16px;
             border-radius: 8px;
-            text-decoration: none;
+                text-decoration: none;
             font-size: 13px;
             font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
+                transition: all 0.3s ease;
+            }
+            
         .result-btn .material-symbols-rounded {
             font-size: 16px;
         }
@@ -450,7 +450,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
         }
 
         .comp-header {
-            display: flex;
+                display: flex;
             justify-content: between;
             align-items: center;
             margin-bottom: 12px;
@@ -464,7 +464,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
 
         .comp-status {
             padding: 4px 12px;
-            border-radius: 20px;
+                border-radius: 20px;
             font-size: 12px;
             font-weight: 500;
         }
@@ -483,7 +483,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
 
         .comp-details {
             color: #94a3b8;
-            font-size: 14px;
+                font-size: 14px;
             line-height: 1.5;
         }
 
@@ -513,20 +513,20 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
         }
 
         .btn {
-            padding: 12px 24px;
+                padding: 12px 24px;
             border-radius: 12px;
-            text-decoration: none;
+                text-decoration: none;
             font-weight: 500;
             font-size: 14px;
-            transition: all 0.3s ease;
+                transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
-        }
-
+            }
+            
         .btn-primary {
             background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
+                color: white;
             border: 1px solid rgba(59, 130, 246, 0.2);
         }
 
@@ -656,7 +656,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                         <div class="stat-item">
                             <span class="stat-number"><?= count($upcoming_competitions) ?></span>
                             <span class="stat-label"><?= t('stat_upcoming_events') ?></span>
-                        </div>
+                    </div>
                         <div class="stat-item">
                             <span class="stat-number"><?= count($recent_competitions) ?></span>
                             <span class="stat-label"><?= t('stat_completed') ?></span>
@@ -664,7 +664,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                     </div>
                 </div>
             </section>
-
+            
             <!-- 대시보드 그리드 -->
             <div class="dashboard-grid">
                 <!-- 다가오는 대회 위젯 -->
@@ -834,8 +834,8 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                         </div>
                     </div>
                 </div>
-            </div>
-
+        </div>
+        
             <!-- 액션 버튼 -->
             <div class="action-buttons">
                 <a href="/comp/" class="btn btn-primary">
@@ -853,7 +853,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
             </div>
         </main>
     </div>
-
+    
     <script>
         function toggleLanguageMenu() {
             const menu = document.getElementById('languageMenu');

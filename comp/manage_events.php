@@ -149,61 +149,61 @@ foreach ($event_groups as $group_name => $group_events) {
     }
 }
 
-// 세부번호를 RunOrder_Tablet.txt에 저장
-$updated_lines = [];
-if (file_exists($runorder_file)) {
-    $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    $event_counter = 0; // 실제 이벤트 카운터
-    
-    foreach ($lines as $line_idx => $line) {
-        if (preg_match('/^bom/', $line)) {
-            $updated_lines[] = $line;
-            continue;
-        }
-        
-        $cols = array_map('trim', explode(',', $line));
-        
-        // 해당 이벤트의 세부번호 찾기
-        $detail_no = '';
-        if (isset($events[$event_counter])) {
-            $event = $events[$event_counter];
-            $raw_no = $event['raw_no'];
+        // 세부번호를 RunOrder_Tablet.txt에 저장
+        $updated_lines = [];
+        if (file_exists($runorder_file)) {
+            $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            $event_counter = 0; // 실제 이벤트 카운터
             
-            // 같은 순번의 이벤트 개수 확인
-            $same_raw_no_events = array_filter($events, function($e) use ($raw_no) {
-                return $e['raw_no'] === $raw_no;
-            });
-            $event_count = count($same_raw_no_events);
-            
-            // 이벤트가 2개 이상인 경우에만 세부번호 사용
-            if ($event_count > 1) {
-                $detail_no = $event['detail_no'];
+            foreach ($lines as $line_idx => $line) {
+                if (preg_match('/^bom/', $line)) {
+                    $updated_lines[] = $line;
+                    continue;
+                }
+                
+                $cols = array_map('trim', explode(',', $line));
+                
+                // 해당 이벤트의 세부번호 찾기
+                $detail_no = '';
+                if (isset($events[$event_counter])) {
+                    $event = $events[$event_counter];
+                    $raw_no = $event['raw_no'];
+                    
+                    // 같은 이벤트명을 가진 이벤트 개수 확인
+                    $same_name_events = array_filter($events, function($e) use ($event) {
+                        return $e['name'] === $event['name'];
+                    });
+                    $event_count = count($same_name_events);
+                    
+                    // 이벤트가 2개 이상인 경우에만 세부번호 사용
+                    if ($event_count > 1) {
+                        $detail_no = $event['detail_no'];
+                    }
+                    // 이벤트가 1개인 경우 세부번호는 빈 문자열
+                }
+                
+                // 세부번호 컬럼이 없으면 추가, 있으면 업데이트
+                if (count($cols) < 14) {
+                    // 세부번호 컬럼이 없으면 추가
+                    $cols[] = $detail_no;
+                } else {
+                    // 세부번호 컬럼이 있으면 업데이트
+                    $cols[13] = $detail_no;
+                }
+                
+                // 다음 이벤트 번호 업데이트 (5번째 컬럼)
+                if (isset($events[$event_counter])) {
+                    $next_event = $events[$event_counter]['next_event'] ?? '';
+                    $cols[5] = $next_event;
+                }
+                
+                $updated_lines[] = implode(',', $cols);
+                $event_counter++; // 실제 이벤트만 카운트
             }
-            // 이벤트가 1개인 경우 세부번호는 빈 문자열
+            
+            // 파일 저장
+            file_put_contents($runorder_file, implode("\n", $updated_lines) . "\n");
         }
-        
-        // 세부번호 컬럼이 없으면 추가, 있으면 업데이트
-        if (count($cols) < 14) {
-            // 세부번호 컬럼이 없으면 추가
-            $cols[] = $detail_no;
-        } else {
-            // 세부번호 컬럼이 있으면 업데이트
-            $cols[13] = $detail_no;
-        }
-        
-        // 다음 이벤트 번호 업데이트 (5번째 컬럼)
-        if (isset($events[$event_counter])) {
-            $next_event = $events[$event_counter]['next_event'] ?? '';
-            $cols[5] = $next_event;
-        }
-        
-        $updated_lines[] = implode(',', $cols);
-        $event_counter++; // 실제 이벤트만 카운트
-    }
-    
-    // 파일 저장
-    file_put_contents($runorder_file, implode("\n", $updated_lines) . "\n");
-}
 
 // ==== 7-1. 라운드 자동 계산 함수 ====
 function calculateRoundInfo($events) {
@@ -421,11 +421,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_detail_numbers
     $detail_updates = $_POST['detail_numbers'] ?? [];
     $updated = false;
     
+    // 이벤트 배열에서 세부번호 업데이트
     foreach ($detail_updates as $key => $new_detail_no) {
         list($raw_no, $name) = explode('|', $key, 2);
-        $raw_no = trim($raw_no); // 공백 문자 제거
-        if (updateDetailNumber($comp_id, $raw_no, $name, $new_detail_no)) {
-            $updated = true;
+        $raw_no = trim($raw_no);
+        
+        // events 배열에서 해당 이벤트 찾아서 세부번호 업데이트
+        foreach ($events as $idx => &$event) {
+            if ($event['raw_no'] === $raw_no && $event['name'] === $name) {
+                $event['detail_no'] = $new_detail_no;
+                $updated = true;
+                break;
+            }
         }
     }
     
@@ -450,11 +457,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_detail_numbers
                     $event = $events[$event_counter];
                     $raw_no = $event['raw_no'];
                     
-                    // 같은 순번의 이벤트 개수 확인
-                    $same_raw_no_events = array_filter($events, function($e) use ($raw_no) {
-                        return $e['raw_no'] === $raw_no;
+                    // 같은 이벤트명을 가진 이벤트 개수 확인
+                    $same_name_events = array_filter($events, function($e) use ($event) {
+                        return $e['name'] === $event['name'];
                     });
-                    $event_count = count($same_raw_no_events);
+                    $event_count = count($same_name_events);
                     
                     // 이벤트가 2개 이상인 경우에만 세부번호 사용
                     if ($event_count > 1) {
@@ -1117,7 +1124,7 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                 <?php if ($k==0): ?>
                     <td rowspan="<?=count($evts)?>" style="font-weight:bold;"><?=h($grp_no)?></td>
                 <?php endif; ?>
-                <td><?= h($e['detail_no']) ?></td>
+                <td style="font-weight:600; color:#0d2c96;"><?= h($e['detail_no']) ?></td>
                 <td><?= h($e['name']) ?></td>
                 <td style="font-weight:600; color:#0d2c96;"><?= h($calculated_round) ?></td>
                 <?php if (!($e['round_type']==="결승")): ?>

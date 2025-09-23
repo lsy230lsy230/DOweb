@@ -1,0 +1,200 @@
+{
+    "comp_id": "20250923-001",
+    "competition_info": {
+        "title": "2025 서초구청장배",
+        "date": "2025-11-02",
+        "place": "서초구 실내체유관",
+        "host": "서초구댄스스포츠연맹",
+        "assigned_admin": "abc",
+        "created": 1758620022
+    },
+    "events": [
+        {
+            "no": "1",
+            "desc": "프로 라틴",
+            "roundtype": "Round 1",
+            "roundnum": "",
+            "detail_no": "",
+            "dances": [
+                "C",
+                "SA",
+                "R",
+                "P",
+                "J"
+            ],
+            "dance_count": 5,
+            "duration": 7.5,
+            "extra_time": 0,
+            "group_events": [
+                {
+                    "no": "1",
+                    "desc": "프로 라틴",
+                    "roundtype": "Round 1",
+                    "roundnum": "",
+                    "detail_no": "",
+                    "dances": [
+                        "C",
+                        "SA",
+                        "R",
+                        "P",
+                        "J"
+                    ],
+                    "dance_count": 5,
+                    "extra_time": 0
+                }
+            ]
+        },
+        {
+            "no": "5",
+            "desc": "프로 라틴",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "detail_no": "",
+            "dances": [
+                "C",
+                "SA",
+                "R",
+                "P",
+                "J"
+            ],
+            "dance_count": 5,
+            "duration": 7.5,
+            "extra_time": 0,
+            "group_events": [
+                {
+                    "no": "5",
+                    "desc": "프로 라틴",
+                    "roundtype": "Semi-Final",
+                    "roundnum": "",
+                    "detail_no": "",
+                    "dances": [
+                        "C",
+                        "SA",
+                        "R",
+                        "P",
+                        "J"
+                    ],
+                    "dance_count": 5,
+                    "extra_time": 0
+                }
+            ]
+        },
+        {
+            "no": "20",
+            "desc": "프로 라틴",
+            "roundtype": "Final",
+            "roundnum": "",
+            "detail_no": "",
+            "dances": [
+                "C",
+                "SA",
+                "R",
+                "P",
+                "J"
+            ],
+            "dance_count": 5,
+            "duration": 7.5,
+            "extra_time": 0,
+            "group_events": [
+                {
+                    "no": "20",
+                    "desc": "프로 라틴",
+                    "roundtype": "Final",
+                    "roundnum": "",
+                    "detail_no": "",
+                    "dances": [
+                        "C",
+                        "SA",
+                        "R",
+                        "P",
+                        "J"
+                    ],
+                    "dance_count": 5,
+                    "extra_time": 0
+                }
+            ]
+        }
+    ],
+    "special_events": [],
+    "timetable_rows": [
+        {
+            "type": "event",
+            "no": "1",
+            "detail_no": "",
+            "title": "프로 라틴",
+            "desc": "프로 라틴",
+            "roundtype": "Round 1",
+            "roundnum": "",
+            "dances": [
+                "C",
+                "SA",
+                "R",
+                "P",
+                "J"
+            ],
+            "dance_count": 5,
+            "duration": 7.5,
+            "start": 540,
+            "end": 547.5,
+            "start_time": "09:00",
+            "end_time": "09:07",
+            "extra_time": 0,
+            "is_multi_event": false,
+            "group_events": []
+        },
+        {
+            "type": "event",
+            "no": "5",
+            "detail_no": "",
+            "title": "프로 라틴",
+            "desc": "프로 라틴",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "C",
+                "SA",
+                "R",
+                "P",
+                "J"
+            ],
+            "dance_count": 5,
+            "duration": 7.5,
+            "start": 547.5,
+            "end": 555,
+            "start_time": "09:07",
+            "end_time": "09:15",
+            "extra_time": 0,
+            "is_multi_event": false,
+            "group_events": []
+        },
+        {
+            "type": "event",
+            "no": "20",
+            "detail_no": "",
+            "title": "프로 라틴",
+            "desc": "프로 라틴",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "C",
+                "SA",
+                "R",
+                "P",
+                "J"
+            ],
+            "dance_count": 5,
+            "duration": 7.5,
+            "start": 555,
+            "end": 562.5,
+            "start_time": "09:15",
+            "end_time": "09:22",
+            "extra_time": 0,
+            "is_multi_event": false,
+            "group_events": []
+        }
+    ],
+    "start_time": "09:00",
+    "opening_time": "10:30",
+    "generated_at": "2025-09-24 01:40:32",
+    "generated_by": "lsy230"
+}
