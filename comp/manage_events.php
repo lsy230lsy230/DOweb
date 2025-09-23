@@ -289,6 +289,9 @@ foreach ($events as $idx => &$event) {
     }
 }
 
+// 라운드 자동계산 강제 실행 (기존 데이터 덮어쓰기)
+// 주의: 이 부분을 주석 처리하면 기존 라운드 정보를 유지합니다
+/*
 // RunOrder_Tablet.txt에서 읽어온 라운드 정보를 사용
 foreach ($events as $idx => &$event) {
     // RunOrder_Tablet.txt에서 읽어온 라운드 정보가 있으면 사용
@@ -298,6 +301,112 @@ foreach ($events as $idx => &$event) {
     // RunOrder_Tablet.txt에서 읽어온 다음 이벤트 번호가 있으면 사용
     if (!empty($event['next_event'])) {
         $next_event_info[$idx] = $event['next_event'];
+    }
+}
+*/
+
+// ==== 7-2. 라운드 자동계산 실행 처리 ====
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['auto_calculate_rounds'])) {
+    // 기존 파일을 읽어서 라운드 정보를 자동계산으로 업데이트
+    if (file_exists($runorder_file)) {
+        $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $updated_lines = [];
+        
+        foreach ($lines as $line) {
+            if (preg_match('/^bom/', $line)) {
+                $updated_lines[] = $line;
+                continue;
+            }
+            
+            $cols = array_map('trim', explode(',', $line));
+            if (count($cols) < 3) {
+                $updated_lines[] = $line;
+                continue;
+            }
+            
+            // 이벤트명이 있는 경우에만 라운드 자동계산 적용
+            if (!empty($cols[1])) {
+                // 라운드 자동계산을 위해 임시로 이벤트 배열 생성
+                $temp_events = [];
+                foreach ($lines as $temp_line) {
+                    if (preg_match('/^bom/', $temp_line)) continue;
+                    $temp_cols = array_map('trim', explode(',', $temp_line));
+                    if (count($temp_cols) >= 3 && !empty($temp_cols[1])) {
+                        $temp_events[] = [
+                            'raw_no' => $temp_cols[0] ?? '',
+                            'name' => $temp_cols[1] ?? '',
+                            'round_type' => $temp_cols[2] ?? ''
+                        ];
+                    }
+                }
+                
+                // 같은 이벤트명의 이벤트들 찾기
+                $same_name_events = array_filter($temp_events, function($e) use ($cols) {
+                    return $e['name'] === $cols[1];
+                });
+                
+                // 같은 이벤트명의 이벤트들을 순번 순으로 정렬
+                usort($same_name_events, function($a, $b) {
+                    return intval($a['raw_no']) - intval($b['raw_no']);
+                });
+                
+                // 현재 이벤트의 위치 찾기
+                $current_pos = -1;
+                foreach ($same_name_events as $pos => $event) {
+                    if ($event['raw_no'] === $cols[0]) {
+                        $current_pos = $pos;
+                        break;
+                    }
+                }
+                
+                // 라운드 자동계산
+                $total_events = count($same_name_events);
+                $stage_text = '';
+                
+                if ($total_events === 1) {
+                    $stage_text = 'Final';
+                } else if ($total_events === 2) {
+                    if ($current_pos === 0) $stage_text = 'Semi-Final';
+                    else $stage_text = 'Final';
+                } else if ($total_events === 3) {
+                    if ($current_pos === 0) $stage_text = 'Round 1';
+                    else if ($current_pos === 1) $stage_text = 'Semi-Final';
+                    else $stage_text = 'Final';
+                } else if ($total_events === 4) {
+                    if ($current_pos === 0) $stage_text = 'Round 1';
+                    else if ($current_pos === 1) $stage_text = 'Round 2';
+                    else if ($current_pos === 2) $stage_text = 'Semi-Final';
+                    else $stage_text = 'Final';
+                } else if ($total_events === 5) {
+                    if ($current_pos === 0) $stage_text = 'Round 1';
+                    else if ($current_pos === 1) $stage_text = 'Round 2';
+                    else if ($current_pos === 2) $stage_text = 'Round 3';
+                    else if ($current_pos === 3) $stage_text = 'Semi-Final';
+                    else $stage_text = 'Final';
+                } else {
+                    $stage_text = ($current_pos + 1) . '/' . $total_events;
+                }
+                
+                // 라운드 정보 업데이트
+                $cols[2] = $stage_text;
+                
+                // 다음 라운드 번호 자동계산
+                if ($current_pos < $total_events - 1) {
+                    $next_event = $same_name_events[$current_pos + 1]['raw_no'];
+                    $cols[5] = $next_event; // 다음라운드 컬럼
+                } else {
+                    $cols[5] = ''; // 마지막 라운드
+                }
+            }
+            
+            $updated_lines[] = implode(',', $cols);
+        }
+        
+        // 파일 저장
+        file_put_contents($runorder_file, implode("\n", $updated_lines) . "\n");
+        $msg = "라운드 자동계산이 완료되었습니다.";
+        header("Location: manage_events.php?comp_id=" . urlencode($comp_id) . "&msg=" . urlencode($msg));
+        exit;
     }
 }
 
@@ -1015,6 +1124,25 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         각 경기 이벤트에는 음악 시간(분), 심사위원 패널 코드, 종목 등이 표시됩니다.<br>
         <span style="color:#03c75a;">동시진행 그룹</span>은 1-1, 1-2, ... 형식으로 묶어서 보여줍니다.<br>
         <b>세부번호는 멀티이벤트 결승전에서 사용되며, 자동 생성되지만 수정 가능합니다.</b>
+    </div>
+    
+    <!-- 라운드 자동계산 버튼 -->
+    <div style="margin-bottom:20px; background:#e3f2fd; padding:15px; border-radius:8px; border:1px solid #2196f3; text-align:center;">
+        <h4 style="color:#1976d2; margin:0 0 15px 0; display:flex; align-items:center; justify-content:center; gap:10px;">
+            <span class="material-symbols-rounded" style="font-size:20px;">auto_fix_high</span>
+            라운드 자동계산
+        </h4>
+        <p style="color:#424242; margin:0 0 15px 0; font-size:14px;">
+            기존 라운드 정보를 무시하고 이벤트명별로 자동으로 Round 1, Semi-Final, Final을 계산합니다.
+        </p>
+        <form method="post" style="display:inline;">
+            <button type="submit" name="auto_calculate_rounds" value="1" 
+                    style="background:#2196f3; color:white; border:none; padding:12px 24px; border-radius:6px; font-weight:600; cursor:pointer; font-size:14px; box-shadow:0 2px 4px rgba(33,150,243,0.3);"
+                    onclick="return confirm('기존 라운드 정보를 모두 자동계산으로 덮어쓰시겠습니까?')">
+                <span class="material-symbols-rounded" style="font-size:18px; vertical-align:middle; margin-right:5px;">refresh</span>
+                라운드 자동계산 실행
+            </button>
+        </form>
     </div>
     
     <!-- 세부번호 수정 폼 -->
