@@ -11,7 +11,7 @@ session_start();
 require_once 'auth.php';
 
 // 권한 확인
-if (!isset($_SESSION['user']) || !hasPermission($_SESSION['user']['role'], 'create_comp')) {
+if (!isset($_SESSION['user']) || !hasPermission($_SESSION['user'], 'create_comp')) {
     echo json_encode(['success' => false, 'message' => '권한이 없습니다.']);
     exit;
 }
