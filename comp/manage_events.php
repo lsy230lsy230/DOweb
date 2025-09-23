@@ -275,6 +275,14 @@ function calculateRoundInfo($events) {
                 if ($pos === 0) $stage_text = 'Round 1';
                 else if ($pos === 1) $stage_text = 'Semi-Final';
                 else $stage_text = 'Final';
+                
+                // 디버깅: 3개 이벤트 케이스 상세 출력
+                if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+                    echo "<!-- DEBUG: 3 events case - pos=$pos, condition check -->\n";
+                    if ($pos === 0) echo "<!-- DEBUG: pos=0 → Round 1 -->\n";
+                    else if ($pos === 1) echo "<!-- DEBUG: pos=1 → Semi-Final -->\n";
+                    else echo "<!-- DEBUG: pos=$pos → Final (else case) -->\n";
+                }
             } else if ($total_events === 4) {
                 if ($pos === 0) $stage_text = 'Round 1';
                 else if ($pos === 1) $stage_text = 'Round 2';
@@ -992,6 +1000,13 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
             <ul style="margin: 5px 0; padding-left: 20px;">
                 <?php foreach ($round_info as $idx => $round): ?>
                     <li>Index <?= $idx ?>: <?= $round ?></li>
+                <?php endforeach; ?>
+            </ul>
+            
+            <p><strong>이벤트 상세 정보:</strong></p>
+            <ul style="margin: 5px 0; padding-left: 20px;">
+                <?php foreach ($events as $idx => $event): ?>
+                    <li>Index <?= $idx ?>: Raw=<?= $event['raw_no'] ?>, Name=<?= htmlspecialchars($event['name']) ?>, Detail=<?= $event['detail_no'] ?></li>
                 <?php endforeach; ?>
             </ul>
         </div>
