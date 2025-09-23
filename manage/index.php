@@ -1,106 +1,169 @@
 <?php
 session_start();
+
+// 다국어 시스템 로드
+require_once __DIR__ . '/../lang/Language.php';
+$lang = Language::getInstance();
+
+// 관리자 인증 확인
 if (!isset($_SESSION['admin'])) {
     if ($_POST['pw'] ?? '' === 'adminpw') {
         $_SESSION['admin'] = true;
     } else {
         ?>
         <!DOCTYPE html>
-        <html lang="ko">
+        <html lang="<?= $lang->getCurrentLang() ?>">
         <head>
             <meta charset="UTF-8">
-            <title>관리자 로그인 - danceoffice.net</title>
+            <title><?= t('admin_login') ?> | DanceOffice</title>
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+            <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
             <style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+
                 body {
-                    background: #181B20;
+                    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                    background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+                    color: #e2e8f0;
                     min-height: 100vh;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    margin: 0;
-                    padding: 0;
-                    font-family: 'Noto Sans KR', sans-serif;
                 }
+
                 .login-container {
-                    background: linear-gradient(135deg, #1a1d21 0%, #181B20 100%);
+                    background: rgba(30, 41, 59, 0.8);
+                    backdrop-filter: blur(20px);
+                    border: 1px solid rgba(59, 130, 246, 0.2);
                     border-radius: 20px;
                     padding: 40px;
-                    box-shadow: 0 20px 40px rgba(3, 199, 90, 0.2);
-                    border: 2px solid #03C75A;
-                    text-align: center;
                     max-width: 400px;
                     width: 90%;
+                    text-align: center;
+                    position: relative;
+                    overflow: hidden;
                 }
+
+                .login-container::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+                    pointer-events: none;
+                }
+
+                .login-content {
+                    position: relative;
+                    z-index: 2;
+                }
+
                 .login-title {
-                    color: #03C75A;
-                    font-size: 24px;
-                    margin-bottom: 10px;
+                    font-size: 28px;
+                    font-weight: 700;
+                    color: #f1f5f9;
+                    margin-bottom: 8px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    gap: 10px;
+                    gap: 12px;
                 }
+
+                .login-title .material-symbols-rounded {
+                    color: #3b82f6;
+                    font-size: 32px;
+                }
+
                 .login-subtitle {
-                    color: #00BFAE;
+                    color: #94a3b8;
                     font-size: 16px;
-                    margin-bottom: 30px;
+                    margin-bottom: 32px;
                 }
+
                 .form-group {
-                    margin-bottom: 20px;
+                    margin-bottom: 24px;
                     text-align: left;
                 }
+
                 .form-group label {
                     display: block;
-                    color: #F5F7FA;
+                    color: #f1f5f9;
                     font-size: 14px;
+                    font-weight: 500;
                     margin-bottom: 8px;
-                    font-weight: 600;
                 }
+
                 .form-group input {
                     width: 100%;
-                    padding: 12px;
-                    border: 1px solid #31343a;
-                    border-radius: 10px;
-                    background: #222;
-                    color: #F5F7FA;
+                    padding: 14px 16px;
+                    border: 1px solid rgba(59, 130, 246, 0.2);
+                    border-radius: 12px;
+                    background: rgba(15, 23, 42, 0.6);
+                    color: #f1f5f9;
                     font-size: 14px;
-                    box-sizing: border-box;
+                    transition: all 0.3s ease;
                 }
+
+                .form-group input:focus {
+                    outline: none;
+                    border-color: #3b82f6;
+                    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                }
+
                 .btn {
-                    background: linear-gradient(90deg, #03C75A 70%, #00BFAE 100%);
-                    color: #222;
+                    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+                    color: white;
                     border: none;
-                    padding: 12px 30px;
-                    border-radius: 25px;
+                    padding: 14px 32px;
+                    border-radius: 12px;
                     font-weight: 600;
                     font-size: 14px;
                     cursor: pointer;
                     transition: all 0.3s ease;
                     width: 100%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 8px;
                 }
+
                 .btn:hover {
-                    background: linear-gradient(90deg, #00BFAE 60%, #03C75A 100%);
-                    color: white;
                     transform: translateY(-2px);
+                    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+                }
+
+                .btn .material-symbols-rounded {
+                    font-size: 18px;
                 }
             </style>
         </head>
         <body>
             <div class="login-container">
-                <h1 class="login-title">
-                    <span class="material-symbols-rounded">admin_panel_settings</span>
-                    관리자 로그인
-                </h1>
-                <p class="login-subtitle">danceoffice.net 관리 시스템</p>
-        <form method="post">
-                    <div class="form-group">
-                        <label for="pw">관리자 비밀번호</label>
-                        <input type="password" id="pw" name="pw" placeholder="비밀번호를 입력하세요" required>
-                    </div>
-                    <button type="submit" class="btn">로그인</button>
-        </form>
+                <div class="login-content">
+                    <h1 class="login-title">
+                        <span class="material-symbols-rounded">admin_panel_settings</span>
+                        <?= t('admin_login') ?>
+                    </h1>
+                    <p class="login-subtitle"><?= t('admin_subtitle') ?></p>
+                    
+                    <form method="post">
+                        <div class="form-group">
+                            <label for="pw"><?= t('admin_password') ?></label>
+                            <input type="password" id="pw" name="pw" placeholder="<?= t('admin_password_placeholder') ?>" required>
+                        </div>
+                        <button type="submit" class="btn">
+                            <span class="material-symbols-rounded">login</span>
+                            <?= t('admin_login_btn') ?>
+                        </button>
+                    </form>
+                </div>
             </div>
         </body>
         </html>
@@ -109,19 +172,17 @@ if (!isset($_SESSION['admin'])) {
     }
 }
 
-// 광고 위치별 안내/권장 사이즈 정보
+// 광고 위치별 정보
 $positions = [
-    'top'    => ['label'=>'상단',   'size'=>'728x90px',    'desc'=>'상단 가로 배너 (PC/모바일 모두 노출)',         'img'=>'top.jpg',   'link'=>'top.link'],
-    'bottom' => ['label'=>'하단',   'size'=>'728x90px',    'desc'=>'하단 가로 배너 (PC/모바일 모두 노출)',         'img'=>'bottom.jpg','link'=>'bottom.link'],
-    'left'   => ['label'=>'좌측',   'size'=>'160x600px',   'desc'=>'좌측 세로 배너 (PC 화면만 노출)',              'img'=>'left.jpg',  'link'=>'left.link'],
-    'right'  => ['label'=>'우측',   'size'=>'160x600px',   'desc'=>'우측 세로 배너 (PC 화면만 노출)',              'img'=>'right.jpg', 'link'=>'right.link'],
-    'main'   => ['label'=>'메인',   'size'=>'300x250px 또는 728x90px', 'desc'=>'메인/이벤트 영역 (크기 가변)',    'img'=>'main.jpg',  'link'=>'main.link'],
+    'top'    => ['label' => t('banner_top'),    'size' => '728x90px',    'desc' => t('banner_top_desc'),    'img' => 'top.jpg',    'link' => 'top.link'],
+    'bottom' => ['label' => t('banner_bottom'), 'size' => '728x90px',    'desc' => t('banner_bottom_desc'), 'img' => 'bottom.jpg', 'link' => 'bottom.link'],
+    'left'   => ['label' => t('banner_left'),   'size' => '160x600px',   'desc' => t('banner_left_desc'),   'img' => 'left.jpg',   'link' => 'left.link'],
+    'right'  => ['label' => t('banner_right'),  'size' => '160x600px',   'desc' => t('banner_right_desc'),  'img' => 'right.jpg',  'link' => 'right.link'],
+    'main'   => ['label' => t('banner_main'),   'size' => '300x250px ' . t('or') . ' 728x90px', 'desc' => t('banner_main_desc'),   'img' => 'main.jpg',   'link' => 'main.link'],
 ];
 
-// NAS 실경로
+// 디렉토리 경로
 $base_ads_dir = __DIR__ . "/../data/ads/";
-
-// 공지/일정 파일 경로
 $notice_file = __DIR__ . "/../data/notice.txt";
 $schedule_file = __DIR__ . "/../data/schedule.txt";
 
@@ -140,7 +201,7 @@ if (isset($_GET['delete_schedule'])) {
 // 광고 삭제 처리
 if (isset($_GET['delete']) && isset($_GET['pos']) && isset($positions[$_GET['pos']])) {
     $pos = $_GET['pos'];
-    $type = $_GET['delete']; // 'img' or 'link'
+    $type = $_GET['delete'];
     if ($type === 'img') {
         $file = $base_ads_dir . $positions[$pos]['img'];
         if (file_exists($file)) unlink($file);
@@ -185,593 +246,638 @@ $current_notice = file_exists($notice_file) ? file_get_contents($notice_file) : 
 $current_schedule = file_exists($schedule_file) ? file_get_contents($schedule_file) : "";
 ?>
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="<?= $lang->getCurrentLang() ?>">
 <head>
     <meta charset="UTF-8">
-    <title>관리자 페이지 - danceoffice.net</title>
+    <title><?= t('admin_title') ?> | DanceOffice</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
     <style>
-        /* PC 버전 스타일 */
-        @media (min-width: 1024px) {
-            body {
-                background: #181B20;
-                min-height: 100vh;
-                font-size: 14px;
-                line-height: 1.5;
-                margin: 0;
-                padding: 0;
-                font-family: 'Noto Sans KR', sans-serif;
-            }
-            
-            .admin-container {
-                max-width: 1200px;
-                margin: 0 auto;
-                padding: 20px;
-            }
-            
-            .admin-header {
-                background: linear-gradient(135deg, #1a1d21 0%, #181B20 100%);
-                border-radius: 15px;
-                padding: 25px;
-                margin-bottom: 20px;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.15);
-                border: 2px solid #03C75A;
-                position: relative;
-                overflow: hidden;
-            }
-            
-            .admin-header::before {
-                content: '';
-                position: absolute;
-                top: -50%;
-                right: -50%;
-                width: 200%;
-                height: 200%;
-                background: radial-gradient(circle, rgba(3, 199, 90, 0.08) 0%, transparent 70%);
-                animation: float 6s ease-in-out infinite;
-            }
-            
-            @keyframes float {
-                0%, 100% { transform: translateY(0px) rotate(0deg); }
-                50% { transform: translateY(-15px) rotate(180deg); }
-            }
-            
-            .admin-title {
-                color: #03C75A;
-                font-size: 24px;
-                margin: 0 0 10px 0;
-                position: relative;
-                z-index: 2;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            
-            .admin-subtitle {
-                color: #00BFAE;
-                font-size: 16px;
-                margin: 0;
-                position: relative;
-                z-index: 2;
-            }
-            
-            .admin-nav {
-                display: flex;
-                gap: 15px;
-                margin-top: 20px;
-                position: relative;
-                z-index: 2;
-            }
-            
-            .admin-nav a {
-                color: white;
-                text-decoration: none;
-                font-weight: 600;
-                font-size: 14px;
-                padding: 10px 20px;
-                border-radius: 20px;
-                background: rgba(3, 199, 90, 0.1);
-                backdrop-filter: blur(10px);
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: 5px;
-            }
-            
-            .admin-nav a:hover {
-                background: #03C75A;
-                color: #222;
-                transform: translateY(-2px);
-            }
-            
-            .admin-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 20px;
-                margin-bottom: 20px;
-            }
-            
-            .admin-card {
-                background: #222;
-                border-radius: 15px;
-                padding: 20px;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.08);
-                border: 1px solid #31343a;
-            }
-            
-            .admin-card h3 {
-                color: #03C75A;
-                font-size: 18px;
-                margin: 0 0 15px 0;
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-            
-            .form-group {
-                margin-bottom: 15px;
-            }
-            
-            .form-group label {
-                display: block;
-                color: #F5F7FA;
-                font-size: 13px;
-                margin-bottom: 5px;
-                font-weight: 600;
-            }
-            
-            .form-group input,
-            .form-group textarea {
-                width: 100%;
-                padding: 10px;
-                border: 1px solid #31343a;
-                border-radius: 8px;
-                background: #181B20;
-                color: #F5F7FA;
-                font-size: 13px;
-                box-sizing: border-box;
-            }
-            
-            .form-group textarea {
-                height: 80px;
-                resize: vertical;
-            }
-            
-            .btn {
-                background: linear-gradient(90deg, #03C75A 70%, #00BFAE 100%);
-                color: #222;
-                border: none;
-                padding: 10px 20px;
-                border-radius: 20px;
-                font-weight: 600;
-                font-size: 13px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-            
-            .btn:hover {
-                background: linear-gradient(90deg, #00BFAE 60%, #03C75A 100%);
-                color: white;
-                transform: translateY(-2px);
-            }
-            
-            .btn-danger {
-                background: linear-gradient(90deg, #ff4444 70%, #cc0000 100%);
-                color: white;
-            }
-            
-            .btn-danger:hover {
-                background: linear-gradient(90deg, #cc0000 60%, #ff4444 100%);
-            }
-            
-            .preview-box {
-                background: #181B20;
-                border: 1px solid #31343a;
-                border-radius: 8px;
-                padding: 15px;
-                margin-bottom: 15px;
-                font-size: 13px;
-                line-height: 1.4;
-            }
-            
-            .preview-box strong {
-                color: #03C75A;
-            }
-            
-            .banner-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-                gap: 20px;
-            }
-            
-            .banner-card {
-                background: #222;
-                border-radius: 15px;
-                padding: 20px;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.08);
-                border: 1px solid #31343a;
-            }
-            
-            .banner-card h4 {
-                color: #03C75A;
-                font-size: 16px;
-                margin: 0 0 10px 0;
-            }
-            
-            .banner-info {
-                background: #181B20;
-                border-radius: 8px;
-                padding: 12px;
-                margin-bottom: 15px;
-                font-size: 12px;
-                color: #B0B3B8;
-            }
-            
-            .banner-thumb {
-                max-width: 100%;
-                height: auto;
-                border-radius: 8px;
-                margin: 10px 0;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            }
-            
-            .file-info {
-                background: #1E2126;
-                border-radius: 6px;
-                padding: 8px;
-                margin: 8px 0;
-                font-size: 11px;
-                color: #8A8D93;
-            }
-            
-            .action-buttons {
-                display: flex;
-                gap: 10px;
-                margin-top: 15px;
-                flex-wrap: wrap;
-            }
-            
-            .btn-small {
-                padding: 6px 12px;
-                font-size: 11px;
-            }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        
-        /* 모바일 버전 스타일 */
-        @media (max-width: 1023px) {
-            body {
-                background: #181B20;
-                min-height: 100vh;
-                font-size: 14px;
-                line-height: 1.5;
-                margin: 0;
-                padding: 0;
-                font-family: 'Noto Sans KR', sans-serif;
-            }
-            
-            .admin-container {
-                padding: 10px;
-            }
-            
-            .admin-header {
-                background: rgba(26, 29, 33, 0.9);
-                backdrop-filter: blur(20px);
-                border-radius: 15px;
-                padding: 20px;
-                margin-bottom: 15px;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.15);
-                border: 2px solid #03C75A;
-            }
-            
-            .admin-title {
-                color: #03C75A;
-                font-size: 20px;
-                margin: 0 0 8px 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-            
-            .admin-subtitle {
-                color: #00BFAE;
-                font-size: 14px;
-                margin: 0;
-            }
-            
-            .admin-nav {
-                display: flex;
-                gap: 10px;
-                margin-top: 15px;
-                flex-wrap: wrap;
-            }
-            
-            .admin-nav a {
-                color: white;
-                text-decoration: none;
-                font-weight: 600;
-                font-size: 13px;
-                padding: 8px 16px;
-                border-radius: 16px;
-                background: rgba(3, 199, 90, 0.2);
-                backdrop-filter: blur(10px);
-                transition: all 0.3s ease;
-                display: flex;
-                align-items: center;
-                gap: 5px;
-            }
-            
-            .admin-nav a:hover {
-                background: #03C75A;
-                color: #222;
-            }
-            
-            .admin-grid {
-                display: flex;
-                flex-direction: column;
-                gap: 15px;
-                margin-bottom: 15px;
-            }
-            
-            .admin-card {
-                background: rgba(34, 34, 34, 0.95);
-                backdrop-filter: blur(20px);
-                border-radius: 15px;
-                padding: 15px;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.08);
-                border: 1px solid #31343a;
-            }
-            
-            .admin-card h3 {
-                color: #03C75A;
-                font-size: 16px;
-                margin: 0 0 12px 0;
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            }
-            
-            .banner-grid {
-                display: flex;
-                flex-direction: column;
-                gap: 15px;
-            }
-            
-            .banner-card {
-                background: rgba(34, 34, 34, 0.95);
-                backdrop-filter: blur(20px);
-                border-radius: 15px;
-                padding: 15px;
-                box-shadow: 0 8px 25px rgba(3, 199, 90, 0.08);
-                border: 1px solid #31343a;
-            }
-            
-            .banner-card h4 {
-                color: #03C75A;
-                font-size: 14px;
-                margin: 0 0 8px 0;
-            }
-            
-            .banner-info {
-                background: #1E2126;
-                border-radius: 8px;
-                padding: 10px;
-                margin-bottom: 12px;
-                font-size: 11px;
-                color: #B0B3B8;
-            }
-            
-            .file-info {
-                background: #181B20;
-                border-radius: 6px;
-                padding: 6px;
-                margin: 6px 0;
-                font-size: 10px;
-                color: #8A8D93;
-            }
-            
-            .action-buttons {
-                display: flex;
-                gap: 8px;
-                margin-top: 12px;
-                flex-wrap: wrap;
-            }
-            
-            .btn {
-                background: linear-gradient(90deg, #03C75A 70%, #00BFAE 100%);
-                color: #222;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 16px;
-                font-weight: 600;
-                font-size: 12px;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-            
-            .btn-small {
-                padding: 5px 10px;
-                font-size: 10px;
-            }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: #e2e8f0;
+            min-height: 100vh;
         }
-        
-        /* 공통 스타일 */
-        .material-symbols-rounded {
-            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        
-        .status-indicator {
+
+        /* 상단 헤더 */
+        .admin-header {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 32px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .admin-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 30% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .admin-header-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .admin-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #f1f5f9;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .admin-title .material-symbols-rounded {
+            color: #3b82f6;
+            font-size: 36px;
+        }
+
+        .admin-subtitle {
+            color: #94a3b8;
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .admin-nav a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        .admin-nav a:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .admin-nav .material-symbols-rounded {
+            font-size: 18px;
+        }
+
+        /* 언어 선택기 */
+        .language-selector {
+            position: absolute;
+            top: 32px;
+            right: 32px;
+            z-index: 3;
+        }
+
+        .language-dropdown {
+            position: relative;
             display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 8px;
         }
-        
-        .status-active {
-            background: #03C75A;
+
+        .language-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
-        
-        .status-inactive {
-            background: #666;
+
+        .language-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+        }
+
+        .language-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 8px;
+            background: rgba(30, 41, 59, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 8px;
+            min-width: 160px;
+            display: none;
+            z-index: 1000;
+        }
+
+        .language-menu.show {
+            display: block;
+        }
+
+        .language-menu a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            color: #e2e8f0;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .language-menu a:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .language-menu a.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+        }
+
+        /* 카드 그리드 */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+
+        .admin-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #f1f5f9;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .card-title .material-symbols-rounded {
+            color: #3b82f6;
+            font-size: 24px;
+        }
+
+        .preview-box {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            min-height: 80px;
+        }
+
+        .preview-box strong {
+            color: #3b82f6;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #f1f5f9;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.6);
+            color: #f1f5f9;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+
+        .btn-danger:hover {
+            box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+
+        .btn .material-symbols-rounded {
+            font-size: 18px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* 배너 그리드 */
+        .banner-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 24px;
+        }
+
+        .banner-card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .banner-info {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 16px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .banner-thumb {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 12px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .file-info {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(59, 130, 246, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            margin: 12px 0;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        .file-info strong {
+            color: #3b82f6;
+        }
+
+        .file-info code {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* 모바일 대응 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .admin-header {
+                padding: 24px 20px;
+            }
+
+            .admin-title {
+                font-size: 24px;
+            }
+
+            .admin-nav {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .cards-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .banner-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .language-selector {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-top: 16px;
+                text-align: center;
+            }
+
+            .language-menu {
+                right: 50%;
+                transform: translateX(50%);
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .action-buttons .btn {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="admin-container">
+    <div class="container">
         <header class="admin-header">
-            <h1 class="admin-title">
-                <span class="material-symbols-rounded">admin_panel_settings</span>
-                관리자 페이지
-            </h1>
-            <p class="admin-subtitle">danceoffice.net 관리 시스템</p>
-            <nav class="admin-nav">
-                <a href="/">
-                    <span class="material-symbols-rounded">home</span>
-                    메인으로
-                </a>
-                <a href="/results/">
-                    <span class="material-symbols-rounded">sports_score</span>
-                    경기 결과
-                </a>
-                 <a href="/comp/">
-                     <span class="material-symbols-rounded">sports</span>
-                     대회 관리
-                 </a>
-                 <a href="/comp/admin_event.php">
-                     <span class="material-symbols-rounded">event</span>
-                     프리스타일 대회 채점
-                 </a>
-        </nav>
-    </header>
-        
-    <main>
-            <div class="admin-grid">
-                <div class="admin-card">
-                    <h3>
-                        <span class="material-symbols-rounded">campaign</span>
-                        공지사항 관리
-                    </h3>
-                    <div class="preview-box">
-                    <strong>현재 등록된 공지사항:</strong><br>
-                    <?= nl2br(htmlspecialchars($current_notice)) ?>
-                    <?php if ($current_notice): ?>
-                            <div class="action-buttons">
-                                <a href="/manage/?delete_notice=1" class="btn btn-danger btn-small" onclick="return confirm('공지사항을 삭제할까요?')">
-                                    <span class="material-symbols-rounded">delete</span>
-                                    공지사항 삭제
-                                </a>
-                            </div>
-                    <?php endif; ?>
-                </div>
-                    <form method="post">
-                        <div class="form-group">
-                            <label for="notice">공지사항 내용</label>
-                            <textarea id="notice" name="notice" placeholder="공지 내용을 입력하세요"><?= htmlspecialchars($current_notice) ?></textarea>
-                        </div>
-                        <button type="submit" class="btn">
-                            <span class="material-symbols-rounded">save</span>
-                            공지 저장
-                        </button>
-            </form>
-                </div>
+            <div class="admin-header-content">
+                <h1 class="admin-title">
+                    <span class="material-symbols-rounded">admin_panel_settings</span>
+                    <?= t('admin_title') ?>
+                </h1>
+                <p class="admin-subtitle"><?= t('admin_subtitle') ?></p>
                 
+                <nav class="admin-nav">
+                    <a href="/">
+                        <span class="material-symbols-rounded">home</span>
+                        <?= t('admin_nav_home') ?>
+                    </a>
+                    <a href="/results.php">
+                        <span class="material-symbols-rounded">military_tech</span>
+                        <?= t('admin_nav_results') ?>
+                    </a>
+                    <a href="/comp/">
+                        <span class="material-symbols-rounded">sports</span>
+                        <?= t('admin_nav_competitions') ?>
+                    </a>
+                    <a href="/comp/admin_event.php">
+                        <span class="material-symbols-rounded">score</span>
+                        <?= t('admin_nav_judging') ?>
+                    </a>
+                </nav>
+            </div>
+
+            <!-- 언어 선택기 -->
+            <div class="language-selector">
+                <div class="language-dropdown">
+                    <div class="language-btn" onclick="toggleLanguageMenu()">
+                        <span><?= $lang->getLangFlag() ?></span>
+                        <span><?= $lang->getLangName() ?></span>
+                        <span class="material-symbols-rounded">expand_more</span>
+                    </div>
+                    <div class="language-menu" id="languageMenu">
+                        <?php foreach ($lang->getAvailableLanguages() as $code => $info): ?>
+                            <a href="<?= $lang->getLanguageUrl($code) ?>" class="<?= $lang->getCurrentLang() === $code ? 'active' : '' ?>">
+                                <span><?= $info['flag'] ?></span>
+                                <span><?= $info['name'] ?></span>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <!-- 공지사항/일정 관리 -->
+            <div class="cards-grid">
+                <!-- 공지사항 관리 -->
                 <div class="admin-card">
-                    <h3>
-                        <span class="material-symbols-rounded">calendar_month</span>
-                        대회 일정 관리
-                    </h3>
+                    <h2 class="card-title">
+                        <span class="material-symbols-rounded">campaign</span>
+                        <?= t('notice_management') ?>
+                    </h2>
+                    
                     <div class="preview-box">
-                    <strong>현재 등록된 대회 일정:</strong><br>
-                    <?= nl2br(htmlspecialchars($current_schedule)) ?>
-                    <?php if ($current_schedule): ?>
+                        <strong><?= t('current_notice') ?></strong><br>
+                        <?= $current_notice ? nl2br(htmlspecialchars($current_notice)) : t('no_notices') ?>
+                        
+                        <?php if ($current_notice): ?>
                             <div class="action-buttons">
-                                <a href="/manage/?delete_schedule=1" class="btn btn-danger btn-small" onclick="return confirm('대회일정을 삭제할까요?')">
+                                <a href="/manage/?delete_notice=1" class="btn btn-danger btn-small" 
+                                   onclick="return confirm('<?= t('notice_delete_confirm') ?>')">
                                     <span class="material-symbols-rounded">delete</span>
-                                    대회일정 삭제
+                                    <?= t('notice_delete') ?>
                                 </a>
                             </div>
-                    <?php endif; ?>
-                </div>
+                        <?php endif; ?>
+                    </div>
+                    
                     <form method="post">
                         <div class="form-group">
-                            <label for="schedule">대회 일정 내용</label>
-                            <textarea id="schedule" name="schedule" placeholder="대회 일정을 입력하세요"><?= htmlspecialchars($current_schedule) ?></textarea>
+                            <label for="notice"><?= t('notice_content') ?></label>
+                            <textarea id="notice" name="notice" placeholder="<?= t('notice_placeholder') ?>"><?= htmlspecialchars($current_notice) ?></textarea>
                         </div>
                         <button type="submit" class="btn">
                             <span class="material-symbols-rounded">save</span>
-                            일정 저장
+                            <?= t('notice_save') ?>
                         </button>
-            </form>
+                    </form>
                 </div>
-            </div>
-            
-            <div class="banner-grid">
-            <?php foreach($positions as $pos=>$data): ?>
-                <div class="banner-card">
-                    <h4>
-                        <span class="material-symbols-rounded">image</span>
-                    <?= $data['label'] ?> 배너
-                        <span style="font-size:12px; color:#8A8D93;">(권장: <?= $data['size'] ?>)</span>
-                    </h4>
-                <div class="banner-info">
-                        <?= $data['desc'] ?>
-                </div>
-                <?php
-                $img_file_web = "/ads/" . $data['img'];
-                $img_file_real = $base_ads_dir . $data['img'];
-                $link_file = $base_ads_dir . $data['link'];
-                $link = file_exists($link_file) ? file_get_contents($link_file) : "";
-                ?>
-                <?php if (file_exists($img_file_real)): ?>
-                    <div>
-                        <img src="<?= $img_file_web ?>" class="banner-thumb">
+
+                <!-- 일정 관리 -->
+                <div class="admin-card">
+                    <h2 class="card-title">
+                        <span class="material-symbols-rounded">event</span>
+                        <?= t('schedule_management') ?>
+                    </h2>
+                    
+                    <div class="preview-box">
+                        <strong><?= t('current_schedule') ?></strong><br>
+                        <?= $current_schedule ? nl2br(htmlspecialchars($current_schedule)) : t('no_schedule') ?>
+                        
+                        <?php if ($current_schedule): ?>
                             <div class="action-buttons">
-                                <a href="/manage/?delete=img&amp;pos=<?= $pos ?>" class="btn btn-danger btn-small" onclick="return confirm('이미지를 삭제할까요?')">
+                                <a href="/manage/?delete_schedule=1" class="btn btn-danger btn-small"
+                                   onclick="return confirm('<?= t('schedule_delete_confirm') ?>')">
                                     <span class="material-symbols-rounded">delete</span>
-                                    이미지 삭제
+                                    <?= t('schedule_delete') ?>
                                 </a>
-                        <?php if ($link): ?>
-                                    <a href="<?= htmlspecialchars($link) ?>" target="_blank" class="btn btn-small">
-                                        <span class="material-symbols-rounded">open_in_new</span>
-                                        링크로 이동
-                                    </a>
-                        <?php endif; ?>
                             </div>
+                        <?php endif; ?>
                     </div>
-                <?php endif; ?>
-                <?php if (file_exists($link_file)): ?>
-                        <div class="file-info">
-                            <strong>현재 링크:</strong> <code><?= htmlspecialchars($link) ?></code>
-                            <a href="/manage/?delete=link&amp;pos=<?= $pos ?>" class="btn btn-danger btn-small" onclick="return confirm('링크 파일을 삭제할까요?')">
-                                <span class="material-symbols-rounded">delete</span>
-                                링크 삭제
-                            </a>
-                    </div>
-                <?php endif; ?>
-                    <form method="post" enctype="multipart/form-data">
-                <input type="hidden" name="pos" value="<?= $pos ?>">
+                    
+                    <form method="post">
                         <div class="form-group">
-                            <label for="banner_<?= $pos ?>">이미지 업로드</label>
-                            <input type="file" id="banner_<?= $pos ?>" name="banner" accept="image/*">
-                        </div>
-                        <div class="form-group">
-                            <label for="link_<?= $pos ?>">배너 링크 (URL)</label>
-                            <input type="text" id="link_<?= $pos ?>" name="banner_link" value="<?= htmlspecialchars($link) ?>" placeholder="배너 링크를 입력하세요">
+                            <label for="schedule"><?= t('schedule_content') ?></label>
+                            <textarea id="schedule" name="schedule" placeholder="<?= t('schedule_placeholder') ?>"><?= htmlspecialchars($current_schedule) ?></textarea>
                         </div>
                         <button type="submit" class="btn">
-                            <span class="material-symbols-rounded">upload</span>
-                            업로드/링크 저장
+                            <span class="material-symbols-rounded">save</span>
+                            <?= t('schedule_save') ?>
                         </button>
-            </form>
+                    </form>
                 </div>
-            <?php endforeach; ?>
             </div>
-    </main>
-        
-        <footer style="text-align: center; color: #03C75A; padding: 20px; font-size: 12px;">
-        &copy; 2025 danceoffice.net | 관리자 페이지
-    </footer>
+
+            <!-- 배너 관리 -->
+            <div class="admin-card" style="margin-bottom: 32px;">
+                <h2 class="card-title">
+                    <span class="material-symbols-rounded">image</span>
+                    <?= t('banner_management') ?>
+                </h2>
+                
+                <div class="banner-grid">
+                    <?php foreach($positions as $pos => $data): ?>
+                        <div class="banner-card">
+                            <h3 class="card-title" style="font-size: 18px; margin-bottom: 12px;">
+                                <span class="material-symbols-rounded">ad_units</span>
+                                <?= $data['label'] ?> <?= t('banner_management') ?>
+                                <span style="font-size: 12px; color: #94a3b8; font-weight: 400;">
+                                    (<?= t('banner_recommended_size') ?>: <?= $data['size'] ?>)
+                                </span>
+                            </h3>
+                            
+                            <div class="banner-info">
+                                <?= $data['desc'] ?>
+                            </div>
+                            
+                            <?php
+                            $img_file_web = "/ads/" . $data['img'];
+                            $img_file_real = $base_ads_dir . $data['img'];
+                            $link_file = $base_ads_dir . $data['link'];
+                            $link = file_exists($link_file) ? file_get_contents($link_file) : "";
+                            ?>
+                            
+                            <?php if (file_exists($img_file_real)): ?>
+                                <div>
+                                    <img src="<?= $img_file_web ?>" class="banner-thumb" alt="<?= $data['label'] ?> 배너">
+                                    <div class="action-buttons">
+                                        <a href="/manage/?delete=img&pos=<?= $pos ?>" class="btn btn-danger btn-small"
+                                           onclick="return confirm('<?= t('banner_delete_image_confirm') ?>')">
+                                            <span class="material-symbols-rounded">delete</span>
+                                            <?= t('banner_image_delete') ?>
+                                        </a>
+                                        <?php if ($link): ?>
+                                            <a href="<?= htmlspecialchars($link) ?>" target="_blank" class="btn btn-small">
+                                                <span class="material-symbols-rounded">open_in_new</span>
+                                                <?= t('banner_view_link') ?>
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <?php if (file_exists($link_file)): ?>
+                                <div class="file-info">
+                                    <strong><?= t('banner_current_link') ?></strong> <code><?= htmlspecialchars($link) ?></code>
+                                    <div class="action-buttons">
+                                        <a href="/manage/?delete=link&pos=<?= $pos ?>" class="btn btn-danger btn-small"
+                                           onclick="return confirm('<?= t('banner_delete_link_confirm') ?>')">
+                                            <span class="material-symbols-rounded">delete</span>
+                                            <?= t('banner_link_delete') ?>
+                                        </a>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                            
+                            <form method="post" enctype="multipart/form-data">
+                                <input type="hidden" name="pos" value="<?= $pos ?>">
+                                <div class="form-group">
+                                    <label for="banner_<?= $pos ?>"><?= t('banner_upload') ?></label>
+                                    <input type="file" id="banner_<?= $pos ?>" name="banner" accept="image/*">
+                                </div>
+                                <div class="form-group">
+                                    <label for="link_<?= $pos ?>"><?= t('banner_link') ?></label>
+                                    <input type="text" id="link_<?= $pos ?>" name="banner_link" 
+                                           value="<?= htmlspecialchars($link) ?>" 
+                                           placeholder="<?= t('banner_link_placeholder') ?>">
+                                </div>
+                                <button type="submit" class="btn">
+                                    <span class="material-symbols-rounded">upload</span>
+                                    <?= t('banner_upload_save') ?>
+                                </button>
+                            </form>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </main>
     </div>
+
+    <script>
+        function toggleLanguageMenu() {
+            const menu = document.getElementById('languageMenu');
+            menu.classList.toggle('show');
+        }
+
+        // 언어 메뉴 외부 클릭 시 닫기
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.language-dropdown');
+            const menu = document.getElementById('languageMenu');
+            
+            if (!dropdown.contains(event.target)) {
+                menu.classList.remove('show');
+            }
+        });
+    </script>
 </body>
 </html>
