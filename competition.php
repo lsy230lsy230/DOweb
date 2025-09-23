@@ -457,7 +457,7 @@ $results = getCompetitionResults($comp_data_path);
                 <?php else: ?>
                     <?php if (isset($schedule['timetable_rows'])): ?>
                         <!-- 푸시된 타임테이블 데이터 표시 (시간 포함) -->
-                        <div class="timetable-info" style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div class="timetable-info" style="background: #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #cbd5e1;">
                             <h3 style="margin: 0 0 10px 0; color: #3b82f6;">
                                 <span class="material-symbols-rounded" style="vertical-align: middle;">info</span>
                                 타임테이블 정보
@@ -515,7 +515,7 @@ $results = getCompetitionResults($comp_data_path);
                                                 <!-- 세부 이벤트들 표시 -->
                                                 <div style="margin-top: 10px;">
                                                     <?php foreach ($group_rows as $sub_row): ?>
-                                                        <div style="padding: 8px; background: #f8fafc; border-radius: 4px; margin-bottom: 8px; border-left: 3px solid #3b82f6;">
+                                                        <div style="padding: 8px; background: #e2e8f0; border-radius: 4px; margin-bottom: 8px; border-left: 3px solid #3b82f6; border: 1px solid #cbd5e1;">
                                                             <div style="display: flex; align-items: center; gap: 8px;">
                                                                 <span style="background: #64748b; color: white; padding: 1px 6px; border-radius: 3px; font-size: 0.75em;">
                                                                     <?= htmlspecialchars($sub_row['detail_no']) ?>
@@ -615,7 +615,7 @@ $results = getCompetitionResults($comp_data_path);
                         </div>
                     <?php elseif (isset($schedule['events'])): ?>
                         <!-- 기존 이벤트 데이터 표시 (호환성) -->
-                        <div class="timetable-info" style="background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <div class="timetable-info" style="background: #e2e8f0; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #cbd5e1;">
                             <h3 style="margin: 0 0 10px 0; color: #3b82f6;">
                                 <span class="material-symbols-rounded" style="vertical-align: middle;">info</span>
                                 이벤트 목록
