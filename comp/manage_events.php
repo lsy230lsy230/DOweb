@@ -367,6 +367,26 @@ $round_calculation = calculateRoundInfo($events);
 $round_info = $round_calculation['round_info'];
 $next_event_info = $round_calculation['next_event_info'];
 
+// 중복 제거된 이벤트 데이터를 전역 변수로 저장 (일관성 보장)
+$unique_events = [];
+$seen_keys = [];
+
+foreach ($events as $evt) {
+    $unique_key = $evt['name'] . '|' . $evt['raw_no'] . '|' . ($evt['detail_no'] ?? '');
+    if (!in_array($unique_key, $seen_keys)) {
+        $unique_events[] = $evt;
+        $seen_keys[] = $unique_key;
+    }
+}
+
+// 디버깅: 전역 중복 제거된 이벤트 정보 출력
+if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+    echo "<!-- DEBUG: Global unique events: -->\n";
+    foreach ($unique_events as $evt) {
+        echo "<!-- DEBUG: Raw={$evt['raw_no']}, Name={$evt['name']}, Detail={$evt['detail_no']} -->\n";
+    }
+}
+
 // 디버깅: 라운드 정보 출력
 if (isset($_GET['debug']) && $_GET['debug'] === '1') {
     echo "<!-- DEBUG: Round info calculated -->\n";
@@ -1144,17 +1164,8 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
         <form method="post">
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap:10px; max-height:300px; overflow-y:auto;">
                 <?php 
-                // 중복 제거된 이벤트만 표시
-                $unique_events = [];
-                $seen_keys = [];
-                
-                foreach ($events as $evt) {
-                    $unique_key = $evt['name'] . '|' . $evt['raw_no'] . '|' . ($evt['detail_no'] ?? '');
-                    if (!in_array($unique_key, $seen_keys)) {
-                        $unique_events[] = $evt;
-                        $seen_keys[] = $unique_key;
-                    }
-                }
+                // 전역 변수 $unique_events 사용 (라운드 계산과 동일한 데이터)
+                // 이렇게 하면 라운드 계산과 세부번호 수정이 동일한 데이터를 사용
                 
                 foreach ($unique_events as $evt): ?>
                     <div style="display:flex; align-items:center; gap:10px; padding:8px; background:white; border-radius:4px; border:1px solid #e9ecef;">
