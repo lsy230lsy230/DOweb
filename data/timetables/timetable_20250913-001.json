@@ -1,0 +1,1331 @@
+{
+    "comp_id": "20250913-001",
+    "competition_info": {
+        "title": "제12회 서초구청장배 댄스스포츠 대회",
+        "date": "2025-09-28",
+        "place": "서초실내체육관",
+        "host": "서초구댄스스포츠연맹",
+        "assigned_admin": "abc",
+        "created": 1757693011
+    },
+    "events": [
+        {
+            "no": "1",
+            "desc": "솔로 일반부 스탠다드 1종목 (T)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "2"
+            ],
+            "extra_time": 1
+        },
+        {
+            "no": "1",
+            "desc": "초등부 스탠다드 2종목 (W T)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2"
+            ],
+            "extra_time": 2
+        },
+        {
+            "no": "2",
+            "desc": "유치부 라틴 1종목 (C)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "3",
+            "desc": "솔로 초등부 저학년 라틴 2종목 (R J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "8",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "3",
+            "desc": "솔로 유치부 라틴 1종목 (R )",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "4",
+            "desc": "솔로 초등부 저학년 라틴 2종목 (C J)",
+            "roundtype": "결승",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "4",
+            "desc": "솔로 초등부 저학년 라틴 1종목 (J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "5",
+            "desc": "솔로 유치부 라틴 1종목 (C)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "5",
+            "desc": "솔로 유치부 라틴 2종목 (C R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "5",
+            "desc": "솔로 초등부 저학년 라틴 1종목 (C)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "5",
+            "desc": "솔로 초등부 저학년 라틴 1종목 (R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "6",
+            "desc": "솔로 초등부 저학년 라틴 3종목 (C R S)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "6",
+            "desc": "솔로 초등부 고학년 라틴 1종목 (C)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "6",
+            "desc": "솔로 초등부 고학년 라틴 1종목 (R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "6",
+            "desc": "솔로 초등부 고학년 라틴 1종목 (S)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "7",
+            "desc": "솔로 초등부 저학년 라틴 3종목 (C R J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "7",
+            "desc": "솔로 초등부 고학년 라틴 1종목 (J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "7",
+            "desc": "솔로 초등부 고학년 라틴 2종목 (R J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "8",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "8",
+            "desc": "솔로 초등부 고학년 라틴 3종목 (C R S)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "R",
+                "SA"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "8",
+            "desc": "솔로 중등부 라틴 3종목 (C R S)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "8",
+            "desc": "솔로 중등부 1종목 (R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "9",
+            "desc": "솔로 초등부 저학년 라틴 2종목 (C R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "10",
+            "desc": "솔로 중등부 라틴 3종목 (C R J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "10",
+            "desc": "솔로 초등부 고학년 라틴 3종목 (C R J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "10",
+            "desc": "솔로 일반부 라틴 2종목 (C J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "11",
+            "desc": "솔로 초등부 고학년 라틴 4종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7",
+                "8",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "11",
+            "desc": "솔로 중등부 라틴 4종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7",
+                "8",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "12",
+            "desc": "솔로 일반부 라틴 3종목 (C R S)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "12",
+            "desc": "솔로 대학부 라틴 3종목 (C R S)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "12",
+            "desc": "솔로 고등부 라틴 3종목 (C R S)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "13",
+            "desc": "솔로 초등부 고학년 5종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "13",
+            "desc": "솔로 중등부 라틴 5종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "14",
+            "desc": "솔로 일반부 라틴 2종목 (C R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "14",
+            "desc": "솔로 일반부 라틴 1종목 (C)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "14",
+            "desc": "솔로 고등부 라틴 2종목 (C R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "14",
+            "desc": "솔로 중등부 라틴 2종목 (C R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "15",
+            "desc": "솔로 일반부 라틴 2종목 (S R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "7",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "15",
+            "desc": "솔로 고등부 라틴 2종목 (S R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "7",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "15",
+            "desc": "솔로 일반부 라틴 1종목 (S)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "7"
+            ],
+            "extra_time": 15
+        },
+        {
+            "no": "15",
+            "desc": "솔로 일반부 라틴 1종목 (R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "16",
+            "desc": "솔로 고등부 라틴 3종목 (C R J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "16",
+            "desc": "솔로 중등부 라틴 1종목 (C)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "16",
+            "desc": "솔로 일반부 라틴 1종목 (J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "17",
+            "desc": "솔로 대학부 스탠다드 5종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "17",
+            "desc": "솔로 일반부 스탠다드 2종목 (W T)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "17",
+            "desc": "초등부 스탠다드 3종목 (W T Q)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "17",
+            "desc": "초등부 스탠다드 1종목 (W)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "17",
+            "desc": "일반부 스탠다드 5종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "17",
+            "desc": "포메이션 리허설",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [],
+            "extra_time": 0
+        },
+        {
+            "no": "18",
+            "desc": "프로-암 클로즈 라틴 1종목 (R)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "19",
+            "desc": "프로-암 오픈 라틴 1종목 (C)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "20",
+            "desc": "프로-암 오픈 라틴 1종목 (R)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "20",
+            "desc": "프로-암 오픈 라틴 2종목 (R S)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "21",
+            "desc": "프로-암 클로즈 라틴 1종목 (J)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "21",
+            "desc": "일반부 라틴 1종목 (J)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "22",
+            "desc": "프로-암 오픈 라틴 2종목 (C R)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "23",
+            "desc": "프로-암 오픈 스탠다드 5종목",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "4",
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "23",
+            "desc": "프로-암 오픈 스탠다드 3종목",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "4"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "23",
+            "desc": "프로-암 오픈 스탠다드 1종목 (W)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "1"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "23",
+            "desc": "클로즈 1종목 (W)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "1"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "23",
+            "desc": "프로-암 오픈 스탠다드 1종목 (SF)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [],
+            "extra_time": 0
+        },
+        {
+            "no": "24",
+            "desc": "프로-암 오픈 라틴 3종목 (CRC)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "25",
+            "desc": "듀오 라틴 3종목",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "25",
+            "desc": "듀오 라틴 1종목",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "25",
+            "desc": "동호인 라틴 1종목 (C)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "25",
+            "desc": "동호인 라틴 1종목 (S)",
+            "roundtype": "Round 1",
+            "roundnum": "",
+            "dances": [
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "26",
+            "desc": "트리오 라틴 2종목(S R)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "27",
+            "desc": "매니아 스탠다드 3종목 (W T SF)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "4"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "28",
+            "desc": "프로페셔널 라틴",
+            "roundtype": "Round 1",
+            "roundnum": "1",
+            "dances": [
+                "6",
+                "7",
+                "8",
+                "9"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "29",
+            "desc": "포메이션A조",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [],
+            "extra_time": 0
+        },
+        {
+            "no": "29",
+            "desc": "포메이션B조",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [],
+            "extra_time": 0
+        },
+        {
+            "no": "30",
+            "desc": "프로페셔널 라틴",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "31",
+            "desc": "프로페셔널 스탠다드",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "32",
+            "desc": "아마추어 라틴 S",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "32",
+            "desc": "일반부 라틴 5종목 S",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "32",
+            "desc": "아마추어 라틴 C",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "32",
+            "desc": "동호인 라틴 2종목 (C R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "32",
+            "desc": "동호인 라틴 1종목 (S)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "32",
+            "desc": "매니아 라틴 5종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "32",
+            "desc": "일반부 라틴 2종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "33",
+            "desc": "매니아 스탠다드 2종목 (W T)",
+            "roundtype": "Semi-Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "34",
+            "desc": "듀오 라틴 3종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "34",
+            "desc": "듀오 라틴 1종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "34",
+            "desc": "동호인 라틴 1종목 (C)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "34",
+            "desc": "동호인 라틴 1종목 (S)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "35",
+            "desc": "일반부 스탠다드 2종목 (W T)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "35",
+            "desc": "동호인 스탠다드 2종목 (W T)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "35",
+            "desc": "시니어 스탠다드 2종목 (W T)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "35",
+            "desc": "그랜드 시니어 스탠다드 2종목 (W T)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "36",
+            "desc": "트리오 라틴 2종목(S R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "7",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "37",
+            "desc": "매니아 스탠다드 2종목 (W T)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "38",
+            "desc": "프로-암 클로즈 라틴 1종목 (R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "39",
+            "desc": "아빠랑 딸이랑 (W)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "40",
+            "desc": "프로-암 오픈 라틴 1종목 (C)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "41",
+            "desc": "아빠랑 딸이랑 (C)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "42",
+            "desc": "프로-암 오픈 라틴 1종목 (R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "42",
+            "desc": "프로-암 오픈 라틴 2종목 (R S)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "43",
+            "desc": "프로-암 클로즈 라틴 1종목 (J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "43",
+            "desc": "일반부 라틴 1종목 (J)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "10"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "44",
+            "desc": "프로-암 오픈 라틴 2종목 (C R)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "45",
+            "desc": "프로-암 오픈 스탠다드 5종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "4",
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "45",
+            "desc": "프로-암 오픈 스탠다드 3종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "4"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "45",
+            "desc": "프로-암 오픈 스탠다드 1종목 (W)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": {
+                "0": "1",
+                "2": "4"
+            },
+            "extra_time": 0
+        },
+        {
+            "no": "45",
+            "desc": "클로즈 1종목 (W)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "46",
+            "desc": "프로-암 오픈 라틴 3종목 (CRC)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "8",
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "47",
+            "desc": "매니아 스탠다드 3종목 (W T SF)",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "4"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "48",
+            "desc": "프로페셔널 스탠다드 마스터클래스",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "49",
+            "desc": "그랜드시니어 스탠다드 3종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "4"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "49",
+            "desc": "아마추어 스탠다드",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "49",
+            "desc": "매니아 스탠다드 4종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "4",
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "49",
+            "desc": "일반부 스탠다드 3종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "4"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "49",
+            "desc": "동호인 스탠다드 3종목",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "4"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "50",
+            "desc": "아마추어 라틴 S",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "50",
+            "desc": "일반부 라틴 5종목 S",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "50",
+            "desc": "아마추어 라틴 C",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "7"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "51",
+            "desc": "프로페셔널 스탠다드",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "1",
+                "2",
+                "3",
+                "4",
+                "5"
+            ],
+            "extra_time": 0
+        },
+        {
+            "no": "52",
+            "desc": "프로페셔널 라틴",
+            "roundtype": "Final",
+            "roundnum": "",
+            "dances": [
+                "6",
+                "7",
+                "8",
+                "9",
+                "10"
+            ],
+            "extra_time": 0
+        }
+    ],
+    "special_events": {
+        "68c5a35a231ac": {
+            "name": "브레이크 타임",
+            "after_event": 10,
+            "duration": 10
+        },
+        "68c63ba7e1d51": {
+            "name": "제너럴 타임",
+            "after_event": 35,
+            "duration": 10
+        }
+    },
+    "generated_at": "2025-09-23 14:01:25",
+    "generated_by": "lsy230"
+}
