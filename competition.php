@@ -278,6 +278,17 @@ $results = getCompetitionResults($comp_data_path);
                 display: inline !important;
             }
             
+            /* 인쇄 시 댄스 컬럼 아이콘 숨김 */
+            .professional-timetable .dance-badges .material-symbols-rounded {
+                display: none !important;
+            }
+            
+            /* 인쇄 시 시간 정렬 개선 */
+            .professional-timetable td:first-child {
+                text-align: center !important;
+                vertical-align: middle !important;
+            }
+            
             /* 배지 색상 조정 */
             .professional-timetable span[style*="background: #3b82f6"] {
                 background: #000 !important;
