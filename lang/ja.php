@@ -51,4 +51,62 @@ return [
     // 言語選択
     'language' => '言語',
     'select_language' => '言語選択',
+    
+    // 管理者ページ
+    'admin_title' => '管理者ページ',
+    'admin_subtitle' => 'DanceOffice管理システム',
+    'admin_login' => '管理者ログイン',
+    'admin_password' => '管理者パスワード',
+    'admin_login_btn' => 'ログイン',
+    'admin_password_placeholder' => 'パスワードを入力してください',
+    
+    // 管理ナビゲーション
+    'admin_nav_home' => 'メインに戻る',
+    'admin_nav_results' => '競技結果',
+    'admin_nav_competitions' => '大会管理',
+    'admin_nav_judging' => 'フリースタイル大会採点',
+    
+    // お知らせ管理
+    'notice_management' => 'お知らせ管理',
+    'current_notice' => '現在登録されているお知らせ:',
+    'notice_content' => 'お知らせ内容',
+    'notice_placeholder' => 'お知らせ内容を入力してください',
+    'notice_save' => 'お知らせ保存',
+    'notice_delete' => 'お知らせ削除',
+    'notice_delete_confirm' => 'お知らせを削除しますか？',
+    
+    // スケジュール管理
+    'schedule_management' => '大会スケジュール管理',
+    'current_schedule' => '現在登録されている大会スケジュール:',
+    'schedule_content' => '大会スケジュール内容',
+    'schedule_placeholder' => '大会スケジュールを入力してください',
+    'schedule_save' => 'スケジュール保存',
+    'schedule_delete' => 'スケジュール削除',
+    'schedule_delete_confirm' => 'スケジュールを削除しますか？',
+    
+    // バナー管理
+    'banner_management' => '広告バナー管理',
+    'banner_top' => '上部',
+    'banner_bottom' => '下部',
+    'banner_left' => '左側',
+    'banner_right' => '右側',
+    'banner_main' => 'メイン',
+    'banner_recommended_size' => '推奨',
+    'banner_upload' => '画像アップロード',
+    'banner_link' => 'バナーリンク (URL)',
+    'banner_link_placeholder' => 'バナーリンクを入力してください',
+    'banner_upload_save' => 'アップロード/リンク保存',
+    'banner_image_delete' => '画像削除',
+    'banner_link_delete' => 'リンク削除',
+    'banner_view_link' => 'リンクを開く',
+    'banner_current_link' => '現在のリンク:',
+    'banner_delete_image_confirm' => '画像を削除しますか？',
+    'banner_delete_link_confirm' => 'リンクファイルを削除しますか？',
+    
+    // バナー説明
+    'banner_top_desc' => '上部横バナー（PC/モバイル両方表示）',
+    'banner_bottom_desc' => '下部横バナー（PC/モバイル両方表示）',
+    'banner_left_desc' => '左側縦バナー（PC画面のみ表示）',
+    'banner_right_desc' => '右側縦バナー（PC画面のみ表示）',
+    'banner_main_desc' => 'メイン/イベントエリア（可変サイズ）',
 ];

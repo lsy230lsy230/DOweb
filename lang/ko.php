@@ -51,4 +51,62 @@ return [
     // 언어 선택
     'language' => '언어',
     'select_language' => '언어 선택',
+    
+    // 관리 페이지
+    'admin_title' => '관리자 페이지',
+    'admin_subtitle' => 'DanceOffice 관리 시스템',
+    'admin_login' => '관리자 로그인',
+    'admin_password' => '관리자 비밀번호',
+    'admin_login_btn' => '로그인',
+    'admin_password_placeholder' => '비밀번호를 입력하세요',
+    
+    // 관리 메뉴
+    'admin_nav_home' => '메인으로',
+    'admin_nav_results' => '경기 결과',
+    'admin_nav_competitions' => '대회 관리',
+    'admin_nav_judging' => '프리스타일 대회 채점',
+    
+    // 공지사항 관리
+    'notice_management' => '공지사항 관리',
+    'current_notice' => '현재 등록된 공지사항:',
+    'notice_content' => '공지사항 내용',
+    'notice_placeholder' => '공지 내용을 입력하세요',
+    'notice_save' => '공지 저장',
+    'notice_delete' => '공지사항 삭제',
+    'notice_delete_confirm' => '공지사항을 삭제할까요?',
+    
+    // 일정 관리
+    'schedule_management' => '대회 일정 관리',
+    'current_schedule' => '현재 등록된 대회 일정:',
+    'schedule_content' => '대회 일정 내용',
+    'schedule_placeholder' => '대회 일정을 입력하세요',
+    'schedule_save' => '일정 저장',
+    'schedule_delete' => '대회일정 삭제',
+    'schedule_delete_confirm' => '대회일정을 삭제할까요?',
+    
+    // 광고 배너 관리
+    'banner_management' => '광고 배너 관리',
+    'banner_top' => '상단',
+    'banner_bottom' => '하단',
+    'banner_left' => '좌측',
+    'banner_right' => '우측',
+    'banner_main' => '메인',
+    'banner_recommended_size' => '권장',
+    'banner_upload' => '이미지 업로드',
+    'banner_link' => '배너 링크 (URL)',
+    'banner_link_placeholder' => '배너 링크를 입력하세요',
+    'banner_upload_save' => '업로드/링크 저장',
+    'banner_image_delete' => '이미지 삭제',
+    'banner_link_delete' => '링크 삭제',
+    'banner_view_link' => '링크로 이동',
+    'banner_current_link' => '현재 링크:',
+    'banner_delete_image_confirm' => '이미지를 삭제할까요?',
+    'banner_delete_link_confirm' => '링크 파일을 삭제할까요?',
+    
+    // 배너 설명
+    'banner_top_desc' => '상단 가로 배너 (PC/모바일 모두 노출)',
+    'banner_bottom_desc' => '하단 가로 배너 (PC/모바일 모두 노출)', 
+    'banner_left_desc' => '좌측 세로 배너 (PC 화면만 노출)',
+    'banner_right_desc' => '우측 세로 배너 (PC 화면만 노출)',
+    'banner_main_desc' => '메인/이벤트 영역 (크기 가변)',
 ];

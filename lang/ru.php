@@ -51,4 +51,62 @@ return [
     // Выбор языка
     'language' => 'Язык',
     'select_language' => 'Выбрать язык',
+    
+    // Страница администратора
+    'admin_title' => 'Панель администратора',
+    'admin_subtitle' => 'Система управления DanceOffice',
+    'admin_login' => 'Вход администратора',
+    'admin_password' => 'Пароль администратора',
+    'admin_login_btn' => 'Войти',
+    'admin_password_placeholder' => 'Введите пароль',
+    
+    // Навигация администратора
+    'admin_nav_home' => 'Вернуться на главную',
+    'admin_nav_results' => 'Результаты соревнований',
+    'admin_nav_competitions' => 'Управление соревнованиями',
+    'admin_nav_judging' => 'Оценка фристайл соревнований',
+    
+    // Управление объявлениями
+    'notice_management' => 'Управление объявлениями',
+    'current_notice' => 'Текущее зарегистрированное объявление:',
+    'notice_content' => 'Содержание объявления',
+    'notice_placeholder' => 'Введите содержание объявления',
+    'notice_save' => 'Сохранить объявление',
+    'notice_delete' => 'Удалить объявление',
+    'notice_delete_confirm' => 'Удалить это объявление?',
+    
+    // Управление расписанием
+    'schedule_management' => 'Управление расписанием соревнований',
+    'current_schedule' => 'Текущее зарегистрированное расписание:',
+    'schedule_content' => 'Содержание расписания',
+    'schedule_placeholder' => 'Введите расписание соревнований',
+    'schedule_save' => 'Сохранить расписание',
+    'schedule_delete' => 'Удалить расписание',
+    'schedule_delete_confirm' => 'Удалить это расписание?',
+    
+    // Управление баннерами
+    'banner_management' => 'Управление рекламными баннерами',
+    'banner_top' => 'Вверху',
+    'banner_bottom' => 'Внизу',
+    'banner_left' => 'Слева',
+    'banner_right' => 'Справа',
+    'banner_main' => 'Основной',
+    'banner_recommended_size' => 'Рекомендуемый',
+    'banner_upload' => 'Загрузка изображения',
+    'banner_link' => 'Ссылка баннера (URL)',
+    'banner_link_placeholder' => 'Введите ссылку баннера',
+    'banner_upload_save' => 'Загрузить/Сохранить ссылку',
+    'banner_image_delete' => 'Удалить изображение',
+    'banner_link_delete' => 'Удалить ссылку',
+    'banner_view_link' => 'Перейти по ссылке',
+    'banner_current_link' => 'Текущая ссылка:',
+    'banner_delete_image_confirm' => 'Удалить это изображение?',
+    'banner_delete_link_confirm' => 'Удалить этот файл ссылки?',
+    
+    // Описания баннеров
+    'banner_top_desc' => 'Верхний горизонтальный баннер (видимый на ПК/мобильных)',
+    'banner_bottom_desc' => 'Нижний горизонтальный баннер (видимый на ПК/мобильных)',
+    'banner_left_desc' => 'Левый вертикальный баннер (только ПК экран)',
+    'banner_right_desc' => 'Правый вертикальный баннер (только ПК экран)',
+    'banner_main_desc' => 'Основная/событийная область (переменный размер)',
 ];

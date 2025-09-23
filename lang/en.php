@@ -51,4 +51,62 @@ return [
     // Language selection
     'language' => 'Language',
     'select_language' => 'Select Language',
+    
+    // Admin page
+    'admin_title' => 'Admin Panel',
+    'admin_subtitle' => 'DanceOffice Management System',
+    'admin_login' => 'Administrator Login',
+    'admin_password' => 'Administrator Password',
+    'admin_login_btn' => 'Login',
+    'admin_password_placeholder' => 'Enter password',
+    
+    // Admin navigation
+    'admin_nav_home' => 'Back to Main',
+    'admin_nav_results' => 'Competition Results',
+    'admin_nav_competitions' => 'Competition Management',
+    'admin_nav_judging' => 'Freestyle Competition Judging',
+    
+    // Notice management
+    'notice_management' => 'Announcement Management',
+    'current_notice' => 'Current registered announcement:',
+    'notice_content' => 'Announcement Content',
+    'notice_placeholder' => 'Enter announcement content',
+    'notice_save' => 'Save Announcement',
+    'notice_delete' => 'Delete Announcement',
+    'notice_delete_confirm' => 'Delete this announcement?',
+    
+    // Schedule management
+    'schedule_management' => 'Competition Schedule Management',
+    'current_schedule' => 'Current registered competition schedule:',
+    'schedule_content' => 'Competition Schedule Content',
+    'schedule_placeholder' => 'Enter competition schedule',
+    'schedule_save' => 'Save Schedule',
+    'schedule_delete' => 'Delete Schedule',
+    'schedule_delete_confirm' => 'Delete this schedule?',
+    
+    // Banner management
+    'banner_management' => 'Advertisement Banner Management',
+    'banner_top' => 'Top',
+    'banner_bottom' => 'Bottom',
+    'banner_left' => 'Left',
+    'banner_right' => 'Right',
+    'banner_main' => 'Main',
+    'banner_recommended_size' => 'Recommended',
+    'banner_upload' => 'Image Upload',
+    'banner_link' => 'Banner Link (URL)',
+    'banner_link_placeholder' => 'Enter banner link',
+    'banner_upload_save' => 'Upload/Save Link',
+    'banner_image_delete' => 'Delete Image',
+    'banner_link_delete' => 'Delete Link',
+    'banner_view_link' => 'Visit Link',
+    'banner_current_link' => 'Current link:',
+    'banner_delete_image_confirm' => 'Delete this image?',
+    'banner_delete_link_confirm' => 'Delete this link file?',
+    
+    // Banner descriptions
+    'banner_top_desc' => 'Top horizontal banner (visible on PC/mobile)',
+    'banner_bottom_desc' => 'Bottom horizontal banner (visible on PC/mobile)',
+    'banner_left_desc' => 'Left vertical banner (PC screen only)',
+    'banner_right_desc' => 'Right vertical banner (PC screen only)',
+    'banner_main_desc' => 'Main/event area (variable size)',
 ];
