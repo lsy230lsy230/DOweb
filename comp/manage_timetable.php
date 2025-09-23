@@ -414,9 +414,60 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             form.submit();
         }
         
+        // 대회 대쉬보드로 푸시하는 함수
+        function pushTimetableToDashboard() {
+            if (!confirm('타임테이블을 대회 대쉬보드에 푸시하시겠습니까?')) {
+                return;
+            }
+            
+            const button = event.target;
+            const originalText = button.innerHTML;
+            button.innerHTML = '⏳ 푸시 중...';
+            button.disabled = true;
+            
+            const formData = new FormData();
+            formData.append('comp_id', '<?= h($comp_id) ?>');
+            
+            fetch('push_timetable.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ ' + data.message + '\n\n' +
+                          '대회명: ' + data.data.competition_title + '\n' +
+                          '이벤트 수: ' + data.data.events_count + '개\n' +
+                          '특별 이벤트: ' + data.data.special_events_count + '개\n' +
+                          '푸시 완료: ' + data.data.pushed_at);
+                    
+                    // 성공 시 버튼 색상 변경
+                    button.style.background = '#10b981';
+                    button.innerHTML = '✅ 푸시 완료';
+                    
+                    // 3초 후 원래 상태로
+                    setTimeout(() => {
+                        button.style.background = '#3b82f6';
+                        button.innerHTML = originalText;
+                        button.disabled = false;
+                    }, 3000);
+                } else {
+                    alert('❌ ' + data.message);
+                    button.innerHTML = originalText;
+                    button.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('❌ 네트워크 오류가 발생했습니다.');
+                button.innerHTML = originalText;
+                button.disabled = false;
+            });
+        }
+        
         // 페이지 로드 시 디버깅 정보 출력
         window.addEventListener('load', function() {
-            console.log('페이지 로드 완료 - 버튼 방식으로 변경됨');
+            console.log('페이지 로드 완료 - 푸시 기능 추가됨');
         });
     </script>
 </head>
@@ -432,6 +483,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             <a href="export_excel.php?comp=<?=h($comp_id)?>" class="btn" style="background: #27ae60; color: white; padding: 8px 16px; text-decoration: none; border-radius: 4px; font-size: 14px;">
                 📊 엑셀 내보내기
             </a>
+            <button onclick="pushTimetableToDashboard()" class="btn" style="background: #3b82f6; color: white; padding: 8px 16px; border: none; border-radius: 4px; font-size: 14px; cursor: pointer;">
+                🚀 대회 대쉬보드에 푸시
+            </button>
         </div>
     </div>
     <div class="compinfo" style="color:#bbb; margin-bottom:1.2em;">
