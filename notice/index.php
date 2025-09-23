@@ -1,6 +1,6 @@
 <?php
-$notice_file = "/volume1/web/data/notice.txt";
-$schedule_file = "/volume1/web/data/schedule.txt";
+$notice_file = __DIR__ . "/../data/notice.txt";
+$schedule_file = __DIR__ . "/../data/schedule.txt";
 
 $notice = file_exists($notice_file) ? nl2br(htmlspecialchars(file_get_contents($notice_file))) : "등록된 공지가 없습니다.";
 $schedule = file_exists($schedule_file) ? nl2br(htmlspecialchars(file_get_contents($schedule_file))) : "등록된 대회일정이 없습니다.";

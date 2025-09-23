@@ -119,11 +119,11 @@ $positions = [
 ];
 
 // NAS 실경로
-$base_ads_dir = "/volume1/web/ads/";
+$base_ads_dir = __DIR__ . "/../data/ads/";
 
 // 공지/일정 파일 경로
-$notice_file = "/volume1/web/data/notice.txt";
-$schedule_file = "/volume1/web/data/schedule.txt";
+$notice_file = __DIR__ . "/../data/notice.txt";
+$schedule_file = __DIR__ . "/../data/schedule.txt";
 
 // 공지/일정 삭제 처리
 if (isset($_GET['delete_notice'])) {
