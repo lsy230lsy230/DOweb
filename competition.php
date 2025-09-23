@@ -112,29 +112,34 @@ $results = getCompetitionResults($comp_data_path);
             body, .container, .comp-content {
                 background: white !important;
                 color: black !important;
-                font-size: 11px;
+                font-size: 10px;
                 margin: 0 !important;
                 padding: 5px !important;
             }
             
             /* 대회 타이틀 컴팩트하게 */
             .competition-header {
-                margin-bottom: 10px !important;
-                padding: 5px 0 !important;
+                margin-bottom: 15px !important;
+                padding: 10px 0 !important;
             }
             
             .competition-header h1 {
-                font-size: 18px !important;
-                margin: 0 !important;
+                font-size: 16px !important;
+                margin: 0 0 5px 0 !important;
                 line-height: 1.2 !important;
             }
             
             .competition-header .competition-meta {
-                font-size: 11px !important;
-                margin: 2px 0 !important;
+                font-size: 10px !important;
+                margin: 0 !important;
             }
             
-            /* 타임테이블 정보 박스 숨기기 또는 최소화 */
+            /* 화면에서 보이는 헤더들 숨기기 */
+            .section-title, h2 {
+                display: none !important;
+            }
+            
+            /* 타임테이블 정보 박스 숨기기 */
             .timetable-info {
                 display: none !important;
             }
@@ -142,21 +147,23 @@ $results = getCompetitionResults($comp_data_path);
             /* 표 인쇄 스타일 */
             .professional-timetable table {
                 background: white !important;
-                font-size: 11px !important;
-                border: 1px solid #333 !important;
+                font-size: 9px !important;
+                border: 1px solid #000 !important;
                 page-break-inside: avoid;
             }
             
             .professional-timetable th {
-                background: #f0f0f0 !important;
+                background: #f5f5f5 !important;
                 color: black !important;
-                border: 1px solid #333 !important;
+                border: 1px solid #000 !important;
                 font-weight: bold !important;
+                padding: 8px 4px !important;
             }
             
             .professional-timetable td {
-                border: 1px solid #333 !important;
+                border: 1px solid #000 !important;
                 color: black !important;
+                padding: 6px 4px !important;
             }
             
             /* 배지 색상 조정 */
@@ -578,8 +585,8 @@ $results = getCompetitionResults($comp_data_path);
                         </div>
                         
                         <!-- 전문적인 표 형태 타임테이블 -->
-                        <div class="professional-timetable" style="background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9em; table-layout: fixed;">
+                        <div class="professional-timetable" style="background: white; border: 1px solid #d1d5db; border-radius: 8px; overflow: hidden;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 0.9em; table-layout: fixed; background: white;">
                                 <thead>
                                     <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                                         <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 120px; font-size: 0.95em;">⏰ 시간</th>
@@ -661,16 +668,14 @@ $results = getCompetitionResults($comp_data_path);
                                             $accent_color = $multi_round_groups[$event_name]['accent_color'];
                                         } else {
                                             // 단일 라운드는 흰 배경
-                                            $bg_color = 'white';
+                                            $bg_color = '#ffffff';
                                             $accent_color = '#3b82f6';
                                         }
                                     ?>
-                                        <tr style="background: <?= $bg_color ?>; transition: all 0.2s ease; <?= $is_first_in_event && $index > 0 ? 'border-top: 3px solid ' . $accent_color . ';' : '' ?>" 
-                                            onmouseover="this.style.background='<?= $is_first_in_event ? '#f0f9ff' : $bg_color ?>'; this.style.transform='scale(1.01)'"
-                                            onmouseout="this.style.background='<?= $bg_color ?>'; this.style.transform='scale(1)'">
+                                        <tr style="background: <?= $bg_color ?>; border-bottom: 1px solid #e5e7eb; <?= $is_first_in_event && $index > 0 ? 'border-top: 2px solid ' . $accent_color . ';' : '' ?>">
                                             
                                             <!-- 시간 -->
-                                            <td style="padding: 12px 8px; text-align: center; color: #1e40af; font-weight: 700; font-size: 0.95em; <?= $is_first_in_event ? 'border-left: 4px solid ' . $accent_color . ';' : 'border-left: 4px solid transparent;' ?>">
+                                            <td style="padding: 12px 8px; text-align: center; color: #1e40af; font-weight: 700; font-size: 0.95em; border-right: 1px solid #e5e7eb; <?= $is_first_in_event ? 'border-left: 3px solid ' . $accent_color . ';' : 'border-left: 3px solid transparent;' ?>">
                                                 <?php if ($is_first_in_event): ?>
                                                     <div style="display: flex; flex-direction: column; align-items: center;">
                                                         <span style="font-size: 1.1em; font-weight: 800; color: #1e40af;">
@@ -686,7 +691,7 @@ $results = getCompetitionResults($comp_data_path);
                                             </td>
                                             
                                             <!-- 이벤트 번호 -->
-                                            <td style="padding: 12px 8px; text-align: center; font-weight: 600;">
+                                            <td style="padding: 12px 8px; text-align: center; font-weight: 600; border-right: 1px solid #e5e7eb;">
                                                 <?php if ($is_first_in_event): ?>
                                                     <span style="background: <?= $accent_color ?>; color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.9em; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                                                         <?= htmlspecialchars($row['no'] ?? '') ?>
@@ -695,28 +700,28 @@ $results = getCompetitionResults($comp_data_path);
                                             </td>
                                             
                                             <!-- 경기 종목 -->
-                                            <td style="padding: 12px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                            <td style="padding: 12px 8px; border-right: 1px solid #e5e7eb;">
                                                 <div style="display: flex; align-items: center; gap: 8px;">
                                                     <?php if (!empty($row['detail_no'])): ?>
-                                                        <span style="background: linear-gradient(135deg, #64748b, #475569); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.8em; font-weight: 600; min-width: 35px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.2); flex-shrink: 0;">
+                                                        <span style="background: linear-gradient(135deg, #64748b, #475569); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.8em; font-weight: 600; min-width: 35px; text-align: center; flex-shrink: 0;">
                                                             <?= htmlspecialchars($row['detail_no']) ?>
                                                         </span>
                                                     <?php endif; ?>
-                                                    <span style="color: #1f2937; font-weight: 500; font-size: 0.9em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                    <span style="color: #1f2937; font-weight: 500; font-size: 0.9em;">
                                                         <?= htmlspecialchars($row['title'] ?? $row['desc'] ?? '경기 종목') ?>
                                                     </span>
                                                 </div>
                                             </td>
                                             
                                             <!-- 댄스 종목 -->
-                                            <td style="padding: 12px 8px; text-align: center; white-space: nowrap;">
+                                            <td style="padding: 12px 8px; text-align: center; white-space: nowrap; border-right: 1px solid #e5e7eb;">
                                                 <?php if (!empty($row['dances']) && is_array($row['dances'])): ?>
                                                     <div style="display: flex; gap: 3px; justify-content: center; flex-wrap: nowrap;">
                                                         <?php
                                                         $dance_names = ['1' => 'W', '2' => 'T', '3' => 'V', '4' => 'F', '5' => 'Q', '6' => 'C', '7' => 'S', '8' => 'R', '9' => 'P', '10' => 'J'];
                                                         foreach ($row['dances'] as $dance):
                                                         ?>
-                                                            <span style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 2px 5px; border-radius: 4px; font-size: 0.75em; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+                                                            <span style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 2px 5px; border-radius: 4px; font-size: 0.75em; font-weight: 600;">
                                                                 <?= htmlspecialchars($dance_names[$dance] ?? $dance) ?>
                                                             </span>
                                                         <?php endforeach; ?>
