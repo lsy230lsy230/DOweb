@@ -234,6 +234,14 @@ function calculateRoundInfo($events) {
             return $raw_no_a - $raw_no_b;
         });
         
+        // 디버깅: 그룹 정보 출력
+        if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+            error_log("Group '$name' has $total_events events:");
+            foreach ($group as $pos => $item) {
+                error_log("  Position $pos: Raw={$item['event']['raw_no']}, Detail={$item['event']['detail_no']}, Index={$item['idx']}");
+            }
+        }
+        
         foreach ($group as $pos => $item) {
             $idx = $item['idx'];
             $stage_text = '';
@@ -1092,7 +1100,13 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                 
                 // 디버깅용 로그 (개발 시에만 사용)
                 if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-                    error_log("Event: {$e['name']}, Raw: {$e['raw_no']}, Detail: {$e['detail_no']}, Original_idx: " . ($original_idx ?? 'null') . ", Round: $calculated_round");
+                    error_log("Display Event: {$e['name']}, Raw: {$e['raw_no']}, Detail: {$e['detail_no']}, Original_idx: " . ($original_idx ?? 'null') . ", Round: $calculated_round");
+                    
+                    // 원본 이벤트 정보도 출력
+                    if ($original_idx !== null) {
+                        $orig_evt = $events[$original_idx];
+                        error_log("  Original Event: Raw={$orig_evt['raw_no']}, Detail={$orig_evt['detail_no']}, Name={$orig_evt['name']}");
+                    }
                 }
         ?>
             <tr<?=($k==0 && count($evts)>1?' class="event-group-row"':'')?>>
