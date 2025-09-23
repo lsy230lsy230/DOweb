@@ -236,8 +236,10 @@ function calculateRoundInfo($events) {
         
         // 디버깅: 그룹 정보 출력
         if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+            echo "<!-- DEBUG: Group '$name' has $total_events events -->\n";
             error_log("Group '$name' has $total_events events:");
             foreach ($group as $pos => $item) {
+                echo "<!-- DEBUG: Position $pos: Raw={$item['event']['raw_no']}, Detail={$item['event']['detail_no']}, Index={$item['idx']} -->\n";
                 error_log("  Position $pos: Raw={$item['event']['raw_no']}, Detail={$item['event']['detail_no']}, Index={$item['idx']}");
             }
         }
@@ -274,6 +276,7 @@ function calculateRoundInfo($events) {
             
             // 디버깅용 로그
             if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+                echo "<!-- DEBUG: Calculated Round - Event: {$item['event']['name']}, Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Position: $pos, Total: $total_events, Round: $stage_text -->\n";
                 error_log("Calculated Round - Event: {$item['event']['name']}, Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Position: $pos, Total: $total_events, Round: $stage_text");
             }
             
@@ -296,6 +299,16 @@ function calculateRoundInfo($events) {
 $round_calculation = calculateRoundInfo($events);
 $round_info = $round_calculation['round_info'];
 $next_event_info = $round_calculation['next_event_info'];
+
+// 디버깅: 라운드 정보 출력
+if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+    echo "<!-- DEBUG: Round info calculated -->\n";
+    echo "<!-- DEBUG: Total events: " . count($events) . " -->\n";
+    echo "<!-- DEBUG: Round info count: " . count($round_info) . " -->\n";
+    foreach ($round_info as $idx => $round) {
+        echo "<!-- DEBUG: Round info[$idx] = $round -->\n";
+    }
+}
 
 // 다음 이벤트 번호를 이벤트에 적용
 foreach ($events as $idx => &$event) {
@@ -939,6 +952,22 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
     <?php if ($msg): ?>
         <div style="color:#03c75a; margin-bottom:1em;"><?= h($msg) ?></div>
     <?php endif; ?>
+    
+    <?php if (isset($_GET['debug']) && $_GET['debug'] === '1'): ?>
+    <div style="background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+        <h3 style="color: #495057; margin: 0 0 10px 0;">🔍 디버깅 정보</h3>
+        <div style="font-size: 12px; color: #6c757d;">
+            <p><strong>총 이벤트 수:</strong> <?= count($events) ?></p>
+            <p><strong>라운드 정보 수:</strong> <?= count($round_info) ?></p>
+            <p><strong>라운드 정보:</strong></p>
+            <ul style="margin: 5px 0; padding-left: 20px;">
+                <?php foreach ($round_info as $idx => $round): ?>
+                    <li>Index <?= $idx ?>: <?= $round ?></li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- 예제파일 다운로드 & 업로드 폼 -->
     <div style="margin-bottom:1.2em; display:flex; gap:1.2em; align-items:center; flex-wrap:wrap;">
@@ -1100,11 +1129,13 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                 
                 // 디버깅용 로그 (개발 시에만 사용)
                 if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+                    echo "<!-- DEBUG: Display Event: {$e['name']}, Raw: {$e['raw_no']}, Detail: {$e['detail_no']}, Original_idx: " . ($original_idx ?? 'null') . ", Round: $calculated_round -->\n";
                     error_log("Display Event: {$e['name']}, Raw: {$e['raw_no']}, Detail: {$e['detail_no']}, Original_idx: " . ($original_idx ?? 'null') . ", Round: $calculated_round");
                     
                     // 원본 이벤트 정보도 출력
                     if ($original_idx !== null) {
                         $orig_evt = $events[$original_idx];
+                        echo "<!-- DEBUG: Original Event: Raw={$orig_evt['raw_no']}, Detail={$orig_evt['detail_no']}, Name={$orig_evt['name']} -->\n";
                         error_log("  Original Event: Raw={$orig_evt['raw_no']}, Detail={$orig_evt['detail_no']}, Name={$orig_evt['name']}");
                     }
                 }
