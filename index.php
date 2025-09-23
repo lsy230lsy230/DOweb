@@ -687,7 +687,7 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                                             <span class="comp-status status-upcoming"><?= t('status_upcoming') ?></span>
                                         </div>
                                         <div class="comp-details">
-                                            <?= htmlspecialchars($comp['description']) ?>
+                                            <?= htmlspecialchars($comp['description'] ?? '') ?>
                                         </div>
                                         <div class="comp-meta">
                                             <div class="meta-item">
