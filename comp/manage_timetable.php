@@ -36,7 +36,7 @@ function to_time($s) {
 }
 function to_hm($m) {
     $h = floor($m / 60);
-    $m = $m % 60;
+    $m = (int)$m % 60;
     return padzero($h) . ':' . padzero($m);
 }
 $start_time_str = $_POST['start_time'] ?? '09:00';
