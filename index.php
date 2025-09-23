@@ -1,9 +1,9 @@
 <?php
-$base_ads_dir = "/volume1/web/data/";
+$base_ads_dir = __DIR__ . "/data/";
 function read_banner($pos) {
     $img_web = "/data/$pos.jpg";
-    $img_file = "/volume1/web/data/$pos.jpg";
-    $link_file = "/volume1/web/data/$pos.link";
+    $img_file = __DIR__ . "/data/$pos.jpg";
+    $link_file = __DIR__ . "/data/$pos.link";
     $link = file_exists($link_file) ? trim(file_get_contents($link_file)) : "";
     if (file_exists($img_file)) {
         if ($link) return "<a href='$link' target='_blank'><img src='$img_web' alt='{$pos} 광고'></a>";
@@ -13,8 +13,8 @@ function read_banner($pos) {
 }
 
 // 공지 및 일정 미리보기
-$notice_file = "/volume1/web/data/notice.txt";
-$schedule_file = "/volume1/web/data/schedule.txt";
+$notice_file = __DIR__ . "/data/notice.txt";
+$schedule_file = __DIR__ . "/data/schedule.txt";
 $notice_preview = file_exists($notice_file) ? nl2br(htmlspecialchars(file_get_contents($notice_file))) : "등록된 공지가 없습니다.";
 $schedule_preview = file_exists($schedule_file) ? nl2br(htmlspecialchars(file_get_contents($schedule_file))) : "등록된 대회일정이 없습니다.";
 
