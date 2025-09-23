@@ -83,6 +83,52 @@ $results = getCompetitionResults($comp_data_path);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+    
+    <style>
+        @media print {
+            /* 인쇄 시 불필요한 요소 숨기기 */
+            .comp-nav, .main-nav, button, .comp-nav-tabs {
+                display: none !important;
+            }
+            
+            /* 인쇄 시 전체 페이지 사용 */
+            body, .container, .comp-content {
+                background: white !important;
+                color: black !important;
+                font-size: 12px;
+                margin: 0 !important;
+                padding: 10px !important;
+            }
+            
+            /* 타임테이블 정보 박스 인쇄 스타일 */
+            .timetable-info {
+                background: #f0f0f0 !important;
+                color: black !important;
+                border: 1px solid #ccc !important;
+                margin-bottom: 15px !important;
+            }
+            
+            /* 아이템 카드 인쇄 스타일 */
+            .item-card {
+                background: white !important;
+                border: 1px solid #ddd !important;
+                margin-bottom: 8px !important;
+                break-inside: avoid;
+            }
+            
+            /* 세부 이벤트 블럭 인쇄 스타일 */
+            .item-card div[style*="background: #475569"] {
+                background: #f5f5f5 !important;
+                color: black !important;
+                border: 1px solid #ccc !important;
+            }
+            
+            /* 제목 색상 조정 */
+            h2, h3 {
+                color: black !important;
+            }
+        }
+    </style>
     <style>
         * {
             margin: 0;
@@ -443,10 +489,16 @@ $results = getCompetitionResults($comp_data_path);
 
             <?php elseif ($page === 'schedule'): ?>
                 <!-- 시간표 -->
-                <h2 class="section-title">
-                    <span class="material-symbols-rounded">schedule</span>
-                    대회 시간표
-                </h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 class="section-title" style="margin-bottom: 0;">
+                        <span class="material-symbols-rounded">schedule</span>
+                        대회 시간표
+                    </h2>
+                    <button onclick="printTimetable()" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <span class="material-symbols-rounded" style="font-size: 18px;">print</span>
+                        인쇄
+                    </button>
+                </div>
                 
                 <?php if (empty($schedule)): ?>
                     <div class="empty-state">
@@ -541,7 +593,7 @@ $results = getCompetitionResults($comp_data_path);
                                                 <?php if (!empty($row['roundtype'])): ?>
                                                     <div style="font-size: 0.9em; color: #64748b; margin-top: 8px;">
                                                         <?= htmlspecialchars($row['roundtype']) ?>
-                                                        <?php if (!empty($row['roundnum'])): ?>
+                                                        <?php if (!empty($row['roundnum']) && $row['roundnum'] !== ''): ?>
                                                             <?= htmlspecialchars($row['roundnum']) ?>
                                                         <?php endif; ?>
                                                     </div>
@@ -582,7 +634,7 @@ $results = getCompetitionResults($comp_data_path);
                                                 <?php if (!empty($row['roundtype'])): ?>
                                                     <div style="font-size: 0.9em; color: #64748b; margin-top: 4px;">
                                                         <?= htmlspecialchars($row['roundtype']) ?>
-                                                        <?php if (!empty($row['roundnum'])): ?>
+                                                        <?php if (!empty($row['roundnum']) && $row['roundnum'] !== ''): ?>
                                                             <?= htmlspecialchars($row['roundnum']) ?>
                                                         <?php endif; ?>
                                                     </div>
@@ -753,5 +805,20 @@ $results = getCompetitionResults($comp_data_path);
             <?php endif; ?>
         </div>
     </div>
+
+    <script>
+        // 인쇄 기능
+        function printTimetable() {
+            // 타임테이블만 인쇄하도록 설정
+            const originalTitle = document.title;
+            document.title = "<?= htmlspecialchars($competition['title']) ?> - 타임테이블";
+            
+            // 잠시 후 인쇄 실행
+            setTimeout(() => {
+                window.print();
+                document.title = originalTitle;
+            }, 100);
+        }
+    </script>
 </body>
 </html>
