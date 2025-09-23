@@ -267,6 +267,17 @@ $results = getCompetitionResults($comp_data_path);
                 font-size: 11px !important;
             }
             
+            /* 인쇄 시 아이콘 숨기고 텍스트로 변경 */
+            .professional-timetable .material-symbols-rounded {
+                display: none !important;
+            }
+            
+            /* 인쇄 시 번호 컬럼에 "No." 텍스트 추가 */
+            .professional-timetable th:first-child::before {
+                content: "No." !important;
+                display: inline !important;
+            }
+            
             /* 배지 색상 조정 */
             .professional-timetable span[style*="background: #3b82f6"] {
                 background: #000 !important;
