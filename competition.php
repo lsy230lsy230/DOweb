@@ -100,7 +100,7 @@ $results = getCompetitionResults($comp_data_path);
         }
         
         @media print {
-            .competition-header {
+            .competition-header.print-only {
                 display: block !important;
             }
             /* 인쇄 시 불필요한 요소 숨기기 */
@@ -135,7 +135,7 @@ $results = getCompetitionResults($comp_data_path);
             }
             
             /* 화면에서 보이는 헤더들 숨기기 */
-            .section-title, h2 {
+            .section-title, h2, .comp-header {
                 display: none !important;
             }
             
@@ -543,7 +543,7 @@ $results = getCompetitionResults($comp_data_path);
 
             <?php elseif ($page === 'schedule'): ?>
                 <!-- 인쇄용 대회 헤더 -->
-                <div class="competition-header" style="display: none;">
+                <div class="competition-header print-only" style="display: none;">
                     <h1><?= htmlspecialchars($competition['title']) ?></h1>
                     <div class="competition-meta">
                         <span>📅 <?= $lang->formatDate($competition['date']) ?></span>
@@ -619,85 +619,60 @@ $results = getCompetitionResults($comp_data_path);
                                         }
                                     }
                                     
-                                    // 여러 라운드를 가진 경기들만 색상 할당
-                                    $multi_round_colors = [
-                                        '#ffebee', '#e3f2fd', '#e8f5e8', '#fff3e0', '#f3e5f5',
-                                        '#e0f2f1', '#fce4ec', '#e1f5fe', '#f1f8e9', '#fff8e1',
-                                        '#f9fbe7', '#e8eaf6', '#efebe9', '#fafafa', '#eceff1'
-                                    ];
+                                    // 모든 이벤트를 흰색 배경으로 통일
+                                    $multi_round_groups = [];
                                     
-                                    $accent_colors = [
-                                        '#f44336', '#2196f3', '#4caf50', '#ff9800', '#9c27b0',
-                                        '#009688', '#e91e63', '#03a9f4', '#8bc34a', '#ffc107',
-                                        '#cddc39', '#3f51b5', '#795548', '#607d8b', '#9e9e9e'
-                                    ];
                                     
-                                    $color_index = 0;
-                                    foreach ($event_count as $event_name => $count) {
-                                        if ($count > 1) { // 여러 라운드가 있는 경기만
-                                            $multi_round_groups[$event_name] = [
-                                                'bg_color' => $multi_round_colors[$color_index % count($multi_round_colors)],
-                                                'accent_color' => $accent_colors[$color_index % count($accent_colors)]
-                                            ];
-                                            $color_index++;
+                                    // 이벤트별 행 수 계산
+                                    $event_rows = [];
+                                    foreach ($all_rows as $row) {
+                                        $event_no = $row['no'] ?? '';
+                                        if (!isset($event_rows[$event_no])) {
+                                            $event_rows[$event_no] = 0;
                                         }
+                                        $event_rows[$event_no]++;
                                     }
                                     
-                                    
                                     $current_event_no = null;
-                                    $event_row_count = 0;
+                                    $event_row_index = 0;
                                     
                                     foreach ($all_rows as $index => $row): 
                                         $is_new_event = ($row['no'] ?? '') !== $current_event_no;
                                         if ($is_new_event) {
                                             $current_event_no = $row['no'] ?? '';
-                                            $event_row_count = 0;
-                                            // 같은 이벤트 번호의 행 수 계산
-                                            foreach ($all_rows as $count_row) {
-                                                if (($count_row['no'] ?? '') === $current_event_no) {
-                                                    $event_row_count++;
-                                                }
-                                            }
+                                            $event_row_index = 0;
                                         }
                                         $is_first_in_event = $is_new_event;
+                                        $event_row_count = $event_rows[$current_event_no] ?? 1;
                                         
-                                        // 색상 결정
-                                        $event_name = $row['desc'] ?? $row['title'] ?? '';
-                                        if (isset($multi_round_groups[$event_name])) {
-                                            $bg_color = $multi_round_groups[$event_name]['bg_color'];
-                                            $accent_color = $multi_round_groups[$event_name]['accent_color'];
-                                        } else {
-                                            // 단일 라운드는 흰 배경
-                                            $bg_color = '#ffffff';
-                                            $accent_color = '#3b82f6';
-                                        }
+                                        // 모든 행을 흰색 배경으로 통일
+                                        $bg_color = '#ffffff';
+                                        $accent_color = '#3b82f6';
                                     ?>
-                                        <tr style="background: <?= $bg_color ?>; border-bottom: 1px solid #e5e7eb; <?= $is_first_in_event && $index > 0 ? 'border-top: 2px solid ' . $accent_color . ';' : '' ?>">
+                                        <tr style="background: <?= $bg_color ?>; border-bottom: 1px solid #e5e7eb;">
                                             
                                             <!-- 시간 -->
-                                            <td style="padding: 12px 8px; text-align: center; color: #1e40af; font-weight: 700; font-size: 0.95em; border-right: 1px solid #e5e7eb; <?= $is_first_in_event ? 'border-left: 3px solid ' . $accent_color . ';' : 'border-left: 3px solid transparent;' ?>">
-                                                <?php if ($is_first_in_event): ?>
-                                                    <div style="display: flex; flex-direction: column; align-items: center;">
-                                                        <span style="font-size: 1.1em; font-weight: 800; color: #1e40af;">
-                                                            <?= htmlspecialchars($row['start_time'] ?? '') ?>
+                                            <?php if ($is_first_in_event): ?>
+                                            <td rowspan="<?= $event_row_count ?>" style="padding: 12px 8px; text-align: center; color: #1e40af; font-weight: 700; font-size: 0.95em; border-right: 1px solid #e5e7eb; vertical-align: middle;">
+                                                <div style="display: flex; flex-direction: column; align-items: center;">
+                                                    <span style="font-size: 1.1em; font-weight: 800; color: #1e40af;">
+                                                        <?= htmlspecialchars($row['start_time'] ?? '') ?>
+                                                    </span>
+                                                    <?php if (!empty($row['end_time'])): ?>
+                                                        <span style="font-size: 0.8em; color: #64748b; margin-top: 2px;">
+                                                            ~ <?= htmlspecialchars($row['end_time']) ?>
                                                         </span>
-                                                        <?php if (!empty($row['end_time'])): ?>
-                                                            <span style="font-size: 0.8em; color: #64748b; margin-top: 2px;">
-                                                                ~ <?= htmlspecialchars($row['end_time']) ?>
-                                                            </span>
-                                                        <?php endif; ?>
-                                                    </div>
-                                                <?php endif; ?>
+                                                    <?php endif; ?>
+                                                </div>
                                             </td>
                                             
                                             <!-- 이벤트 번호 -->
-                                            <td style="padding: 12px 8px; text-align: center; font-weight: 600; border-right: 1px solid #e5e7eb;">
-                                                <?php if ($is_first_in_event): ?>
-                                                    <span style="background: <?= $accent_color ?>; color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.9em; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                                                        <?= htmlspecialchars($row['no'] ?? '') ?>
-                                                    </span>
-                                                <?php endif; ?>
+                                            <td rowspan="<?= $event_row_count ?>" style="padding: 12px 8px; text-align: center; font-weight: 600; border-right: 1px solid #e5e7eb; vertical-align: middle;">
+                                                <span style="background: <?= $accent_color ?>; color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.9em; font-weight: 700;">
+                                                    <?= htmlspecialchars($row['no'] ?? '') ?>
+                                                </span>
                                             </td>
+                                            <?php endif; ?>
                                             
                                             <!-- 경기 종목 -->
                                             <td style="padding: 12px 8px; border-right: 1px solid #e5e7eb;">
@@ -765,7 +740,9 @@ $results = getCompetitionResults($comp_data_path);
                                                 <?php endif; ?>
                                             </td>
                                         </tr>
-                                    <?php endforeach; ?>
+                                    <?php 
+                                        $event_row_index++;
+                                    endforeach; ?>
                                 </tbody>
                             </table>
                         </div>
