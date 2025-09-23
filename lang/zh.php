@@ -137,4 +137,5 @@ return [
     'current_image' => '当前图片',
     'no_current_image' => '当前没有图片',
     'notice_delete_confirm' => '确定要删除这个公告吗？',
+    'view_all_notices' => '查看所有公告',
 ];

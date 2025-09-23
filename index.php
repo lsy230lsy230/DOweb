@@ -5,6 +5,9 @@ session_start();
 require_once __DIR__ . '/lang/Language.php';
 $lang = Language::getInstance();
 
+// NoticeManager 로드
+require_once __DIR__ . '/data/NoticeManager.php';
+
 $base_ads_dir = __DIR__ . "/data/";
 function read_banner($pos) {
     $img_web = "/data/$pos.jpg";
@@ -18,10 +21,17 @@ function read_banner($pos) {
     return "";
 }
 
-// 공지 및 일정 미리보기
-$notice_file = __DIR__ . "/data/notice.txt";
+// 공지사항 로드 (데이터베이스 기반)
+try {
+    $noticeManager = new NoticeManager();
+    $recent_notices = $noticeManager->getRecentNotices(3);
+} catch (Exception $e) {
+    $recent_notices = [];
+    error_log("공지사항 로드 실패: " . $e->getMessage());
+}
+
+// 일정 미리보기 (기존 파일 기반)
 $schedule_file = __DIR__ . "/data/schedule.txt";
-$notice_preview = file_exists($notice_file) ? nl2br(htmlspecialchars(file_get_contents($notice_file))) : t('no_notices');
 $schedule_preview = file_exists($schedule_file) ? nl2br(htmlspecialchars(file_get_contents($schedule_file))) : t('no_schedule');
 
 // 대회 스케줄러 로드
@@ -752,13 +762,59 @@ $recent_competitions = $scheduler->getRecentCompetitions(2);
                             <span class="material-symbols-rounded widget-icon">campaign</span>
                             <?= t('widget_announcements') ?>
                         </h2>
-                        <a href="/notice/" class="widget-action"><?= t('action_manage') ?></a>
+                        <a href="/manage/" class="widget-action"><?= t('action_manage') ?></a>
                     </div>
                     
                     <div class="widget-content">
-                        <div style="color: #94a3b8; line-height: 1.6; font-size: 14px;">
-                            <?= $notice_preview ?>
-                        </div>
+                        <?php if (!empty($recent_notices)): ?>
+                            <?php foreach ($recent_notices as $notice): ?>
+                                <div class="notice-item" style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid rgba(59, 130, 246, 0.1);">
+                                    <div style="display: flex; align-items: flex-start; gap: 8px; margin-bottom: 8px;">
+                                        <?php if ($notice['is_pinned']): ?>
+                                            <span class="material-symbols-rounded" style="color: #f59e0b; font-size: 16px; margin-top: 2px;">push_pin</span>
+                                        <?php endif; ?>
+                                        <div style="flex: 1;">
+                                            <h4 style="color: #f1f5f9; font-size: 14px; font-weight: 600; margin: 0 0 4px 0; line-height: 1.4;">
+                                                <?= htmlspecialchars($notice['title']) ?>
+                                            </h4>
+                                            <p style="color: #94a3b8; font-size: 12px; margin: 0 0 8px 0;">
+                                                <?= date('Y-m-d', strtotime($notice['created_at'])) ?>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="color: #e2e8f0; font-size: 13px; line-height: 1.5;">
+                                        <?php 
+                                        $content = htmlspecialchars($notice['content']);
+                                        if (strlen($content) > 100) {
+                                            echo substr($content, 0, 100) . '...';
+                                        } else {
+                                            echo nl2br($content);
+                                        }
+                                        ?>
+                                    </div>
+                                    
+                                    <?php if ($notice['image_path']): ?>
+                                        <div style="margin-top: 8px;">
+                                            <img src="/<?= $notice['image_path'] ?>" alt="<?= htmlspecialchars($notice['title']) ?>" 
+                                                 style="max-width: 100%; height: auto; border-radius: 6px; max-height: 120px;">
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            <?php endforeach; ?>
+                            
+                            <div style="text-align: center; margin-top: 16px;">
+                                <a href="/manage/" style="color: #3b82f6; text-decoration: none; font-size: 12px; display: inline-flex; align-items: center; gap: 4px;">
+                                    <span class="material-symbols-rounded" style="font-size: 14px;">visibility</span>
+                                    <?= t('view_all_notices') ?>
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <div style="text-align: center; color: #64748b; padding: 20px;">
+                                <span class="material-symbols-rounded" style="font-size: 32px; margin-bottom: 8px; display: block; opacity: 0.5;">campaign</span>
+                                <?= t('no_notices') ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
 

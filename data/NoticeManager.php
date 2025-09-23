@@ -7,15 +7,42 @@ class NoticeManager {
     }
     
     private function connect() {
+        // 먼저 PDO PostgreSQL 드라이버가 사용 가능한지 확인
+        if (!extension_loaded('pdo_pgsql')) {
+            throw new Exception('PDO PostgreSQL extension not loaded');
+        }
+        
+        // 환경 변수에서 DATABASE_URL 가져오기
         $database_url = $_ENV['DATABASE_URL'] ?? getenv('DATABASE_URL');
         if (!$database_url) {
-            throw new Exception('DATABASE_URL environment variable not set');
+            // 개별 환경 변수로 DSN 구성 시도
+            $host = $_ENV['PGHOST'] ?? getenv('PGHOST');
+            $port = $_ENV['PGPORT'] ?? getenv('PGPORT') ?? '5432';
+            $dbname = $_ENV['PGDATABASE'] ?? getenv('PGDATABASE');
+            $user = $_ENV['PGUSER'] ?? getenv('PGUSER');
+            $password = $_ENV['PGPASSWORD'] ?? getenv('PGPASSWORD');
+            
+            if ($host && $dbname && $user && $password) {
+                $database_url = "pgsql:host={$host};port={$port};dbname={$dbname};user={$user};password={$password}";
+            } else {
+                throw new Exception('DATABASE_URL or individual PostgreSQL environment variables not set');
+            }
         }
         
         try {
-            $this->pdo = new PDO($database_url);
-            $this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            $this->pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            // PDO 옵션 설정
+            $options = [
+                PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+                PDO::ATTR_EMULATE_PREPARES => false,
+                PDO::ATTR_STRINGIFY_FETCHES => false
+            ];
+            
+            $this->pdo = new PDO($database_url, null, null, $options);
+            
+            // 연결 테스트
+            $this->pdo->query('SELECT 1');
+            
         } catch (PDOException $e) {
             throw new Exception('Database connection failed: ' . $e->getMessage());
         }

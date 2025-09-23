@@ -1,0 +1,82 @@
+﻿1,Under 21 Open Latin,,,24,3,C,SA,R,P,,J,2
+2,Solo Under 10 Latin 3 Dance,,,6,1,C,R,J,,,J,2
+3,Asian Closed Amateur Latin,,,24,3,C,SA,R,P,,FD,2
+4,Asian Closed Pro Latin,,,20,3,C,SA,R,P,,DD,2
+5,Under 21 Open Latin,,,12,2,C,SA,R,P,,J,2
+6,Asian Closed Pro Ballroom,,,19,2,W,T,S,Q,,CD,2
+7,Asian Closed Amateur Latin,,,12,2,C,SA,R,P,,FD,2
+8,Solo Under 10 Latin 3 Dance,,,0,1,C,R,J,,,J,2
+9,Over 40 Pro Open Ballroom,,,0,1,W,T,S,Q,,G,2
+10,Freestyle Solo Under 10,,,0,1,FREESTYLE,,,,,2
+11,Solo Under 12 Latin 3 Dance,,,8,1,C,R,J,,,J,2
+12,Under 17 Open Latin,,,6,1,C,SA,R,P,J,J,2
+13,Senior Ballroom 5 Dance,,,0,1,W,T,V.W,S,Q,G,2
+15,Under 21 Open Ballroom,,,6,1,W,T,V.W,S,Q,I,2
+16,Under 21 Open Latin,,,6,1,C,SA,R,P,J,J,2
+17,Senior Ballroom 2 Dance,,,0,1,W,T,,,,G,2
+18,Asian Closed Pro Latin,,,12,2,C,SA,R,P,,DD,2
+20,Asian Closed Pro Ballroom,,,12,2,W,T,S,Q,,CD,2
+21,Asian Closed Amateur Latin,,,6,1,C,SA,R,P,J,FD,2
+22,Asian Closed Amateur Ballroom,,,6,1,W,T,V.W,S,Q,ED,2
+23,Solo Under 12 Latin 3 Dance,,,0,1,C,R,J,,,J,2
+24,Korea Open Latin,,,39,4,C,SA,R,P,,BD,2
+25,Korea Open Ballroom,,,25,3,W,T,S,Q,,AD,2
+26,Under 17 Open Latin,,,0,1,C,SA,R,P,J,J,2
+27,Senior Latin 5 Dance,,,0,1,C,R,SA,P,J,H,2
+28,Asian Closed Amateur Latin,,,0,1,C,SA,R,P,J,FD,2
+30,Under 14 Open Latin,,,0,1,C,SA,R,P,J,J,2
+30A,Over 40 Open Pro Latin,,,0,1,C,SA,R,J,P,H,2
+31,Senior Latin 2 Dance,,,0,1,C,R,,,,H,2
+32,Solo Under 8 Latin 3 Dance,,,0,1,C,R,J,,,J,2
+33,Solo Under 14 Latin 4 Dance,,,8,1,C,SA,R,J,,J,2
+34,Korea Open Amateur Ballroom,,,20,2,W,T,S,Q,,ED,2
+35,Korea Open Amateur Latin,,,21,3,C,SA,R,P,,FD,2
+36,Korea Open Ballroom,,,24,3,W,T,S,Q,,AD,2
+37,Korea Open Latin,,,24,4,C,SA,R,P,,BD,2
+39,Under 21 Open Latin,,,0,1,C,SA,R,P,J,J,2
+40,Solo Under 14 Latin 4 Dance,,,0,1,C,SA,R,J,,J,2
+41,Proam Open Ballroom W,,,6,1,W,,,,,K,2
+42,Proam Open Ballroom T,,,6,1,T,,,,,K,2
+43,Proam Open Ballroom V.W,,,4,1,V.W,,,,,K,2
+44,Proam Open Ballroom S,,,7,1,S,,,,,K,2
+45,Proam Open Ballroom Q,,,5,1,Q,,,,,K,2
+46,Proam Open Latin CCha,,,6,1,C,,,,,L,2
+47,Proam Open Latin S,,,7,1,SA,,,,,L,2
+48,Proam Open Latin R,,,6,1,R,,,,,L,2
+49,Proam Open Latin P Double,,,6,1,P,,,,,L,2
+50,Proam Open Latin J,,,6,1,J,,,,,L,2
+51,Korea Open Amateur Ballroom,,,12,2,W,T,S,Q,,ED,2
+52,Korea Open Amateur Latin,,,12,2,C,SA,R,P,,FD,2
+53,Korea Open Ballroom,,,12,2,W,T,S,Q,,AD,2
+54,Korea Open Latin,,,12,2,C,SA,R,P,,BD,2
+55,Proam Open Ballroom W,,,0,1,W,,,,,K,2
+56,Proam Open Ballroom T,,,0,1,T,,,,,K,2
+57,Proam Open Ballroom V.W,,,0,1,V.W,,,,,K,2
+58,Proam Open Ballroom S,,,0,1,S,,,,,K,2
+59,Proam Open Ballroom Q,,,0,1,Q,,,,,K,2
+60,Proam Open Latin CCha,,,0,1,C,,,,,L,2
+61,Proam Open Latin S,,,0,1,SA,,,,,L,2
+62,Proam Open Latin R,,,0,1,R,,,,,L,2
+63,Proam Open Latin P Double,,,0,1,P,,,,,L,2
+64,Proam Open Latin J,,,0,1,J,,,,,L,2
+65,Korea Open Amateur Ballroom,,,6,1,W,T,V.W,S,Q,ED,2
+66,Korea Open Amateur Latin,,,6,1,C,SA,R,P,J,FD,2
+66X,Setting Time,,,0,1,,,,,,,2
+67X,Door Open,,,0,1,,,,,,,2
+68X,Opening Ceremony,,,6,1,,,,,,,2
+69,Asian Closed Pro Ballroom,,,6,1,W,T,V.W,S,Q,CN,2
+70,Asian Closed Pro Latin,,,6,1,C,SA,R,P,J,DN,2
+71X,Dinner & Special Demonstration,,,0,1,,,,,,,2
+72,Korea Open Ballroom,,,6,1,W,T,V.W,S,Q,AN,2
+73,Korea Open Latin,,,6,1,C,SA,R,P,J,BN,2
+73X,General Dance,,,6,1,,,,,,,2
+74,Asian Closed Pro Ballroom,,,0,1,W,T,V.W,S,Q,CN,2
+75,Asian Closed Pro Latin,,,0,1,C,SA,R,P,J,DN,2
+76,Korea Open Amateur Ballroom,,,0,1,W,T,V.W,S,Q,EN,2
+77,Korea Open Amateur Latin,,,0,1,C,SA,R,P,J,FN,2
+78X,Prize (Asian Pro  Open Amateur),,,0,1,,,,,,,2
+79,Korea Open Ballroom,,,0,1,W,T,V.W,S,Q,AN,2
+80,Korea Open Latin,,,0,1,C,SA,R,P,J,BN,2
+81X,Prize,,,0,1,,,,,,,2
+82,Korea Open Pro Ballroom,,,0,1,W,T,V.W,S,Q,AN,2
+83,Korea Open Pro Latin,,,0,1,C,SA,R,P,J,BN,2

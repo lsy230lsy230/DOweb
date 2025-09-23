@@ -4,6 +4,7 @@ expertMode = true
 
 [nix]
 channel = "stable-25_05"
+packages = ["php82Extensions.pdo_pgsql", "php82Extensions.pgsql"]
 
 [workflows]
 runButton = "Project"
@@ -32,3 +33,7 @@ outputType = "webview"
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[[ports]]
+localPort = 42751
+externalPort = 3000

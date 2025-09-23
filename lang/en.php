@@ -137,4 +137,5 @@ return [
     'current_image' => 'Current Image',
     'no_current_image' => 'No current image',
     'notice_delete_confirm' => 'Are you sure you want to delete this notice?',
+    'view_all_notices' => 'View All Notices',
 ];

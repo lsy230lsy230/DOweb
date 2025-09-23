@@ -137,4 +137,5 @@ return [
     'current_image' => '現在の画像',
     'no_current_image' => '現在の画像がありません',
     'notice_delete_confirm' => 'このお知らせを削除しますか？',
+    'view_all_notices' => 'すべてのお知らせを表示',
 ];

@@ -1,0 +1,970 @@
+[
+    {
+        "panel_code": "ED",
+        "adj_code": "36"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "37"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "38"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "2"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "3"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "8"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "9"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "10"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "15"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "18"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "19"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "24"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "28"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "29"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "31"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "35"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "36"
+    },
+    {
+        "panel_code": "EN",
+        "adj_code": "37"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "4"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "5"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "6"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "11"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "13"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "16"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "20"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "22"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "23"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "25"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "27"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "33"
+    },
+    {
+        "panel_code": "FD",
+        "adj_code": "34"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "4"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "5"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "11"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "13"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "14"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "16"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "17"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "20"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "22"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "23"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "25"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "33"
+    },
+    {
+        "panel_code": "FN",
+        "adj_code": "39"
+    },
+    {
+        "panel_code": "G",
+        "adj_code": "3"
+    },
+    {
+        "panel_code": "G",
+        "adj_code": "9"
+    },
+    {
+        "panel_code": "G",
+        "adj_code": "10"
+    },
+    {
+        "panel_code": "G",
+        "adj_code": "15"
+    },
+    {
+        "panel_code": "G",
+        "adj_code": "19"
+    },
+    {
+        "panel_code": "G",
+        "adj_code": "28"
+    },
+    {
+        "panel_code": "G",
+        "adj_code": "29"
+    },
+    {
+        "panel_code": "G",
+        "adj_code": "31"
+    },
+    {
+        "panel_code": "G",
+        "adj_code": "32"
+    },
+    {
+        "panel_code": "H",
+        "adj_code": "6"
+    },
+    {
+        "panel_code": "H",
+        "adj_code": "7"
+    },
+    {
+        "panel_code": "H",
+        "adj_code": "16"
+    },
+    {
+        "panel_code": "H",
+        "adj_code": "20"
+    },
+    {
+        "panel_code": "H",
+        "adj_code": "23"
+    },
+    {
+        "panel_code": "H",
+        "adj_code": "25"
+    },
+    {
+        "panel_code": "H",
+        "adj_code": "26"
+    },
+    {
+        "panel_code": "H",
+        "adj_code": "34"
+    },
+    {
+        "panel_code": "H",
+        "adj_code": "39"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "2"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "3"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "15"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "18"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "24"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "28"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "30"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "31"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "32"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "35"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "36"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "37"
+    },
+    {
+        "panel_code": "I",
+        "adj_code": "38"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "4"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "5"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "11"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "13"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "14"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "16"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "17"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "22"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "23"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "26"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "27"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "33"
+    },
+    {
+        "panel_code": "J",
+        "adj_code": "39"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "2"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "3"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "8"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "9"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "10"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "12"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "15"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "18"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "19"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "24"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "28"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "29"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "30"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "36"
+    },
+    {
+        "panel_code": "K",
+        "adj_code": "38"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "4"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "5"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "7"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "11"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "13"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "14"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "16"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "17"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "20"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "27"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "33"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "34"
+    },
+    {
+        "panel_code": "L",
+        "adj_code": "37"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "2"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "3"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "9"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "10"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "12"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "19"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "24"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "35"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "36"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "30"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "18"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "31"
+    },
+    {
+        "panel_code": "AD",
+        "adj_code": "37"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "2"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "3"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "8"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "9"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "10"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "12"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "19"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "24"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "32"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "35"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "36"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "37"
+    },
+    {
+        "panel_code": "AN",
+        "adj_code": "38"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "4"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "5"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "6"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "7"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "11"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "13"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "14"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "17"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "20"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "22"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "23"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "25"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "26"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "27"
+    },
+    {
+        "panel_code": "BD",
+        "adj_code": "34"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "4"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "5"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "7"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "11"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "13"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "14"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "20"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "21"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "22"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "23"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "25"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "26"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "27"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "33"
+    },
+    {
+        "panel_code": "BN",
+        "adj_code": "39"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "2"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "3"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "8"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "9"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "10"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "18"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "12"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "15"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "19"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "24"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "29"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "35"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "32"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "35"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "36"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "37"
+    },
+    {
+        "panel_code": "CD",
+        "adj_code": "38"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "2"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "3"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "8"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "9"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "10"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "12"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "18"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "19"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "24"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "29"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "31"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "35"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "36"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "37"
+    },
+    {
+        "panel_code": "CN",
+        "adj_code": "38"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "4"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "5"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "7"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "11"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "13"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "17"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "20"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "22"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "23"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "25"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "26"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "33"
+    },
+    {
+        "panel_code": "DD",
+        "adj_code": "39"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "5"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "6"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "7"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "11"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "13"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "14"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "20"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "21"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "22"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "23"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "25"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "26"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "27"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "33"
+    },
+    {
+        "panel_code": "DN",
+        "adj_code": "34"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "2"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "3"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "9"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "10"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "15"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "19"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "24"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "28"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "30"
+    },
+    {
+        "panel_code": "ED",
+        "adj_code": "32"
+    }
+]

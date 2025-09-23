@@ -137,4 +137,5 @@ return [
     'current_image' => '현재 이미지',
     'no_current_image' => '현재 이미지가 없습니다',
     'notice_delete_confirm' => '이 공지사항을 삭제하시겠습니까?',
+    'view_all_notices' => '모든 공지사항 보기',
 ];

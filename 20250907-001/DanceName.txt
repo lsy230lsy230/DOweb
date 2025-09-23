@@ -1,0 +1,16 @@
+﻿0,None,-
+1,Waltz,W
+2,Tango,T
+3,Viennese Waltz,V
+4,Slow Foxtrot,S
+5,Quickstep,Q
+6,Samba,SA
+7,Cha Cha Cha,C
+8,Rumba,R
+9,Paso Doble,P
+10,Jive,J
+11,Freestyle,F
+12,Swing,SW
+13,Argentine Tango,AT
+14,Handicap,Hand.
+15,Formation Team,FO
