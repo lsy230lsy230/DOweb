@@ -210,6 +210,19 @@ function calculateRoundInfo($events) {
             $name_groups[$name] = [];
         }
         $name_groups[$name][] = ['idx' => $idx, 'event' => $evt];
+        
+        // 디버깅: 이벤트 그룹화 과정 출력
+        if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+            echo "<!-- DEBUG: Adding event to group '$name' - Raw: {$evt['raw_no']}, Detail: {$evt['detail_no']}, Index: $idx -->\n";
+        }
+    }
+    
+    // 디버깅: 최종 그룹 정보 출력
+    if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+        echo "<!-- DEBUG: Final groups: -->\n";
+        foreach ($name_groups as $name => $group) {
+            echo "<!-- DEBUG: Group '$name' has " . count($group) . " events -->\n";
+        }
     }
     
     // 각 그룹별로 라운드 정보 계산
@@ -278,6 +291,12 @@ function calculateRoundInfo($events) {
             if (isset($_GET['debug']) && $_GET['debug'] === '1') {
                 echo "<!-- DEBUG: Calculated Round - Event: {$item['event']['name']}, Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Position: $pos, Total: $total_events, Round: $stage_text -->\n";
                 error_log("Calculated Round - Event: {$item['event']['name']}, Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Position: $pos, Total: $total_events, Round: $stage_text");
+                
+                // 라운드 계산 조건 상세 출력
+                echo "<!-- DEBUG: Round calculation details - total_events=$total_events, pos=$pos -->\n";
+                if ($total_events === 3) {
+                    echo "<!-- DEBUG: 3 events case - pos 0=Round 1, pos 1=Semi-Final, pos 2=Final -->\n";
+                }
             }
             
             // 다음 이벤트 번호 자동 계산
