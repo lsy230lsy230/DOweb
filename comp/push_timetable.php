@@ -183,23 +183,56 @@ try {
         $extra_time = $events[$i]['extra_time'] ?? 0;
         $total_duration = $events[$i]['duration'] + $extra_time;
         
-        $timetable_rows[] = [
-            'type' => 'event',
-            'no' => $events[$i]['no'],
-            'title' => $events[$i]['desc'],
-            'desc' => $events[$i]['desc'],
-            'roundtype' => $events[$i]['roundtype'],
-            'roundnum' => $events[$i]['roundnum'],
-            'dances' => $events[$i]['dances'],
-            'dance_count' => $events[$i]['dance_count'],
-            'duration' => $events[$i]['duration'],
-            'start' => $cur_min,
-            'end' => $cur_min + $total_duration,
-            'start_time' => to_hm($cur_min),
-            'end_time' => to_hm($cur_min + $total_duration),
-            'extra_time' => $extra_time,
-            'group_events' => $events[$i]['group_events']
-        ];
+        // 멀티이벤트인지 확인
+        $is_multi_event = isset($events[$i]['group_events']) && count($events[$i]['group_events']) > 1;
+        
+        if ($is_multi_event) {
+            // 멀티이벤트: 각 세부 이벤트별로 행 생성 (시간은 공유)
+            foreach ($events[$i]['group_events'] as $j => $group_event) {
+                $timetable_rows[] = [
+                    'type' => 'event',
+                    'no' => $events[$i]['no'],
+                    'detail_no' => $group_event['detail_no'],
+                    'title' => $group_event['desc'],
+                    'desc' => $group_event['desc'],
+                    'roundtype' => $group_event['roundtype'],
+                    'roundnum' => $group_event['roundnum'],
+                    'dances' => $group_event['dances'],
+                    'dance_count' => $group_event['dance_count'],
+                    'duration' => $events[$i]['duration'],
+                    'start' => $cur_min,
+                    'end' => $cur_min + $total_duration,
+                    'start_time' => to_hm($cur_min),
+                    'end_time' => to_hm($cur_min + $total_duration),
+                    'extra_time' => $extra_time,
+                    'is_multi_event' => true,
+                    'is_first_in_group' => ($j === 0), // 첫 번째 행 여부
+                    'group_size' => count($events[$i]['group_events']),
+                    'group_events' => $events[$i]['group_events']
+                ];
+            }
+        } else {
+            // 단일이벤트
+            $timetable_rows[] = [
+                'type' => 'event',
+                'no' => $events[$i]['no'],
+                'detail_no' => $events[$i]['detail_no'],
+                'title' => $events[$i]['desc'],
+                'desc' => $events[$i]['desc'],
+                'roundtype' => $events[$i]['roundtype'],
+                'roundnum' => $events[$i]['roundnum'],
+                'dances' => $events[$i]['dances'],
+                'dance_count' => $events[$i]['dance_count'],
+                'duration' => $events[$i]['duration'],
+                'start' => $cur_min,
+                'end' => $cur_min + $total_duration,
+                'start_time' => to_hm($cur_min),
+                'end_time' => to_hm($cur_min + $total_duration),
+                'extra_time' => $extra_time,
+                'is_multi_event' => false,
+                'group_events' => []
+            ];
+        }
         $cur_min += $total_duration;
         
         // 특별 이벤트 확인 (현재 이벤트 번호 후에 삽입할 특별 이벤트)
