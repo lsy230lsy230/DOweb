@@ -202,26 +202,56 @@ if (file_exists($runorder_file)) {
 
 // ==== 7-1. 라운드 자동 계산 함수 ====
 function calculateRoundInfo($events) {
-    // 이벤트명별로 그룹화
+    // 이벤트명별로 그룹화하되, Raw 번호와 세부번호를 조합한 고유 키 사용
     $name_groups = [];
     foreach ($events as $idx => $evt) {
         $name = $evt['name'];
+        $raw_no = $evt['raw_no'];
+        $detail_no = $evt['detail_no'] ?? '';
+        
+        // 고유 키 생성: 이벤트명 + Raw번호 + 세부번호
+        $unique_key = $name . '|' . $raw_no . '|' . $detail_no;
+        
         if (!isset($name_groups[$name])) {
             $name_groups[$name] = [];
         }
-        $name_groups[$name][] = ['idx' => $idx, 'event' => $evt];
+        $name_groups[$name][] = ['idx' => $idx, 'event' => $evt, 'unique_key' => $unique_key];
         
         // 디버깅: 이벤트 그룹화 과정 출력
         if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-            echo "<!-- DEBUG: Adding event to group '$name' - Raw: {$evt['raw_no']}, Detail: {$evt['detail_no']}, Index: $idx -->\n";
+            echo "<!-- DEBUG: Adding event to group '$name' - Raw: $raw_no, Detail: '$detail_no', Index: $idx, Unique: $unique_key -->\n";
         }
+    }
+    
+    // 중복 제거: 같은 Raw 번호와 세부번호를 가진 이벤트를 하나로 합치기
+    foreach ($name_groups as $name => &$group) {
+        $unique_events = [];
+        $seen_keys = [];
+        
+        foreach ($group as $item) {
+            $unique_key = $item['unique_key'];
+            if (!in_array($unique_key, $seen_keys)) {
+                $unique_events[] = $item;
+                $seen_keys[] = $unique_key;
+            } else {
+                // 디버깅: 중복 제거된 이벤트 출력
+                if (isset($_GET['debug']) && $_GET['debug'] === '1') {
+                    echo "<!-- DEBUG: Duplicate removed - Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Index: {$item['idx']} -->\n";
+                }
+            }
+        }
+        
+        $group = $unique_events;
     }
     
     // 디버깅: 최종 그룹 정보 출력
     if (isset($_GET['debug']) && $_GET['debug'] === '1') {
-        echo "<!-- DEBUG: Final groups: -->\n";
+        echo "<!-- DEBUG: Final groups after deduplication: -->\n";
         foreach ($name_groups as $name => $group) {
             echo "<!-- DEBUG: Group '$name' has " . count($group) . " events -->\n";
+            foreach ($group as $item) {
+                echo "<!-- DEBUG:   - Raw: {$item['event']['raw_no']}, Detail: {$item['event']['detail_no']}, Index: {$item['idx']} -->\n";
+            }
         }
     }
     
