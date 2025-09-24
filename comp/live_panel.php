@@ -4240,23 +4240,26 @@ function executeTransition() {
             if (success) {
                 // 다음 라운드 선수 파일 생성
                 createNextRoundPlayerFile(currentEvent, actualAdvancingCount, aggregationData).then(() => {
-                    // 이벤트 리스트 새로고침
-                    loadEvents();
-                    
-                    // 집계 데이터 새로고침
-                    loadAggregationData(getCurrentEventNo());
-                    
-                    // 라운드 전환 완료 알림
-                    alert(`라운드 전환이 완료되었습니다.\n진출 팀: ${actualAdvancingCount}팀\n다음 라운드 선수 파일이 생성되었습니다.`);
-                    
-                    // 모달 닫기
-                    closeAggregationModal();
-                    
-                    // 결과 페이지로 자동 리다이렉트
-                    setTimeout(() => {
-                        const compId = "<?=addslashes($comp_id)?>";
-                        window.location.href = `../competition.php?id=${compId}&page=results`;
-                    }, 1000);
+                    // 결과 파일 생성
+                    generateResultFiles(currentEvent, aggregationData).then(() => {
+                        // 이벤트 리스트 새로고침
+                        loadEvents();
+                        
+                        // 집계 데이터 새로고침
+                        loadAggregationData(getCurrentEventNo());
+                        
+                        // 라운드 전환 완료 알림
+                        alert(`라운드 전환이 완료되었습니다.\n진출 팀: ${actualAdvancingCount}팀\n다음 라운드 선수 파일이 생성되었습니다.\n상세 리포트가 생성되었습니다.`);
+                        
+                        // 모달 닫기
+                        closeAggregationModal();
+                        
+                        // 결과 페이지로 자동 리다이렉트
+                        setTimeout(() => {
+                            const compId = "<?=addslashes($comp_id)?>";
+                            window.location.href = `../competition.php?id=${compId}&page=results`;
+                        }, 1000);
+                    });
                 });
             } else {
                 alert('저장에 실패했습니다. 다시 시도해주세요.');
@@ -4315,6 +4318,39 @@ function createNextRoundPlayerFile(currentEvent, advancingCount, aggregationData
         })
         .catch(error => {
             console.error('Error creating next round player file:', error);
+            reject(error);
+        });
+    });
+}
+
+// 결과 파일 생성 함수
+function generateResultFiles(currentEvent, aggregationData) {
+    console.log('Generating result files...');
+    
+    return new Promise((resolve, reject) => {
+        // 서버에 결과 파일 생성 요청
+        fetch('generate_result_files.php', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                comp_id: "<?=addslashes($comp_id)?>",
+                event_no: currentEvent.no,
+                event_name: currentEvent.name || currentEvent.desc || '경기 종목',
+                aggregation_data: aggregationData
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('Result files generated successfully');
+                resolve(data);
+            } else {
+                console.error('Failed to generate result files:', data.message);
+                reject(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error generating result files:', error);
             reject(error);
         });
     });

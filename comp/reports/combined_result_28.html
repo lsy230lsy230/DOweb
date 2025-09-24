@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로페셔널 라틴 - 상세 결과 리포트</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+        .header { 
+            text-align: center; color: white; margin-bottom: 30px; 
+            background: rgba(255,255,255,0.1); padding: 30px; border-radius: 15px;
+        }
+        .header h1 { font-size: 2.5em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 1.2em; opacity: 0.9; }
+        .report-section { 
+            background: white; border-radius: 15px; padding: 25px; margin-bottom: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .report-section h2 { 
+            color: #667eea; margin-bottom: 20px; font-size: 1.5em; 
+            border-bottom: 3px solid #667eea; padding-bottom: 10px;
+        }
+        table { 
+            width: 100%; border-collapse: collapse; margin-top: 15px; 
+            background: white; border-radius: 8px; overflow: hidden;
+        }
+        th, td { 
+            padding: 12px; text-align: center; border: 1px solid #e0e0e0; 
+        }
+        th { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+            color: white; font-weight: bold;
+        }
+        tr:nth-child(even) { background: #f8f9fa; }
+        tr:hover { background: #e3f2fd; }
+        .player-name { text-align: left; font-weight: 500; }
+        .rank-1 { background: linear-gradient(135deg, #ffd700, #ffed4e); color: #333; font-weight: bold; }
+        .rank-2 { background: linear-gradient(135deg, #c0c0c0, #e8e8e8); color: #333; font-weight: bold; }
+        .rank-3 { background: linear-gradient(135deg, #cd7f32, #daa520); color: white; font-weight: bold; }
+        .judge-scores { font-size: 0.9em; }
+        .final-rank { font-weight: bold; font-size: 1.1em; }
+        .print-btn { 
+            position: fixed; top: 20px; right: 20px; z-index: 1000;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border: none; padding: 12px 25px; border-radius: 25px;
+            cursor: pointer; font-size: 16px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .print-btn:hover { transform: translateY(-2px); }
+        @media print {
+            body { background: white !important; }
+            .print-btn { display: none !important; }
+            .report-section { box-shadow: none !important; margin-bottom: 10px !important; }
+        }
+    </style>
+</head>
+<body>
+    <button class="print-btn" onclick="window.print()">🖨️ 인쇄</button>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🏆 프로페셔널 라틴</h1>
+            <p>이벤트 번호: 28 | </p>
+            <p> | </p>
+        </div>
+        <div class="report-section">
+            <h2>🏆 최종 순위</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>등번호</th>
+                        <th>선수명</th>
+                        <th>상태</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="report-section">
+            <h2>📊 심사위원별 채점 결과</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>등번호</th>
+                        <th>선수명</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+        <div class="report-section">
+            <h2>📈 경기 통계</h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: bold;">0</div>
+                    <div>참가 팀</div>
+                </div>
+                <div style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: bold;">0</div>
+                    <div>심사위원</div>
+                </div>
+                <div style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 20px; border-radius: 10px; text-align: center;">
+                    <div style="font-size: 2em; font-weight: bold;">0</div>
+                    <div>최종 순위</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

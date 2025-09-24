@@ -1044,7 +1044,36 @@ $results = getCompetitionResults($comp_data_path);
                     $event_results = [];
                     
                     if (is_dir($comp_data_dir)) {
-                        // 1. results_*.json 파일들 찾기
+                        // 1. Results 폴더에서 생성된 리포트 파일들 찾기
+                        $results_dir = $comp_data_dir . '/Results';
+                        if (is_dir($results_dir)) {
+                            $event_dirs = glob($results_dir . '/Event_*', GLOB_ONLYDIR);
+                            foreach ($event_dirs as $event_dir) {
+                                if (preg_match('/Event_(\d+)$/', basename($event_dir), $matches)) {
+                                    $event_no = $matches[1];
+                                    
+                                    // 메타데이터 파일 로드
+                                    $metadata_file = $event_dir . '/metadata.json';
+                                    if (file_exists($metadata_file)) {
+                                        $metadata = json_decode(file_get_contents($metadata_file), true);
+                                        if ($metadata) {
+                                            $event_results[] = [
+                                                'event_no' => $event_no,
+                                                'event_name' => $metadata['event_name'],
+                                                'round' => 'Final',
+                                                'final_rankings' => [],
+                                                'source' => 'results',
+                                                'generated_at' => $metadata['generated_at'],
+                                                'files' => $metadata['files'],
+                                                'results_dir' => $event_dir
+                                            ];
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // 2. results_*.json 파일들 찾기 (기존 방식)
                         $result_files = glob($comp_data_dir . '/results_*.json');
                         foreach ($result_files as $file) {
                             $result_data = json_decode(file_get_contents($file), true);
@@ -1053,7 +1082,7 @@ $results = getCompetitionResults($comp_data_path);
                             }
                         }
                         
-                        // 2. players_hits_*.json 파일들도 결과로 간주
+                        // 3. players_hits_*.json 파일들도 결과로 간주
                         $hits_files = glob($comp_data_dir . '/players_hits_*.json');
                         foreach ($hits_files as $file) {
                             $hits_data = json_decode(file_get_contents($file), true);
@@ -1063,49 +1092,60 @@ $results = getCompetitionResults($comp_data_path);
                                 if (preg_match('/players_hits_(\d+)\.json/', $filename, $matches)) {
                                     $event_no = $matches[1];
                                     
-                                    // RunOrder에서 해당 이벤트 정보 찾기
-                                    $event_name = "이벤트 {$event_no}";
-                                    $round = "Final";
+                                    // 이미 Results 폴더에 있는 이벤트는 스킵
+                                    $exists = false;
+                                    foreach ($event_results as $existing) {
+                                        if ($existing['event_no'] == $event_no && $existing['source'] == 'results') {
+                                            $exists = true;
+                                            break;
+                                        }
+                                    }
                                     
-                                    // RunOrder_Tablet.txt에서 이벤트 정보 찾기
-                                    $runorder_file = $comp_data_dir . '/RunOrder_Tablet.txt';
-                                    if (file_exists($runorder_file)) {
-                                        $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-                                        foreach ($lines as $line) {
-                                            if (preg_match('/^bom/', $line)) continue;
-                                            $cols = array_map('trim', explode(',', $line));
-                                            if (count($cols) >= 4 && $cols[0] == $event_no) {
-                                                $event_name = $cols[1];
-                                                $round = $cols[2];
-                                                break;
+                                    if (!$exists) {
+                                        // RunOrder에서 해당 이벤트 정보 찾기
+                                        $event_name = "이벤트 {$event_no}";
+                                        $round = "Final";
+                                        
+                                        // RunOrder_Tablet.txt에서 이벤트 정보 찾기
+                                        $runorder_file = $comp_data_dir . '/RunOrder_Tablet.txt';
+                                        if (file_exists($runorder_file)) {
+                                            $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                                            foreach ($lines as $line) {
+                                                if (preg_match('/^bom/', $line)) continue;
+                                                $cols = array_map('trim', explode(',', $line));
+                                                if (count($cols) >= 4 && $cols[0] == $event_no) {
+                                                    $event_name = $cols[1];
+                                                    $round = $cols[2];
+                                                    break;
+                                                }
                                             }
                                         }
-                                    }
-                                    
-                                    // 순위 데이터 변환
-                                    $rankings = [];
-                                    foreach ($hits_data as $rank => $players) {
-                                        foreach ($players as $player_no) {
-                                            $rankings[] = [
-                                                'rank' => $rank,
-                                                'player_no' => $player_no,
-                                                'player_name' => "선수 {$player_no}"
-                                            ];
+                                        
+                                        // 순위 데이터 변환
+                                        $rankings = [];
+                                        foreach ($hits_data as $rank => $players) {
+                                            foreach ($players as $player_no) {
+                                                $rankings[] = [
+                                                    'rank' => $rank,
+                                                    'player_no' => $player_no,
+                                                    'player_name' => "선수 {$player_no}"
+                                                ];
+                                            }
                                         }
+                                        
+                                        $event_results[] = [
+                                            'event_no' => $event_no,
+                                            'event_name' => $event_name,
+                                            'round' => $round,
+                                            'final_rankings' => $rankings,
+                                            'source' => 'hits'
+                                        ];
                                     }
-                                    
-                                    $event_results[] = [
-                                        'event_no' => $event_no,
-                                        'event_name' => $event_name,
-                                        'round' => $round,
-                                        'final_rankings' => $rankings,
-                                        'source' => 'hits'
-                                    ];
                                 }
                             }
                         }
                         
-                        // 3. RunOrder_Tablet.txt에서 완료된 이벤트들 찾기
+                        // 4. RunOrder_Tablet.txt에서 완료된 이벤트들 찾기
                         $runorder_file = $comp_data_dir . '/RunOrder_Tablet.txt';
                         if (file_exists($runorder_file)) {
                             $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -1164,10 +1204,42 @@ $results = getCompetitionResults($comp_data_path);
                                         </h3>
                                         <span class="item-date">
                                             <?= htmlspecialchars($result['round'] ?? '') ?>
+                                            <?php if (isset($result['generated_at'])): ?>
+                                                <br><small style="color: #64748b;">생성: <?= htmlspecialchars($result['generated_at']) ?></small>
+                                            <?php endif; ?>
                                         </span>
                                     </div>
                                     <div class="item-content">
-                                        <?php if (isset($result['final_rankings']) && !empty($result['final_rankings'])): ?>
+                                        <?php if (isset($result['source']) && $result['source'] === 'results' && isset($result['files'])): ?>
+                                            <!-- Results 폴더에서 생성된 리포트 파일들 -->
+                                            <div style="margin-top: 12px;">
+                                                <h4 style="color: #3b82f6; margin-bottom: 8px;">📊 상세 리포트</h4>
+                                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                                    <?php if (isset($result['files']['detailed_report'])): ?>
+                                                        <a href="/comp/data/<?= str_replace('comp_', '', $comp_id) ?>/Results/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['detailed_report']) ?>" 
+                                                           target="_blank" 
+                                                           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                                                            📋 상세 리포트
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <?php if (isset($result['files']['recall_report'])): ?>
+                                                        <a href="/comp/data/<?= str_replace('comp_', '', $comp_id) ?>/Results/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['recall_report']) ?>" 
+                                                           target="_blank" 
+                                                           style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                                                            📊 리콜 리포트
+                                                        </a>
+                                                    <?php endif; ?>
+                                                    <?php if (isset($result['files']['combined_report'])): ?>
+                                                        <a href="/comp/data/<?= str_replace('comp_', '', $comp_id) ?>/Results/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['combined_report']) ?>" 
+                                                           target="_blank" 
+                                                           style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
+                                                            🏆 컴바인 리포트
+                                                        </a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        <?php elseif (isset($result['final_rankings']) && !empty($result['final_rankings'])): ?>
+                                            <!-- 기존 순위 표시 -->
                                             <div style="margin-top: 12px;">
                                                 <h4 style="color: #3b82f6; margin-bottom: 8px;">최종 순위</h4>
                                                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;">
