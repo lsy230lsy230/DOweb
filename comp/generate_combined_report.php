@@ -133,7 +133,7 @@ file_put_contents($report_path, $html);
 
 echo json_encode([
     'success' => true,
-    'report_url' => "/comp/data/$comp_id/Results/Event_$event_no/$report_filename"
+    'report_url' => "comp/data/$comp_id/Results/Event_$event_no/$report_filename"
 ], JSON_UNESCAPED_UNICODE);
 
 function generateCombinedReportHTML($comp_id, $event_no, $event_name, $event_info, $all_players, $event_players, $adjudicators, $scores, $final_rankings) {
