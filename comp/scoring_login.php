@@ -103,11 +103,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (empty($input_judge_id) || empty($input_password)) {
         $error_message = '심사위원 ID와 비밀번호를 입력해주세요.';
-        if ($is_ajax) {
-            header('Content-Type: application/json');
-            echo json_encode(['success' => false, 'message' => $error_message]);
-            exit;
-        }
+        header('Content-Type: application/json');
+        echo json_encode(['success' => false, 'message' => $error_message]);
+        exit;
     } else {
         // Check if judge_id and password match any adjudicator
         $found_adjudicator = null;
@@ -126,22 +124,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['scoring_judge_country'] = $found_adjudicator['country'];
             $_SESSION['scoring_comp_id'] = $comp_id;
             
-            if ($is_ajax) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => true, 'message' => '로그인 성공']);
-                exit;
-            } else {
-                // Redirect to scoring dashboard
-                header("Location: scoring_dashboard.php?comp_id=" . urlencode($comp_id) . "&lang=" . urlencode($lang));
-                exit;
-            }
+            header('Content-Type: application/json');
+            echo json_encode(['success' => true, 'message' => '로그인 성공']);
+            exit;
         } else {
             $error_message = '잘못된 심사위원 ID 또는 비밀번호입니다.';
-            if ($is_ajax) {
-                header('Content-Type: application/json');
-                echo json_encode(['success' => false, 'message' => $error_message]);
-                exit;
-            }
+            header('Content-Type: application/json');
+            echo json_encode(['success' => false, 'message' => $error_message]);
+            exit;
         }
     }
 }
