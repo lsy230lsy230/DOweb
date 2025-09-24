@@ -93,7 +93,7 @@ $error_message = '';
 
 // Handle login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $input_judge_id = $_POST['judge_id'] ?? '';
+    $input_judge_name = $_POST['judge_name'] ?? '';
     $input_password = $_POST['password'] ?? '';
     $input_password = preg_replace('/\D+/', '', $input_password); // 숫자만 추출
     
@@ -101,18 +101,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $is_ajax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' ||
                (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false);
     
-    if (empty($input_password)) {
-        $error_message = '비밀번호를 입력해주세요.';
+    if (empty($input_judge_name) || empty($input_password)) {
+        $error_message = '심사위원 이름과 비밀번호를 입력해주세요.';
         if ($is_ajax) {
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['success' => false, 'message' => $error_message], JSON_UNESCAPED_UNICODE);
             exit;
         }
     } else {
-        // Check if judge_id and password match any adjudicator
+        // Check if judge_name and password match any adjudicator
         $found_adjudicator = null;
         foreach ($adjudicators as $adjudicator) {
-            if ($adjudicator['id'] === $input_judge_id && $adjudicator['password'] === $input_password) {
+            if ($adjudicator['name'] === $input_judge_name && $adjudicator['password'] === $input_password) {
                 $found_adjudicator = $adjudicator;
                 break;
             }
@@ -136,7 +136,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
             }
         } else {
-            $error_message = '잘못된 심사위원 ID 또는 비밀번호입니다.';
+            $error_message = '잘못된 심사위원 이름 또는 비밀번호입니다.';
             if ($is_ajax) {
                 header('Content-Type: application/json; charset=utf-8');
                 echo json_encode(['success' => false, 'message' => $error_message], JSON_UNESCAPED_UNICODE);
@@ -385,6 +385,14 @@ function h($s) { return htmlspecialchars($s ?? ''); }
     <?php endif; ?>
     
     <form method="post">
+        <div class="form-group">
+            <label for="judge_name">심사위원 이름</label>
+            <input type="text" 
+                   id="judge_name" 
+                   name="judge_name" 
+                   placeholder="심사위원 이름을 입력하세요" 
+                   required>
+        </div>
         <div class="form-group">
             <label for="password"><?=h($t['password_label'])?></label>
             <input type="password" 
