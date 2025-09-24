@@ -1044,7 +1044,7 @@ $results = getCompetitionResults($comp_data_path);
                     $event_results = [];
                     
                     if (is_dir($comp_data_dir)) {
-                        // 1. Results 폴더에서 생성된 리포트 파일들 찾기
+                        // 1. Results 폴더에서 생성된 리포트 파일들 찾기 (대회별 분리)
                         $results_dir = $comp_data_dir . '/Results';
                         if (is_dir($results_dir)) {
                             $event_dirs = glob($results_dir . '/Event_*', GLOB_ONLYDIR);
@@ -1065,7 +1065,8 @@ $results = getCompetitionResults($comp_data_path);
                                                 'source' => 'results',
                                                 'generated_at' => $metadata['generated_at'],
                                                 'files' => $metadata['files'],
-                                                'results_dir' => $event_dir
+                                                'results_dir' => $event_dir,
+                                                'comp_id' => $comp_id
                                             ];
                                         }
                                     }
@@ -1216,21 +1217,21 @@ $results = getCompetitionResults($comp_data_path);
                                                 <h4 style="color: #3b82f6; margin-bottom: 8px;">📊 상세 리포트</h4>
                                                 <div style="display: flex; gap: 10px; flex-wrap: wrap;">
                                                     <?php if (isset($result['files']['detailed_report'])): ?>
-                                                        <a href="/comp/data/<?= str_replace('comp_', '', $comp_id) ?>/Results/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['detailed_report']) ?>" 
+                                                        <a href="/comp/data/<?= htmlspecialchars($result['comp_id'] ?? str_replace('comp_', '', $comp_id)) ?>/Results/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['detailed_report']) ?>" 
                                                            target="_blank" 
                                                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
                                                             📋 상세 리포트
                                                         </a>
                                                     <?php endif; ?>
                                                     <?php if (isset($result['files']['recall_report'])): ?>
-                                                        <a href="/comp/data/<?= str_replace('comp_', '', $comp_id) ?>/Results/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['recall_report']) ?>" 
+                                                        <a href="/comp/data/<?= htmlspecialchars($result['comp_id'] ?? str_replace('comp_', '', $comp_id)) ?>/Results/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['recall_report']) ?>" 
                                                            target="_blank" 
                                                            style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
                                                             📊 리콜 리포트
                                                         </a>
                                                     <?php endif; ?>
                                                     <?php if (isset($result['files']['combined_report'])): ?>
-                                                        <a href="/comp/data/<?= str_replace('comp_', '', $comp_id) ?>/Results/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['combined_report']) ?>" 
+                                                        <a href="/comp/data/<?= htmlspecialchars($result['comp_id'] ?? str_replace('comp_', '', $comp_id)) ?>/Results/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['combined_report']) ?>" 
                                                            target="_blank" 
                                                            style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
                                                             🏆 컴바인 리포트

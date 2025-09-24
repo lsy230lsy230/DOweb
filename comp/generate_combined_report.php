@@ -119,20 +119,21 @@ if (file_exists($result_file)) {
 // 컴바인 리포트 HTML 생성
 $html = generateCombinedReportHTML($comp_id, $event_no, $event_name, $event_info, $all_players, $event_players, $adjudicators, $scores, $final_rankings);
 
-// 리포트 파일 저장
+// 대회별 리포트 파일 저장
 $report_filename = "combined_result_{$event_no}.html";
-$report_path = __DIR__ . "/reports/$report_filename";
+$reports_dir = __DIR__ . "/data/$comp_id/Results/Event_$event_no";
 
 // reports 디렉토리 생성
-if (!is_dir(__DIR__ . "/reports")) {
-    mkdir(__DIR__ . "/reports", 0755, true);
+if (!is_dir($reports_dir)) {
+    mkdir($reports_dir, 0755, true);
 }
 
+$report_path = "$reports_dir/$report_filename";
 file_put_contents($report_path, $html);
 
 echo json_encode([
     'success' => true,
-    'report_url' => "/comp/reports/$report_filename"
+    'report_url' => "/comp/data/$comp_id/Results/Event_$event_no/$report_filename"
 ], JSON_UNESCAPED_UNICODE);
 
 function generateCombinedReportHTML($comp_id, $event_no, $event_name, $event_info, $all_players, $event_players, $adjudicators, $scores, $final_rankings) {

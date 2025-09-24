@@ -16,13 +16,13 @@ if (empty($comp_id) || empty($event_no)) {
 // 대회 데이터 디렉토리
 $data_dir = __DIR__ . "/data/$comp_id";
 
-// Results 폴더 생성
+// 대회별 Results 폴더 생성 (대회 ID를 포함한 고유 폴더)
 $results_dir = "$data_dir/Results";
 if (!is_dir($results_dir)) {
     mkdir($results_dir, 0755, true);
 }
 
-// 이벤트별 Results 폴더 생성
+// 이벤트별 Results 폴더 생성 (대회 ID + 이벤트 번호)
 $event_results_dir = "$results_dir/Event_$event_no";
 if (!is_dir($event_results_dir)) {
     mkdir($event_results_dir, 0755, true);
