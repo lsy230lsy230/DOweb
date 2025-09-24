@@ -16,17 +16,18 @@ if (empty($comp_id) || empty($event_no)) {
 // 대회 데이터 디렉토리
 $data_dir = __DIR__ . "/data/$comp_id";
 
-// Results 폴더 생성
-$results_dir = "$data_dir/Results";
-if (!is_dir($results_dir)) {
-    if (!mkdir($results_dir, 0755, true)) {
-        echo json_encode(['success' => false, 'message' => 'Results 폴더 생성에 실패했습니다.'], JSON_UNESCAPED_UNICODE);
+// 웹 접근 가능한 results_reports 폴더 생성
+$web_root = dirname(__DIR__);
+$results_reports_dir = "$web_root/results_reports/$comp_id";
+if (!is_dir($results_reports_dir)) {
+    if (!mkdir($results_reports_dir, 0755, true)) {
+        echo json_encode(['success' => false, 'message' => 'Results reports 폴더 생성에 실패했습니다.'], JSON_UNESCAPED_UNICODE);
         exit;
     }
 }
 
-// 이벤트별 Results 폴더 생성
-$event_results_dir = "$results_dir/Event_$event_no";
+// 이벤트별 폴더 생성
+$event_results_dir = "$results_reports_dir/Event_$event_no";
 if (!is_dir($event_results_dir)) {
     if (!mkdir($event_results_dir, 0755, true)) {
         echo json_encode(['success' => false, 'message' => 'Event 폴더 생성에 실패했습니다.'], JSON_UNESCAPED_UNICODE);
