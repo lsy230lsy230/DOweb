@@ -136,8 +136,6 @@ if (file_exists($runorder_file)) {
             $event_no = !empty($detail_no) ? $detail_no : $base_no_raw;
             $base_event_no = preg_replace('/\D+/', '', $base_no_raw); // 숫자만 추출
             
-            // 디버그: 이벤트 파싱 확인
-            error_log("Event parsing - base_no_raw: '{$base_no_raw}', detail_no: '{$detail_no}', event_no: '{$event_no}', base_event_no: '{$base_event_no}'");
             
             $event_data = [
                 'no' => $event_no,
@@ -156,8 +154,6 @@ if (file_exists($runorder_file)) {
                     // 원본 숫자 코드를 그대로 사용 (파일명과 일치시키기 위해)
                     $event_data['dances'][] = $cols[$i];
                     
-                    // 디버그: 종목 코드 확인
-                    error_log("Event {$event_data['no']}: dance code {$cols[$i]} added");
                 }
             }
             
@@ -227,8 +223,6 @@ function convertDanceNumber($dance_number, $dance_mapping) {
     return $dance_mapping[$dance_number] ?? $dance_number;
 }
 
-// 디버그: 댄스 매핑 확인
-error_log("Dance mapping loaded: " . print_r($dance_mapping, true));
 
 
 // Load panel list and check judge's panels
@@ -253,14 +247,6 @@ foreach ($panel_list as $panel) {
     }
 }
 
-// 디버그 정보 추가
-error_log("Current judge ID: '{$current_judge_id}' (type: " . gettype($current_judge_id) . ")");
-error_log("Panel list loaded: " . count($panel_list) . " panels");
-error_log("Judge panels: " . implode(',', $judge_panels));
-
-// 패널 리스트의 심사위원 ID들도 로그로 확인
-$all_judge_ids = array_unique(array_column($panel_list, 'adj_code'));
-error_log("All judge IDs in panel: " . implode(',', $all_judge_ids));
 
 // Calculate round info from RunOrder_Tablet.txt data
 function calculateRoundDisplay($event_data, $all_events) {
@@ -338,8 +324,6 @@ foreach ($events as $idx => &$event) {
     
     $event['panel_status'] = $event['can_score'] ? 'eligible' : 'not_eligible';
     
-    // 디버그 정보 추가
-    error_log("Event {$event['no']}: panel_code='{$panel_code}', judge_panels=" . implode(',', $judge_panels) . ", can_score=" . ($event['can_score'] ? 'true' : 'false') . ", reason={$reason}");
 }
 unset($event); // Break the reference
 
@@ -369,14 +353,6 @@ foreach ($events as $event) {
         
         $has_scores = $all_dances_scored;
         
-        // 디버그: 개별 종목 파일 확인 로그
-        error_log("Event {$event_no}: checking .adj files for judge {$judge_id}");
-        foreach ($event['dances'] as $dance) {
-            $adj_file = "$data_dir/{$event_no}_{$dance}_{$judge_id}.adj";
-            $exists = file_exists($adj_file) ? 'EXISTS' : 'MISSING';
-            error_log("  - {$adj_file}: {$exists}");
-        }
-        error_log("  - Result: " . ($has_scores ? 'COMPLETED' : 'INCOMPLETE'));
     }
     
     $events_with_scores[$event_no] = $has_scores;
@@ -873,7 +849,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
 <body>
 <div class="container">
     <div class="top-controls">
-        <button id="filterToggle" class="filter-btn" onclick="toggleEventFilter()">간단히</button>
+        <button id="filterToggle" class="filter-btn" onclick="toggleEventFilter()">대기중만</button>
         <select class="lang-switch" onchange="window.location.href='?comp_id=<?=h($comp_id)?>&lang=' + this.value">
             <option value="ko" <?=$lang === 'ko' ? 'selected' : ''?>>한국어</option>
             <option value="en" <?=$lang === 'en' ? 'selected' : ''?>>English</option>
@@ -895,22 +871,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
     <div class="comp-info" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 30px; text-align: center;">
         <strong><?=h($info['title'])?></strong><br>
         <?=h($info['date'])?> | <?=h($info['place'])?>
-        
-        <!-- 디버그 정보 추가 -->
-        <div style="margin-top: 10px; font-size: 12px; color: #666; text-align: left;">
-            <strong>디버그 정보:</strong><br>
-            심사위원 ID: <?=h($_SESSION['scoring_judge_id'] ?? 'N/A')?><br>
-            심사위원 이름: <?=h($_SESSION['scoring_judge_name'] ?? 'N/A')?><br>
-            패널 개수: <?=count($judge_panels)?><br>
-            심사위원 패널: <?=implode(', ', $judge_panels)?><br>
-            이벤트 총 개수: <?=count($events)?><br>
-            멀티 이벤트 개수: <?=count($multievent_events)?><br>
-            댄스 매핑: <?=implode(', ', array_slice($dance_mapping, 0, 5))?>... (<?=count($dance_mapping)?>개)<br>
-            첫 번째 이벤트 종목: <?=h(implode(', ', $events[0]['dances'] ?? []))?><br>
-            댄스 매핑 테스트: 8 -> <?=h($dance_mapping['8'] ?? 'NOT_FOUND')?>, 6 -> <?=h($dance_mapping['6'] ?? 'NOT_FOUND')?><br>
-            이벤트 18 종목: <?=h(implode(', ', $events[17]['dances'] ?? []))?><br>
-            convertDanceNumber 테스트: <?=h(convertDanceNumber('8', $dance_mapping))?>
-        </div>
     </div>
     
     <?php if (empty($events)): ?>
@@ -1021,11 +981,17 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 
                 <div class="event-actions">
                     <?php if ($can_score): ?>
-                        <a href="multievent_scoring.php?comp_id=<?=h($comp_id)?>&event_group=<?=h($base_no)?>&lang=<?=h($lang)?>" 
-                           class="btn btn-primary" 
-                           target="_blank">
-                            <?=h($t['score'])?>
-                        </a>
+                        <?php if ($has_scores): ?>
+                            <button class="btn btn-disabled" disabled>
+                                <?=h($t['scoring_complete'])?>
+                            </button>
+                        <?php else: ?>
+                            <a href="multievent_scoring.php?comp_id=<?=h($comp_id)?>&event_group=<?=h($base_no)?>&lang=<?=h($lang)?>" 
+                               class="btn btn-primary" 
+                               target="_blank">
+                                <?=h($t['score'])?>
+                            </a>
+                        <?php endif; ?>
                     <?php else: ?>
                         <button class="btn btn-disabled" disabled>
                             <?=h($t['scoring_not_allowed'])?>
@@ -1069,11 +1035,17 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 
                 <div class="event-actions">
                     <?php if ($event['can_score']): ?>
-                        <a href="judge_scoring.php?comp_id=<?=h($comp_id)?>&event_no=<?=h($event['no'])?>&lang=<?=h($lang)?>" 
-                           class="btn btn-primary" 
-                           target="_blank">
-                            <?=h($t['score'])?>
-                        </a>
+                        <?php if ($events_with_scores[$event['no']]): ?>
+                            <button class="btn btn-disabled" disabled>
+                                <?=h($t['scoring_complete'])?>
+                            </button>
+                        <?php else: ?>
+                            <a href="judge_scoring.php?comp_id=<?=h($comp_id)?>&event_no=<?=h($event['no'])?>&lang=<?=h($lang)?>" 
+                               class="btn btn-primary" 
+                               target="_blank">
+                                <?=h($t['score'])?>
+                            </a>
+                        <?php endif; ?>
                     <?php else: ?>
                         <button class="btn btn-disabled" disabled>
                             <?=h($t['scoring_not_allowed'])?>
@@ -1096,20 +1068,20 @@ let showAllEvents = true;
 
 function toggleEventFilter() {
     const filterBtn = document.getElementById('filterToggle');
-    const eventCards = document.querySelectorAll('.event-card');
+    const eventCards = document.querySelectorAll('.event-card, .multievent-card');
     
     showAllEvents = !showAllEvents;
     
     if (showAllEvents) {
         // Show all events
-        filterBtn.textContent = '간단히';
+        filterBtn.textContent = '대기중만';
         filterBtn.classList.remove('active');
         eventCards.forEach(card => {
             card.style.display = 'block';
         });
     } else {
         // Hide completed and not-assigned events
-        filterBtn.textContent = 'All';
+        filterBtn.textContent = '전체보기';
         filterBtn.classList.add('active');
         eventCards.forEach(card => {
             const status = card.getAttribute('data-status');
