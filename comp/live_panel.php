@@ -4251,6 +4251,12 @@ function executeTransition() {
                     
                     // 모달 닫기
                     closeAggregationModal();
+                    
+                    // 결과 페이지로 자동 리다이렉트
+                    setTimeout(() => {
+                        const compId = "<?=addslashes($comp_id)?>";
+                        window.location.href = `../competition.php?id=${compId}&page=results`;
+                    }, 1000);
                 });
             } else {
                 alert('저장에 실패했습니다. 다시 시도해주세요.');

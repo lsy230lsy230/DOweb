@@ -1013,27 +1013,99 @@ $results = getCompetitionResults($comp_data_path);
                     종합결과
                 </h2>
                 
-                <?php if (empty($results)): ?>
-                    <div class="empty-state">
-                        <div class="material-symbols-rounded">trophy</div>
-                        <h3>결과가 아직 발표되지 않았습니다</h3>
-                        <p>대회 종료 후 결과가 이곳에 표시됩니다.</p>
+                <!-- 실시간 결과 표시 -->
+                <div id="live-results-container" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(59, 130, 246, 0.1); border-radius: 16px; padding: 24px; margin-bottom: 24px;">
+                    <h3 style="color: #3b82f6; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                        <span class="material-symbols-rounded">live_tv</span>
+                        실시간 경기 결과
+                    </h3>
+                    <div id="live-results-content">
+                        <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                            <div class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">refresh</div>
+                            <p>실시간 결과를 로딩 중입니다...</p>
+                        </div>
                     </div>
-                <?php else: ?>
-                    <div class="item-list">
-                        <?php foreach ($results as $result): ?>
-                            <div class="item-card">
-                                <div class="item-header">
-                                    <h3 class="item-title"><?= htmlspecialchars($result['category'] ?? '경기 종목') ?></h3>
-                                    <span class="item-date">결과 발표</span>
-                                </div>
-                                <div class="item-content">
-                                    <?= htmlspecialchars($result['summary'] ?? '') ?>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
+                    <div style="font-size: 12px; color: #64748b; margin-top: 16px; text-align: center;">
+                        <span class="material-symbols-rounded" style="vertical-align: middle; font-size: 16px;">refresh</span>
+                        <span>30초마다 자동 갱신됩니다. 최신 결과가 아닐 경우 새로고침(F5) 해주세요.</span>
                     </div>
-                <?php endif; ?>
+                </div>
+                
+                <!-- 이벤트별 결과 목록 -->
+                <div id="event-results-container">
+                    <h3 style="color: #3b82f6; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                        <span class="material-symbols-rounded">list</span>
+                        이벤트별 결과
+                    </h3>
+                    
+                    <?php 
+                    // 대회 데이터에서 결과 파일들 로드
+                    $comp_data_dir = __DIR__ . '/comp/data/' . str_replace('comp_', '', $comp_id);
+                    $event_results = [];
+                    
+                    if (is_dir($comp_data_dir)) {
+                        // 결과 파일들 찾기
+                        $result_files = glob($comp_data_dir . '/results_*.json');
+                        foreach ($result_files as $file) {
+                            $result_data = json_decode(file_get_contents($file), true);
+                            if ($result_data) {
+                                $event_results[] = $result_data;
+                            }
+                        }
+                    }
+                    ?>
+                    
+                    <?php if (empty($event_results)): ?>
+                        <div class="empty-state">
+                            <div class="material-symbols-rounded">trophy</div>
+                            <h3>결과가 아직 발표되지 않았습니다</h3>
+                            <p>대회 진행 중 결과가 이곳에 표시됩니다.</p>
+                        </div>
+                    <?php else: ?>
+                        <div class="item-list">
+                            <?php foreach ($event_results as $result): ?>
+                                <div class="item-card">
+                                    <div class="item-header">
+                                        <h3 class="item-title">
+                                            <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 8px;">
+                                                <?= htmlspecialchars($result['event_no'] ?? '') ?>번
+                                            </span>
+                                            <?= htmlspecialchars($result['event_name'] ?? '경기 종목') ?>
+                                        </h3>
+                                        <span class="item-date">
+                                            <?= htmlspecialchars($result['round'] ?? '') ?>
+                                        </span>
+                                    </div>
+                                    <div class="item-content">
+                                        <?php if (isset($result['final_rankings']) && !empty($result['final_rankings'])): ?>
+                                            <div style="margin-top: 12px;">
+                                                <h4 style="color: #3b82f6; margin-bottom: 8px;">최종 순위</h4>
+                                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+                                                    <?php 
+                                                    $rankings = $result['final_rankings'];
+                                                    ksort($rankings);
+                                                    foreach ($rankings as $rank => $players): 
+                                                    ?>
+                                                        <div style="background: rgba(59, 130, 246, 0.1); padding: 8px; border-radius: 6px;">
+                                                            <strong style="color: #3b82f6;"><?= $rank ?>위</strong>
+                                                            <div style="font-size: 0.9em; color: #94a3b8;">
+                                                                <?php foreach ($players as $player): ?>
+                                                                    <div><?= htmlspecialchars($player['name'] ?? '') ?></div>
+                                                                <?php endforeach; ?>
+                                                            </div>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                </div>
+                                            </div>
+                                        <?php else: ?>
+                                            <p style="color: #94a3b8;">결과 데이터를 처리 중입니다...</p>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
 
             <?php elseif ($page === 'live'): ?>
                 <!-- 실시간 결과 -->
@@ -1065,6 +1137,90 @@ $results = getCompetitionResults($comp_data_path);
                 document.title = originalTitle;
             }, 100);
         }
+        
+        // 실시간 결과 로드
+        function loadLiveResults() {
+            const compId = "<?= htmlspecialchars($comp_id) ?>";
+            const resultsContainer = document.getElementById('live-results-content');
+            
+            if (!resultsContainer) return;
+            
+            // 실시간 결과 API 호출
+            fetch(`/comp/live_aggregation_api.php?comp_id=${compId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.results) {
+                        displayLiveResults(data.results);
+                    } else {
+                        resultsContainer.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                                <div class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">schedule</div>
+                                <p>현재 진행 중인 경기가 없습니다.</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading live results:', error);
+                    resultsContainer.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #ef4444;">
+                            <div class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px;">error</div>
+                            <p>실시간 결과를 불러올 수 없습니다.</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        // 실시간 결과 표시
+        function displayLiveResults(results) {
+            const resultsContainer = document.getElementById('live-results-content');
+            
+            let html = '';
+            
+            results.forEach(result => {
+                html += `
+                    <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
+                        <h4 style="color: #3b82f6; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+                            <span class="material-symbols-rounded">emoji_events</span>
+                            ${result.event_name || '경기 종목'}
+                        </h4>
+                        <div style="color: #94a3b8; font-size: 14px; margin-bottom: 16px;">
+                            <span style="background: rgba(59, 130, 246, 0.1); padding: 4px 8px; border-radius: 4px; margin-right: 8px;">
+                                ${result.round || ''}
+                            </span>
+                            <span>진출자: ${result.advancing_count || 0}명</span>
+                        </div>
+                        ${result.rankings ? `
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;">
+                                ${result.rankings.map((ranking, index) => `
+                                    <div style="background: rgba(59, 130, 246, 0.1); padding: 8px; border-radius: 6px; text-align: center;">
+                                        <div style="color: #3b82f6; font-weight: 600; font-size: 14px;">${index + 1}위</div>
+                                        <div style="color: #94a3b8; font-size: 12px;">${ranking.player_name || ''}</div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : '<p style="color: #94a3b8; text-align: center;">결과 처리 중...</p>'}
+                    </div>
+                `;
+            });
+            
+            resultsContainer.innerHTML = html || `
+                <div style="text-align: center; padding: 40px; color: #94a3b8;">
+                    <div class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">schedule</div>
+                    <p>현재 진행 중인 경기가 없습니다.</p>
+                </div>
+            `;
+        }
+        
+        // 페이지 로드 시 실시간 결과 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentPage = "<?= htmlspecialchars($page) ?>";
+            if (currentPage === 'results') {
+                loadLiveResults();
+                // 30초마다 자동 새로고침
+                setInterval(loadLiveResults, 30000);
+            }
+        });
     </script>
 </body>
 </html>
