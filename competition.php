@@ -1156,7 +1156,11 @@ $results = getCompetitionResults($comp_data_path);
                                             <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 8px;">
                                                 <?= htmlspecialchars($result['event_no'] ?? '') ?>번
                                             </span>
-                                            <?= htmlspecialchars($result['event_name'] ?? '경기 종목') ?>
+                                            <a href="javascript:void(0)" 
+                                               onclick="viewEventResult('<?= htmlspecialchars($result['event_no'] ?? '') ?>', '<?= htmlspecialchars($result['event_name'] ?? '경기 종목') ?>')"
+                                               style="color: #3b82f6; text-decoration: none; cursor: pointer; border-bottom: 1px dashed #3b82f6;">
+                                                <?= htmlspecialchars($result['event_name'] ?? '경기 종목') ?>
+                                            </a>
                                         </h3>
                                         <span class="item-date">
                                             <?= htmlspecialchars($result['round'] ?? '') ?>
@@ -1354,6 +1358,56 @@ $results = getCompetitionResults($comp_data_path);
                     <p>현재 진행 중인 경기가 없습니다.</p>
                 </div>
             `;
+        }
+        
+        // 이벤트 결과 상세 보기
+        function viewEventResult(eventNo, eventName) {
+            const compId = "<?= htmlspecialchars($comp_id) ?>";
+            
+            // 로딩 표시
+            const loadingDiv = document.createElement('div');
+            loadingDiv.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.8); z-index: 9999; display: flex; 
+                align-items: center; justify-content: center; color: white; font-size: 18px;
+            `;
+            loadingDiv.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="font-size: 48px; margin-bottom: 20px;">⏳</div>
+                    <div>${eventName} 상세 결과를 생성 중입니다...</div>
+                </div>
+            `;
+            document.body.appendChild(loadingDiv);
+            
+            // 컴바인 리포트 생성 요청
+            fetch(`/comp/generate_combined_report.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    comp_id: compId,
+                    event_no: eventNo,
+                    event_name: eventName
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.body.removeChild(loadingDiv);
+                
+                if (data.success) {
+                    // 새 창에서 결과 표시
+                    const reportUrl = data.report_url;
+                    window.open(reportUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                } else {
+                    alert('상세 결과 생성에 실패했습니다: ' + (data.message || '알 수 없는 오류'));
+                }
+            })
+            .catch(error => {
+                document.body.removeChild(loadingDiv);
+                console.error('Error:', error);
+                alert('상세 결과 생성 중 오류가 발생했습니다: ' + error.message);
+            });
         }
         
         // 페이지 로드 시 실시간 결과 로드
