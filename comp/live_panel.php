@@ -1570,8 +1570,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             <span id="next-round">-</span>
                         </div>
                         <div class="summary-item">
-                            <span class="summary-label">진출 선수 수:</span>
-                            <input type="number" id="advance-count" placeholder="진출할 선수 수">
+                            <span class="summary-label">진출 팀 수:</span>
+                            <input type="number" id="advance-count" placeholder="진출할 팀 수">
                         </div>
                     </div>
                     
@@ -4200,7 +4200,7 @@ function executeTransition() {
     const advanceCount = parseInt(document.getElementById('advance-count').value);
     
     if (!advanceCount || advanceCount <= 0) {
-        alert('진출할 선수 수를 입력해주세요.');
+        alert('진출할 팀 수를 입력해주세요.');
         return;
     }
     
@@ -4220,13 +4220,13 @@ function executeTransition() {
     
     // 동점으로 인한 자동 조정 확인
     if (actualAdvancingCount > originalRecallCount) {
-        const tieMessage = `동점으로 인해 진출자 수가 ${originalRecallCount}명에서 ${actualAdvancingCount}명으로 자동 조정됩니다.\n계속하시겠습니까?`;
+        const tieMessage = `동점으로 인해 진출 팀 수가 ${originalRecallCount}팀에서 ${actualAdvancingCount}팀으로 자동 조정됩니다.\n계속하시겠습니까?`;
         if (!confirm(tieMessage)) {
             return;
         }
     }
     
-    if (confirm(`정말로 ${actualAdvancingCount}명의 선수를 다음 라운드로 전환하시겠습니까?`)) {
+    if (confirm(`정말로 ${actualAdvancingCount}팀을 다음 라운드로 전환하시겠습니까?`)) {
         // 이벤트의 recall 수 업데이트
         currentEvent.recall = actualAdvancingCount.toString();
         
@@ -4247,7 +4247,7 @@ function executeTransition() {
                     loadAggregationData(getCurrentEventNo());
                     
                     // 라운드 전환 완료 알림
-                    alert(`라운드 전환이 완료되었습니다.\n진출자: ${actualAdvancingCount}명\n다음 라운드 선수 파일이 생성되었습니다.`);
+                    alert(`라운드 전환이 완료되었습니다.\n진출 팀: ${actualAdvancingCount}팀\n다음 라운드 선수 파일이 생성되었습니다.`);
                     
                     // 모달 닫기
                     closeAggregationModal();

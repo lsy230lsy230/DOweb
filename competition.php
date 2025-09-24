@@ -1280,24 +1280,70 @@ $results = getCompetitionResults($comp_data_path);
                     <div style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 12px; padding: 20px; margin-bottom: 16px;">
                         <h4 style="color: #3b82f6; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
                             <span class="material-symbols-rounded">emoji_events</span>
-                            ${result.event_name || '경기 종목'}
+                            ${result.event_no} ${result.event_name || '경기 종목'} - ${result.round || 'Final'}
                         </h4>
+                        
                         <div style="color: #94a3b8; font-size: 14px; margin-bottom: 16px;">
-                            <span style="background: rgba(59, 130, 246, 0.1); padding: 4px 8px; border-radius: 4px; margin-right: 8px;">
-                                ${result.round || ''}
-                            </span>
-                            <span>진출자: ${result.advancing_count || 0}명</span>
-                        </div>
-                        ${result.rankings ? `
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;">
-                                ${result.rankings.map((ranking, index) => `
-                                    <div style="background: rgba(59, 130, 246, 0.1); padding: 8px; border-radius: 6px; text-align: center;">
-                                        <div style="color: #3b82f6; font-weight: 600; font-size: 14px;">${index + 1}위</div>
-                                        <div style="color: #94a3b8; font-size: 12px;">${ranking.player_name || ''}</div>
-                                    </div>
-                                `).join('')}
+                            <div style="margin-bottom: 8px;">
+                                <strong>총 심사위원:</strong> ${result.total_judges || 0}
                             </div>
-                        ` : '<p style="color: #94a3b8; text-align: center;">결과 처리 중...</p>'}
+                            <div style="margin-bottom: 8px;">
+                                <strong>완료된 심사위원:</strong> ${result.completed_judges || 0}
+                            </div>
+                            <div style="margin-bottom: 16px;">
+                                <strong>진행률:</strong> ${result.progress || 0}%
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(59, 130, 246, 0.1); padding: 16px; border-radius: 8px; margin-bottom: 16px;">
+                            <h5 style="color: #3b82f6; margin-bottom: 12px; font-size: 16px;">집계 결과</h5>
+                            <div style="color: #94a3b8; font-size: 14px; margin-bottom: 12px;">
+                                <strong>진출 기준:</strong> Recall ${result.recall_threshold || 0}개 이상 (상위 ${result.advancing_count || 0}팀)
+                            </div>
+                            
+                            ${result.rankings && result.rankings.length > 0 ? `
+                                <div style="overflow-x: auto;">
+                                    <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                        <thead>
+                                            <tr style="background: rgba(59, 130, 246, 0.2);">
+                                                <th style="padding: 8px; text-align: center; border: 1px solid rgba(59, 130, 246, 0.3);">순위</th>
+                                                <th style="padding: 8px; text-align: center; border: 1px solid rgba(59, 130, 246, 0.3);">등번호</th>
+                                                <th style="padding: 8px; text-align: left; border: 1px solid rgba(59, 130, 246, 0.3);">선수명</th>
+                                                <th style="padding: 8px; text-align: center; border: 1px solid rgba(59, 130, 246, 0.3);">Recall 점수</th>
+                                                <th style="padding: 8px; text-align: center; border: 1px solid rgba(59, 130, 246, 0.3);">상태</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${result.rankings.map((ranking, index) => `
+                                                <tr style="border-bottom: 1px solid rgba(59, 130, 246, 0.1);">
+                                                    <td style="padding: 8px; text-align: center; font-weight: 600;">${index + 1}</td>
+                                                    <td style="padding: 8px; text-align: center;">${ranking.player_no || ''}</td>
+                                                    <td style="padding: 8px; text-align: left;">
+                                                        ${ranking.player_name || ''}
+                                                        ${ranking.exempt ? ' ⭐' : ''}
+                                                    </td>
+                                                    <td style="padding: 8px; text-align: center;">
+                                                        ${ranking.exempt ? '면제' : (ranking.recall_score || 0)}
+                                                    </td>
+                                                    <td style="padding: 8px; text-align: center;">
+                                                        <span style="padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;
+                                                            ${ranking.status === '진출' ? 'background: rgba(34, 197, 94, 0.2); color: #16a34a;' : 
+                                                              ranking.status === '면제' ? 'background: rgba(59, 130, 246, 0.2); color: #3b82f6;' :
+                                                              'background: rgba(239, 68, 68, 0.2); color: #dc2626;'}">
+                                                            ${ranking.status || (ranking.exempt ? '면제' : '진출')}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <div style="margin-top: 12px; padding: 8px; background: rgba(59, 130, 246, 0.1); border-radius: 6px; text-align: center; font-size: 14px; font-weight: 600;">
+                                    진출 팀: ${result.advancing_count || 0}팀 | 탈락 팀: ${result.eliminated_count || 0}팀
+                                </div>
+                            ` : '<p style="color: #94a3b8; text-align: center; padding: 20px;">결과 처리 중...</p>'}
+                        </div>
                     </div>
                 `;
             });
