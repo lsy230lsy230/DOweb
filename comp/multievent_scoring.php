@@ -920,6 +920,11 @@ function getDanceNames($dances, $dance_mapping) {
         loadExistingScores();
         
         updateProgressOverview();
+        
+        // 페이지 로드 시 모든 이벤트 완료 상태 확인
+        setTimeout(() => {
+            checkAllEventsCompleted();
+        }, 500);
     }
     
     function loadExistingScores() {
@@ -956,6 +961,17 @@ function getDanceNames($dances, $dance_mapping) {
                 const firstDance = firstDanceBtn.dataset.dance;
                 renderRanksForEventDance(eventNo, firstDance);
                 updateEventStatus(eventNo);
+                
+                // 기존 점수가 있는 경우 완료 상태로 표시
+                if (EXISTING_SCORES[eventNo] && EXISTING_SCORES[eventNo][firstDance]) {
+                    const submitBtn = block.querySelector('.submit-btn');
+                    if (submitBtn) {
+                        submitBtn.textContent = '완료';
+                        submitBtn.style.background = '#28a745';
+                        submitBtn.disabled = true;
+                        block.classList.add('completed');
+                    }
+                }
             }
         });
     }
@@ -1091,6 +1107,9 @@ function getDanceNames($dances, $dance_mapping) {
                 submitBtn.style.background = '#28a745';
                 eventBlock.classList.add('completed');
                 updateProgressOverview();
+                
+                // 모든 이벤트 완료 확인
+                checkAllEventsCompleted();
             } else {
                 alert('전송 실패: ' + (result.error || '알 수 없는 오류'));
                 submitBtn.textContent = originalText;
@@ -1102,6 +1121,111 @@ function getDanceNames($dances, $dance_mapping) {
             alert('전송 중 오류가 발생했습니다: ' + err);
             submitBtn.textContent = originalText;
             submitBtn.disabled = false;
+        });
+    }
+    
+    function checkAllEventsCompleted() {
+        const eventBlocks = document.querySelectorAll('.event-block');
+        const completedEvents = document.querySelectorAll('.event-block.completed');
+        
+        // 모든 이벤트가 완료되었는지 확인
+        if (eventBlocks.length === completedEvents.length && eventBlocks.length > 0) {
+            // 모든 이벤트 완료 시 완료 메시지 표시
+            showCompletionMessage();
+        }
+    }
+    
+    function showCompletionMessage() {
+        // 완료 메시지 모달 생성
+        const modal = document.createElement('div');
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        `;
+        
+        const messageBox = document.createElement('div');
+        messageBox.style.cssText = `
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+        `;
+        
+        messageBox.innerHTML = `
+            <div style="font-size: 60px; margin-bottom: 20px;">🎉</div>
+            <h2 style="color: #28a745; margin: 0 0 15px 0; font-size: 28px;">모든 채점 완료!</h2>
+            <p style="color: #666; margin: 0 0 25px 0; font-size: 16px; line-height: 1.5;">
+                모든 이벤트의 채점이 성공적으로 완료되었습니다.<br>
+                수고하셨습니다!
+            </p>
+            <div style="display: flex; gap: 15px; justify-content: center;">
+                <button id="stayBtn" style="
+                    background: #6c757d;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                ">계속 작업</button>
+                <button id="goHomeBtn" style="
+                    background: #28a745;
+                    color: white;
+                    border: none;
+                    padding: 12px 24px;
+                    border-radius: 8px;
+                    font-size: 14px;
+                    font-weight: bold;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                ">메인으로 돌아가기</button>
+            </div>
+        `;
+        
+        modal.appendChild(messageBox);
+        document.body.appendChild(modal);
+        
+        // 버튼 이벤트 처리
+        document.getElementById('stayBtn').addEventListener('click', function() {
+            document.body.removeChild(modal);
+        });
+        
+        document.getElementById('goHomeBtn').addEventListener('click', function() {
+            const compId = '<?= h($comp_id) ?>';
+            const lang = '<?= h($lang) ?>';
+            window.location.href = `scoring_dashboard.php?comp_id=${compId}&lang=${lang}`;
+        });
+        
+        // 버튼 호버 효과
+        document.getElementById('stayBtn').addEventListener('mouseenter', function() {
+            this.style.background = '#5a6268';
+            this.style.transform = 'translateY(-2px)';
+        });
+        document.getElementById('stayBtn').addEventListener('mouseleave', function() {
+            this.style.background = '#6c757d';
+            this.style.transform = 'translateY(0)';
+        });
+        
+        document.getElementById('goHomeBtn').addEventListener('mouseenter', function() {
+            this.style.background = '#218838';
+            this.style.transform = 'translateY(-2px)';
+        });
+        document.getElementById('goHomeBtn').addEventListener('mouseleave', function() {
+            this.style.background = '#28a745';
+            this.style.transform = 'translateY(0)';
         });
     }
 

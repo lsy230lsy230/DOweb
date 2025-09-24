@@ -13,7 +13,10 @@ if (!preg_match('/^\d{8}-\d+$/', $comp_id) || !is_file($info_file)) {
 }
 $info = json_decode(file_get_contents($info_file), true);
 
-// 댄스 약어 => 풀네임 매핑
+// 공용 댄스 매핑 데이터 사용
+require_once __DIR__ . '/../data/dance_mapping.php';
+
+// 기존 개별 대회 파일도 호환성을 위해 유지
 $dance_types = [];
 if (file_exists($dance_file)) {
     $lines = file($dance_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);

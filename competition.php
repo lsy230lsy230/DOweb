@@ -218,8 +218,8 @@ $results = getCompetitionResults($comp_data_path);
             
             /* 대회 타이틀 컴팩트하게 */
             .competition-header {
-                margin-bottom: 15px !important;
-                padding: 10px 0 !important;
+                margin-bottom: 5px !important;
+                padding: 5px 0 !important;
             }
             
             .competition-header h1 {
@@ -243,12 +243,25 @@ $results = getCompetitionResults($comp_data_path);
                 display: none !important;
             }
             
-            /* 표 인쇄 스타일 */
+            /* 표 인쇄 스타일 - 컴팩트하게 */
             .professional-timetable table {
                 background: white !important;
-                font-size: 11px !important;
+                font-size: 9px !important;
                 border: 1px solid #000 !important;
+                page-break-inside: auto;
+                line-height: 1.2 !important;
+            }
+            
+            /* 행별 페이지 나누기 최적화 */
+            .professional-timetable tr {
                 page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            
+            /* 표가 페이지를 넘어갈 때만 나누기 */
+            .professional-timetable table {
+                page-break-before: auto;
+                page-break-after: auto;
             }
             
             .professional-timetable th {
@@ -256,15 +269,18 @@ $results = getCompetitionResults($comp_data_path);
                 color: black !important;
                 border: 1px solid #000 !important;
                 font-weight: bold !important;
-                padding: 10px 6px !important;
-                font-size: 12px !important;
+                padding: 4px 3px !important;
+                font-size: 10px !important;
+                line-height: 1.1 !important;
             }
             
             .professional-timetable td {
                 border: 1px solid #000 !important;
                 color: black !important;
-                padding: 8px 6px !important;
-                font-size: 11px !important;
+                padding: 3px 3px !important;
+                font-size: 9px !important;
+                line-height: 1.1 !important;
+                vertical-align: top !important;
             }
             
             /* 인쇄 시 아이콘 숨기고 텍스트로 변경 */
@@ -286,6 +302,29 @@ $results = getCompetitionResults($comp_data_path);
             .professional-timetable td:nth-child(4) {
                 font-weight: bold !important;
                 color: #000 !important;
+            }
+            
+            /* 행 높이 최소화 */
+            .professional-timetable tr {
+                height: auto !important;
+                min-height: 0 !important;
+            }
+            
+            /* 배지와 아이콘 크기 최소화 */
+            .professional-timetable span[style*="padding:"] {
+                padding: 1px 2px !important;
+                font-size: 7px !important;
+                margin: 0 !important;
+            }
+            
+            /* 시간 표시 최소화 */
+            .professional-timetable td div[style*="flex-direction: column"] {
+                line-height: 1 !important;
+            }
+            
+            .professional-timetable td div[style*="flex-direction: column"] span {
+                font-size: 8px !important;
+                margin: 0 !important;
             }
             
             /* 인쇄 시 시간 정렬 개선 (첫 번째 컬럼) */
@@ -713,11 +752,11 @@ $results = getCompetitionResults($comp_data_path);
                             <table style="width: 100%; border-collapse: collapse; font-size: 0.9em; table-layout: fixed; background: white; min-width: 800px;" class="timetable-main">
                                 <thead>
                                     <tr style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 90px; font-size: 0.95em;">⏰ 시간</th>
-                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 60px; font-size: 0.95em;">No.</th>
-                                        <th style="padding: 16px 12px; text-align: left; font-weight: 700; color: white; width: 230px; font-size: 0.95em;">🏆 경기 종목</th>
-                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 250px; font-size: 0.95em;">💃 댄스</th>
-                                        <th style="padding: 16px 12px; text-align: center; font-weight: 700; color: white; width: 140px; font-size: 0.95em;">🎯 라운드</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 700; color: white; width: 80px; font-size: 0.85em;">⏰ 시간</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 700; color: white; width: 50px; font-size: 0.85em;">No.</th>
+                                        <th style="padding: 8px 6px; text-align: left; font-weight: 700; color: white; width: 200px; font-size: 0.85em;">🏆 경기 종목</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 700; color: white; width: 180px; font-size: 0.85em;">💃 댄스</th>
+                                        <th style="padding: 8px 6px; text-align: center; font-weight: 700; color: white; width: 100px; font-size: 0.85em;">🎯 라운드</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -797,13 +836,13 @@ $results = getCompetitionResults($comp_data_path);
                                             
                                             <!-- 시간 -->
                                             <?php if ($is_first_in_event): ?>
-                                            <td <?= $is_numeric_event && $event_row_count > 1 ? 'rowspan="' . $event_row_count . '"' : '' ?> style="padding: 12px 8px; text-align: center; color: #1e40af; font-weight: 700; font-size: 0.95em; border-right: 1px solid #e5e7eb; vertical-align: middle;">
-                                                <div style="display: flex; flex-direction: column; align-items: center;">
-                                                    <span style="font-size: 1.1em; font-weight: 800; color: #1e40af;">
+                                            <td <?= $is_numeric_event && $event_row_count > 1 ? 'rowspan="' . $event_row_count . '"' : '' ?> style="padding: 4px 3px; text-align: center; color: #1e40af; font-weight: 700; font-size: 0.8em; border-right: 1px solid #e5e7eb; vertical-align: middle;">
+                                                <div style="display: flex; flex-direction: column; align-items: center; line-height: 1;">
+                                                    <span style="font-size: 0.9em; font-weight: 800; color: #1e40af;">
                                                         <?= htmlspecialchars($row['start_time'] ?? '') ?>
                                                     </span>
                                                     <?php if (!empty($row['end_time'])): ?>
-                                                        <span style="font-size: 0.8em; color: #64748b; margin-top: 2px;">
+                                                        <span style="font-size: 0.7em; color: #64748b; margin-top: 1px;">
                                                             ~ <?= htmlspecialchars($row['end_time']) ?>
                                                         </span>
                                                     <?php endif; ?>
@@ -811,9 +850,9 @@ $results = getCompetitionResults($comp_data_path);
                                             </td>
                                             
                                             <!-- 이벤트 번호 -->
-                                            <td <?= $is_numeric_event && $event_row_count > 1 ? 'rowspan="' . $event_row_count . '"' : '' ?> style="padding: 12px 8px; text-align: center; font-weight: 600; border-right: 1px solid #e5e7eb; vertical-align: middle;">
+                                            <td <?= $is_numeric_event && $event_row_count > 1 ? 'rowspan="' . $event_row_count . '"' : '' ?> style="padding: 4px 3px; text-align: center; font-weight: 600; border-right: 1px solid #e5e7eb; vertical-align: middle;">
                                                 <?php if (!empty($row['no'])): ?>
-                                                    <span style="background: <?= $accent_color ?>; color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.9em; font-weight: 700;">
+                                                    <span style="background: <?= $accent_color ?>; color: white; padding: 2px 4px; border-radius: 4px; font-size: 0.8em; font-weight: 700;">
                                                         <?= htmlspecialchars($row['no']) ?>
                                                     </span>
                                                 <?php endif; ?>
@@ -821,34 +860,30 @@ $results = getCompetitionResults($comp_data_path);
                                             <?php endif; ?>
                                             
                                             <!-- 경기 종목 -->
-                                            <td style="padding: 12px 8px; border-right: 1px solid #e5e7eb;">
-                                                <div style="display: flex; align-items: center; gap: 8px;">
+                                            <td style="padding: 4px 3px; border-right: 1px solid #e5e7eb;">
+                                                <div style="display: flex; align-items: center; gap: 4px;">
                                                     <?php if (!empty($row['detail_no'])): ?>
-                                                        <span style="background: linear-gradient(135deg, #64748b, #475569); color: white; padding: 3px 8px; border-radius: 6px; font-size: 0.8em; font-weight: 600; min-width: 35px; text-align: center; flex-shrink: 0;">
+                                                        <span style="background: linear-gradient(135deg, #64748b, #475569); color: white; padding: 1px 3px; border-radius: 3px; font-size: 0.7em; font-weight: 600; min-width: 25px; text-align: center; flex-shrink: 0;">
                                                             <?= htmlspecialchars($row['detail_no']) ?>
                                                         </span>
                                                     <?php endif; ?>
-                                                    <span style="color: #1f2937; font-weight: 500; font-size: 0.9em;">
+                                                    <span style="color: #1f2937; font-weight: 500; font-size: 0.8em; line-height: 1.1;">
                                                         <?= htmlspecialchars($row['title'] ?? $row['desc'] ?? '경기 종목') ?>
                                                     </span>
                                                 </div>
                                             </td>
                                             
                                             <!-- 댄스 종목 -->
-                                            <td style="padding: 12px 8px; text-align: center; white-space: nowrap; border-right: 1px solid #e5e7eb;">
+                                            <td style="padding: 4px 3px; text-align: center; white-space: nowrap; border-right: 1px solid #e5e7eb;">
                                                 <?php if (!empty($row['dances']) && is_array($row['dances'])): ?>
-                                                    <div style="display: flex; gap: 3px; justify-content: center; flex-wrap: nowrap;">
+                                                    <div style="display: flex; gap: 2px; justify-content: center; flex-wrap: nowrap;">
                                                         <?php
-                                                        // 댄스 약자를 풀네임으로 매핑 (DanceName.txt 기준)
-                                                        $dance_names = [
-                                                            'W' => 'Waltz', 'T' => 'Tango', 'V' => 'Viennese Waltz', 'S' => 'Slow Foxtrot', 'Q' => 'Quickstep',
-                                                            'SA' => 'Samba', 'C' => 'Cha Cha Cha', 'R' => 'Rumba', 'P' => 'Paso Doble', 'J' => 'Jive',
-                                                            'F' => 'Freestyle', 'SW' => 'Swing', 'AT' => 'Argentine Tango', 'Hand.' => 'Handicap', 'FO' => 'Formation Team'
-                                                        ];
+                                                        // 공용 댄스 매핑 데이터 사용
+                                                        require_once __DIR__ . '/data/dance_mapping.php';
                                                         foreach ($row['dances'] as $dance):
                                                         ?>
-                                                            <span style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 2px 5px; border-radius: 4px; font-size: 0.75em; font-weight: 600;">
-                                                                <?= htmlspecialchars($dance_names[$dance] ?? $dance) ?>
+                                                            <span style="background: linear-gradient(135deg, #f59e0b, #d97706); color: white; padding: 1px 3px; border-radius: 3px; font-size: 0.65em; font-weight: 600;">
+                                                                <?= htmlspecialchars(getDanceName($dance)) ?>
                                                             </span>
                                                         <?php endforeach; ?>
                                                     </div>
@@ -856,7 +891,7 @@ $results = getCompetitionResults($comp_data_path);
                                             </td>
                                             
                                             <!-- 라운드 -->
-                                            <td style="padding: 12px 8px; text-align: center; white-space: nowrap;">
+                                            <td style="padding: 4px 3px; text-align: center; white-space: nowrap;">
                                                 <?php if (!empty($row['roundtype'])): ?>
                                                     <?php 
                                                     $roundtype = $row['roundtype'];
@@ -882,9 +917,9 @@ $results = getCompetitionResults($comp_data_path);
                                                         $display_text = $roundtype . ' ' . $roundnum;
                                                     }
                                                     ?>
-                                                    <div style="display: flex; align-items: center; justify-content: center; gap: 4px; flex-wrap: nowrap;">
-                                                        <span style="font-size: 1em;"><?= $round_icon ?></span>
-                                                        <span style="color: <?= $round_color ?>; font-weight: 700; font-size: 0.85em;">
+                                                    <div style="display: flex; align-items: center; justify-content: center; gap: 2px; flex-wrap: nowrap;">
+                                                        <span style="font-size: 0.8em;"><?= $round_icon ?></span>
+                                                        <span style="color: <?= $round_color ?>; font-weight: 700; font-size: 0.7em;">
                                                             <?= htmlspecialchars($display_text) ?>
                                                         </span>
                                                     </div>

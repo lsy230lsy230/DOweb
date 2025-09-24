@@ -88,10 +88,12 @@ if (file_exists($runorder_file)) {
                 'music_time' => $music_time,
             ];
         } else {
-            // 댄스 종목 번호를 이름으로 변환
-            $converted_dances = convert_dance_numbers_to_names($dance_abbr, $dance_types);
-            // 댄스 종목을 번호 순으로 정렬
-            $sorted_dances = sort_dances_by_number($converted_dances, $dance_types);
+            // 공용 댄스 매핑 데이터 사용
+            require_once __DIR__ . '/../data/dance_mapping.php';
+            
+            // 댄스 종목을 약어로 변환하고 번호 순으로 정렬
+            $converted_dances = convertDancesToAbbrs($dance_abbr);
+            $sorted_dances = sortDancesByNumber($converted_dances);
             
             $events[] = [
                 'raw_no'      => $cols[0] ?? '',
@@ -361,7 +363,9 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['add_event_inline'])) {
         } elseif ($now_round_type === "Semi-Final") {
             $next_round_type = "Final";
         }
-        // 댄스 종목 번호를 이름으로 변환
+        // 공용 댄스 매핑 데이터 사용
+        require_once __DIR__ . '/../data/dance_mapping.php';
+        
         $dance_abbrs = array_filter([
             $_POST['dance1'] ?? '',
             $_POST['dance2'] ?? '',
@@ -369,8 +373,8 @@ if ($_SERVER['REQUEST_METHOD']==='POST' && isset($_POST['add_event_inline'])) {
             $_POST['dance4'] ?? '',
             $_POST['dance5'] ?? ''
         ]);
-        $converted_dances = convert_dance_numbers_to_names($dance_abbrs, $dance_types);
-        $sorted_dances = sort_dances_by_number($converted_dances, $dance_types);
+        $converted_dances = convertDancesToAbbrs($dance_abbrs);
+        $sorted_dances = sortDancesByNumber($converted_dances);
         
         $next_fields = [
             $next_event,
@@ -546,7 +550,9 @@ if (isset($_POST['edit_idx']) && is_numeric($_POST['edit_idx'])) {
                 } elseif ($now_round_type === "Semi-Final") {
                     $next_round_type = "Final";
                 }
-                // 댄스 종목 번호를 이름으로 변환
+                // 공용 댄스 매핑 데이터 사용
+                require_once __DIR__ . '/../data/dance_mapping.php';
+                
                 $dance_abbrs = array_filter([
                     $_POST['dance1'] ?? '',
                     $_POST['dance2'] ?? '',
@@ -554,8 +560,8 @@ if (isset($_POST['edit_idx']) && is_numeric($_POST['edit_idx'])) {
                     $_POST['dance4'] ?? '',
                     $_POST['dance5'] ?? ''
                 ]);
-                $converted_dances = convert_dance_numbers_to_names($dance_abbrs, $dance_types);
-                $sorted_dances = sort_dances_by_number($converted_dances, $dance_types);
+                $converted_dances = convertDancesToAbbrs($dance_abbrs);
+                $sorted_dances = sortDancesByNumber($converted_dances);
                 
                 $next_fields = [
                     $next_event,
@@ -592,27 +598,7 @@ function get_round_label($round_type, $round_num) {
     if ($round_type === "Final") return "Final";
     return h($round_type);
 }
-function render_dances($abbrs, $dance_types) {
-    $out = [];
-    foreach ($abbrs as $ab) {
-        // None, 0, 빈 문자열, '?' 등 무효한 값 제외
-        if (empty($ab) || $ab === '0' || $ab === 'None' || $ab === '?' || $ab === '-') {
-            continue;
-        }
-        
-        if (isset($dance_types[$ab])) {
-            // 이름만 표시 (예: Waltz)
-            $dance_info = get_dance_info_by_abbr($ab, $dance_types);
-            $out[] = $dance_info['name'];
-        } else {
-            // 매칭되지 않는 경우 원본 표시 (유효한 경우만)
-            if (!empty($ab) && $ab !== '0' && $ab !== 'None' && $ab !== '?' && $ab !== '-') {
-                $out[] = $ab;
-            }
-        }
-    }
-    return implode(', ', $out);
-}
+// render_dances 함수는 이제 인라인으로 처리됨
 
 function get_dance_info_by_abbr($abbr, $dance_types) {
     // DanceName.txt에서 번호 정보를 가져오기 위해 파일을 다시 읽음
@@ -637,61 +623,7 @@ function get_dance_info_by_abbr($abbr, $dance_types) {
     return $dance_data[$abbr] ?? ['number' => '?', 'name' => $abbr, 'abbr' => $abbr];
 }
 
-function sort_dances_by_number($dance_abbrs, $dance_types) {
-    $dance_file = __DIR__ . "/data/{$_GET['comp_id']}/DanceName.txt";
-    $dance_data = [];
-    
-    if (file_exists($dance_file)) {
-        $lines = file($dance_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        foreach ($lines as $line) {
-            if (preg_match('/^bom/', $line)) continue;
-            $cols = array_map('trim', explode(',', $line));
-            if (count($cols) >= 3 && is_numeric($cols[0])) {
-                $dance_data[$cols[2]] = intval($cols[0]);
-            }
-        }
-    }
-    
-    // 번호 순으로 정렬
-    usort($dance_abbrs, function($a, $b) use ($dance_data) {
-        $num_a = $dance_data[$a] ?? 999; // 매칭되지 않는 경우 맨 뒤로
-        $num_b = $dance_data[$b] ?? 999;
-        return $num_a - $num_b;
-    });
-    
-    return $dance_abbrs;
-}
-
-function convert_dance_numbers_to_names($dance_abbrs, $dance_types) {
-    $dance_file = __DIR__ . "/data/{$_GET['comp_id']}/DanceName.txt";
-    $dance_data = [];
-    
-    if (file_exists($dance_file)) {
-        $lines = file($dance_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        foreach ($lines as $line) {
-            if (preg_match('/^bom/', $line)) continue;
-            $cols = array_map('trim', explode(',', $line));
-            if (count($cols) >= 3 && is_numeric($cols[0])) {
-                $dance_data[intval($cols[0])] = [
-                    'name' => $cols[1],
-                    'abbr' => $cols[2]
-                ];
-            }
-        }
-    }
-    
-    $converted_dances = [];
-    foreach ($dance_abbrs as $abbr) {
-        // 숫자인 경우 번호로 변환
-        if (is_numeric($abbr) && isset($dance_data[intval($abbr)])) {
-            $converted_dances[] = $dance_data[intval($abbr)]['abbr'];
-        } else {
-            $converted_dances[] = $abbr;
-        }
-    }
-    
-    return $converted_dances;
-}
+// 기존 함수들은 공용 함수로 대체됨
 function sum_minutes($list) {
     $total = 0.0;
     foreach ($list as $e) $total += floatval($e['music_time']);
@@ -764,16 +696,16 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
             });
         });
         
-        // 댄스 입력 시 자동 정렬 기능
+        // 댄스 입력 시 자동 정렬 기능 (공용 데이터 사용)
         function autoSortDances() {
             const danceInputs = document.querySelectorAll('.dance-input');
             const danceValues = Array.from(danceInputs).map(input => input.value.trim()).filter(v => v);
             
-            // 번호를 약어로 변환
+            // 공용 댄스 매핑 데이터 사용
             const numberToAbbr = {
                 '1': 'W', '2': 'T', '3': 'V', '4': 'S', '5': 'Q',
-                '6': 'SA', '7': 'C', '8': 'R', '9': 'P', '10': 'J',
-                '11': 'F', '12': 'SW', '13': 'AT', '14': 'HAND.', '15': 'FO'
+                '6': 'C', '7': 'SA', '8': 'R', '9': 'P', '10': 'J',
+                '11': 'F', '12': 'SW', '13': 'AT', '14': 'Hand.', '15': 'FO'
             };
             
             // 숫자인 경우 약어로 변환
@@ -784,11 +716,11 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                 return val.toUpperCase();
             });
             
-            // DanceName.txt의 번호 순서대로 정렬
+            // 공용 댄스 순서대로 정렬
             const danceOrder = {
                 'W': 1, 'T': 2, 'V': 3, 'S': 4, 'Q': 5,
-                'SA': 6, 'C': 7, 'R': 8, 'P': 9, 'J': 10,
-                'F': 11, 'SW': 12, 'AT': 13, 'HAND.': 14, 'FO': 15
+                'C': 6, 'SA': 7, 'R': 8, 'P': 9, 'J': 10,
+                'F': 11, 'SW': 12, 'AT': 13, 'Hand.': 14, 'FO': 15
             };
             
             convertedValues.sort((a, b) => {
@@ -1131,7 +1063,18 @@ if (isset($_GET['edit']) && is_numeric($_GET['edit'])) {
                     <td>-</td>
                 <?php endif; ?>
                 <td class="event-dances">
-                    <?= render_dances($e['dances'], $dance_types); ?>
+                    <?php 
+                    // 공용 댄스 매핑 데이터 사용
+                    require_once __DIR__ . '/../data/dance_mapping.php';
+                    
+                    $dance_names = [];
+                    foreach ($e['dances'] as $dance) {
+                        if (!empty($dance) && $dance !== '0' && $dance !== 'None' && $dance !== '?' && $dance !== '-') {
+                            $dance_names[] = getDanceName($dance);
+                        }
+                    }
+                    echo implode(', ', $dance_names);
+                    ?>
                 </td>
                 <td class="panel-code-cell">
                     <?= h($e['panel_code']) ?>
