@@ -4328,14 +4328,23 @@ function generateResultFiles(currentEvent, aggregationData) {
     console.log('Generating result files...');
     
     return new Promise((resolve, reject) => {
-        // 서버에 결과 파일 생성 요청
-        fetch('generate_result_files.php', {
+        // 직접 파일 생성 방식으로 변경
+        const compId = "<?=addslashes($comp_id)?>";
+        const eventNo = currentEvent.no;
+        const eventName = currentEvent.name || currentEvent.desc || '경기 종목';
+        
+        // Results 폴더 생성
+        const resultsDir = `data/${compId}/Results`;
+        const eventResultsDir = `${resultsDir}/Event_${eventNo}`;
+        
+        // 폴더 생성 요청
+        fetch('create_results_folder.php', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({
-                comp_id: "<?=addslashes($comp_id)?>",
-                event_no: currentEvent.no,
-                event_name: currentEvent.name || currentEvent.desc || '경기 종목',
+                comp_id: compId,
+                event_no: eventNo,
+                event_name: eventName,
                 aggregation_data: aggregationData
             })
         })
