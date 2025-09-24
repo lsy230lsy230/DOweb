@@ -1044,12 +1044,98 @@ $results = getCompetitionResults($comp_data_path);
                     $event_results = [];
                     
                     if (is_dir($comp_data_dir)) {
-                        // 결과 파일들 찾기
+                        // 1. results_*.json 파일들 찾기
                         $result_files = glob($comp_data_dir . '/results_*.json');
                         foreach ($result_files as $file) {
                             $result_data = json_decode(file_get_contents($file), true);
                             if ($result_data) {
                                 $event_results[] = $result_data;
+                            }
+                        }
+                        
+                        // 2. players_hits_*.json 파일들도 결과로 간주
+                        $hits_files = glob($comp_data_dir . '/players_hits_*.json');
+                        foreach ($hits_files as $file) {
+                            $hits_data = json_decode(file_get_contents($file), true);
+                            if ($hits_data) {
+                                // 파일명에서 이벤트 번호 추출
+                                $filename = basename($file);
+                                if (preg_match('/players_hits_(\d+)\.json/', $filename, $matches)) {
+                                    $event_no = $matches[1];
+                                    
+                                    // RunOrder에서 해당 이벤트 정보 찾기
+                                    $event_name = "이벤트 {$event_no}";
+                                    $round = "Final";
+                                    
+                                    // RunOrder_Tablet.txt에서 이벤트 정보 찾기
+                                    $runorder_file = $comp_data_dir . '/RunOrder_Tablet.txt';
+                                    if (file_exists($runorder_file)) {
+                                        $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                                        foreach ($lines as $line) {
+                                            if (preg_match('/^bom/', $line)) continue;
+                                            $cols = array_map('trim', explode(',', $line));
+                                            if (count($cols) >= 4 && $cols[0] == $event_no) {
+                                                $event_name = $cols[1];
+                                                $round = $cols[2];
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    
+                                    // 순위 데이터 변환
+                                    $rankings = [];
+                                    foreach ($hits_data as $rank => $players) {
+                                        foreach ($players as $player_no) {
+                                            $rankings[] = [
+                                                'rank' => $rank,
+                                                'player_no' => $player_no,
+                                                'player_name' => "선수 {$player_no}"
+                                            ];
+                                        }
+                                    }
+                                    
+                                    $event_results[] = [
+                                        'event_no' => $event_no,
+                                        'event_name' => $event_name,
+                                        'round' => $round,
+                                        'final_rankings' => $rankings,
+                                        'source' => 'hits'
+                                    ];
+                                }
+                            }
+                        }
+                        
+                        // 3. RunOrder_Tablet.txt에서 완료된 이벤트들 찾기
+                        $runorder_file = $comp_data_dir . '/RunOrder_Tablet.txt';
+                        if (file_exists($runorder_file)) {
+                            $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                            foreach ($lines as $line) {
+                                if (preg_match('/^bom/', $line)) continue;
+                                $cols = array_map('trim', explode(',', $line));
+                                if (count($cols) >= 4) {
+                                    $event_no = $cols[0];
+                                    $event_name = $cols[1];
+                                    $round = $cols[2];
+                                    
+                                    // 이미 결과에 없는 이벤트만 추가
+                                    $exists = false;
+                                    foreach ($event_results as $existing) {
+                                        if ($existing['event_no'] == $event_no) {
+                                            $exists = true;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    if (!$exists && !empty($event_no) && is_numeric($event_no)) {
+                                        $event_results[] = [
+                                            'event_no' => $event_no,
+                                            'event_name' => $event_name,
+                                            'round' => $round,
+                                            'final_rankings' => [],
+                                            'source' => 'runorder'
+                                        ];
+                                    }
+                                }
                             }
                         }
                     }
@@ -1080,17 +1166,26 @@ $results = getCompetitionResults($comp_data_path);
                                         <?php if (isset($result['final_rankings']) && !empty($result['final_rankings'])): ?>
                                             <div style="margin-top: 12px;">
                                                 <h4 style="color: #3b82f6; margin-bottom: 8px;">최종 순위</h4>
-                                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
+                                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;">
                                                     <?php 
-                                                    $rankings = $result['final_rankings'];
-                                                    ksort($rankings);
-                                                    foreach ($rankings as $rank => $players): 
+                                                    // 순위별로 그룹화
+                                                    $rankings_by_rank = [];
+                                                    foreach ($result['final_rankings'] as $ranking) {
+                                                        $rank = $ranking['rank'];
+                                                        if (!isset($rankings_by_rank[$rank])) {
+                                                            $rankings_by_rank[$rank] = [];
+                                                        }
+                                                        $rankings_by_rank[$rank][] = $ranking;
+                                                    }
+                                                    ksort($rankings_by_rank);
+                                                    
+                                                    foreach ($rankings_by_rank as $rank => $players): 
                                                     ?>
-                                                        <div style="background: rgba(59, 130, 246, 0.1); padding: 8px; border-radius: 6px;">
-                                                            <strong style="color: #3b82f6;"><?= $rank ?>위</strong>
-                                                            <div style="font-size: 0.9em; color: #94a3b8;">
+                                                        <div style="background: rgba(59, 130, 246, 0.1); padding: 8px; border-radius: 6px; text-align: center;">
+                                                            <strong style="color: #3b82f6; font-size: 14px;"><?= $rank ?>위</strong>
+                                                            <div style="font-size: 0.9em; color: #94a3b8; margin-top: 4px;">
                                                                 <?php foreach ($players as $player): ?>
-                                                                    <div><?= htmlspecialchars($player['name'] ?? '') ?></div>
+                                                                    <div style="margin: 2px 0;"><?= htmlspecialchars($player['player_name'] ?? "선수 {$player['player_no']}") ?></div>
                                                                 <?php endforeach; ?>
                                                             </div>
                                                         </div>
@@ -1098,7 +1193,10 @@ $results = getCompetitionResults($comp_data_path);
                                                 </div>
                                             </div>
                                         <?php else: ?>
-                                            <p style="color: #94a3b8;">결과 데이터를 처리 중입니다...</p>
+                                            <p style="color: #94a3b8; text-align: center; padding: 20px;">
+                                                <span class="material-symbols-rounded" style="vertical-align: middle; font-size: 18px;">schedule</span>
+                                                결과 데이터를 처리 중입니다...
+                                            </p>
                                         <?php endif; ?>
                                     </div>
                                 </div>
