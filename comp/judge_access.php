@@ -1,7 +1,7 @@
 <?php
 // 심사위원 접속 페이지
 $lang = $_GET['lang'] ?? 'ko';
-if (!in_array($lang, ['ko', 'en', 'zh', 'ja'])) {
+if (!in_array($lang, ['ko', 'en', 'zh', 'ja', 'ru'])) {
     $lang = 'ko';
 }
 
@@ -65,6 +65,21 @@ $texts = [
         'cancel' => 'キャンセル',
         'no_competitions' => '本日予定されている大会はありません',
         'contact_admin' => '大会管理者にお問い合わせください',
+        'switch_lang' => 'English'
+    ],
+    'ru' => [
+        'title' => 'Доступ судей',
+        'subtitle' => 'Выберите соревнование для судейства',
+        'competition' => 'Соревнование',
+        'place' => 'Место',
+        'date' => 'Дата',
+        'login' => 'Вход',
+        'judge_id' => 'ID судьи',
+        'password' => 'Пароль',
+        'enter' => 'Войти',
+        'cancel' => 'Отмена',
+        'no_competitions' => 'Сегодня нет запланированных соревнований',
+        'contact_admin' => 'Обратитесь к администратору соревнований',
         'switch_lang' => 'English'
     ]
 ];
@@ -196,6 +211,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             cursor: pointer;
             transition: all 0.3s ease;
             text-align: left;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
         
         .competition-card:hover {
@@ -248,137 +266,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             font-size: 1em;
         }
         
-        /* 로그인 모달 */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-        }
-        
-        .modal-content {
-            background-color: #fff;
-            margin: 15% auto;
-            padding: 30px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 400px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            animation: modalSlideIn 0.3s ease;
-        }
-        
-        @keyframes modalSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        .modal-header {
-            text-align: center;
-            margin-bottom: 25px;
-        }
-        
-        .modal-title {
-            font-size: 1.4em;
-            font-weight: 700;
-            color: #333;
-            margin: 0 0 5px 0;
-        }
-        
-        .modal-subtitle {
-            color: #666;
-            font-size: 0.9em;
-            margin: 0;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        
-        .form-label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #333;
-            font-size: 0.9em;
-        }
-        
-        .form-input {
-            width: 100%;
-            padding: 12px 16px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.2s;
-        }
-        
-        .form-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 12px;
-            margin-top: 25px;
-        }
-        
-        .btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .btn-primary {
-            background: #667eea;
-            color: #fff;
-        }
-        
-        .btn-primary:hover {
-            background: #5a6fd8;
-            transform: translateY(-1px);
-        }
-        
-        .btn-secondary {
-            background: #6c757d;
-            color: #fff;
-        }
-        
-        .btn-secondary:hover {
-            background: #5a6268;
-            transform: translateY(-1px);
-        }
-        
-        .close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 24px;
-            font-weight: bold;
-            color: #aaa;
-            cursor: pointer;
-            line-height: 1;
-        }
-        
-        .close:hover {
-            color: #333;
-        }
         
         /* 모바일 대응 */
         @media (max-width: 768px) {
@@ -412,9 +299,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
     </style>
 </head>
 <body>
-    <a href="?lang=<?=$lang === 'ko' ? 'en' : 'ko'?>" class="lang-switch">
-        <?=h($t['switch_lang'])?>
-    </a>
+    <select class="lang-switch" onchange="window.location.href='?lang=' + this.value">
+        <option value="ko" <?=$lang === 'ko' ? 'selected' : ''?>>한국어</option>
+        <option value="en" <?=$lang === 'en' ? 'selected' : ''?>>English</option>
+        <option value="zh" <?=$lang === 'zh' ? 'selected' : ''?>>中文</option>
+        <option value="ja" <?=$lang === 'ja' ? 'selected' : ''?>>日本語</option>
+        <option value="ru" <?=$lang === 'ru' ? 'selected' : ''?>>Русский</option>
+    </select>
     
     <div class="container">
         <div class="header">
@@ -430,7 +321,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         <?php else: ?>
             <div class="competitions-grid">
                 <?php foreach ($competitions as $comp): ?>
-                <div class="competition-card" onclick="openLoginModal('<?=h($comp['id'])?>', '<?=h($comp['title'])?>')">
+                <a href="scoring_login.php?comp_id=<?=h($comp['id'])?>&lang=<?=h($lang)?>" class="competition-card">
                     <div class="competition-title"><?=h($comp['title'])?></div>
                     <div class="competition-info">
                         <div class="competition-place">
@@ -446,107 +337,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         <?php endif; ?>
     </div>
     
-    <!-- 로그인 모달 -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeLoginModal()">&times;</span>
-            <div class="modal-header">
-                <div class="modal-title"><?=h($t['login'])?></div>
-                <div class="modal-subtitle" id="modalSubtitle"></div>
-            </div>
-            
-            <form id="loginForm" onsubmit="submitLogin(event)">
-                <div class="form-group">
-                    <label class="form-label" for="judgeId"><?=h($t['judge_id'])?></label>
-                    <input type="text" id="judgeId" name="judge_id" class="form-input" required autocomplete="username">
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="password"><?=h($t['password'])?></label>
-                    <input type="password" id="password" name="password" class="form-input" required autocomplete="current-password">
-                </div>
-                
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeLoginModal()">
-                        <?=h($t['cancel'])?>
-                    </button>
-                    <button type="submit" class="btn btn-primary">
-                        <?=h($t['enter'])?>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
     
-    <script>
-        let currentCompId = '';
-        
-        function openLoginModal(compId, compTitle) {
-            currentCompId = compId;
-            document.getElementById('modalSubtitle').textContent = compTitle;
-            document.getElementById('loginModal').style.display = 'block';
-            document.getElementById('judgeId').focus();
-        }
-        
-        function closeLoginModal() {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('loginForm').reset();
-            currentCompId = '';
-        }
-        
-        function submitLogin(event) {
-            event.preventDefault();
-            
-            const judgeId = document.getElementById('judgeId').value.trim();
-            const password = document.getElementById('password').value;
-            
-            if (!judgeId || !password) {
-                alert('심사위원 ID와 비밀번호를 입력해주세요.');
-                return;
-            }
-            
-            // 로그인 처리
-            const formData = new FormData();
-            formData.append('comp_id', currentCompId);
-            formData.append('judge_id', judgeId);
-            formData.append('password', password);
-            
-            fetch('scoring_login.php', {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // 로그인 성공 시 대시보드로 이동
-                    window.location.href = `scoring_dashboard.php?comp_id=${currentCompId}&lang=<?=h($lang)?>`;
-                } else {
-                    alert(data.message || '로그인에 실패했습니다.');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('로그인 중 오류가 발생했습니다.');
-            });
-        }
-        
-        // 모달 외부 클릭 시 닫기
-        window.onclick = function(event) {
-            const modal = document.getElementById('loginModal');
-            if (event.target === modal) {
-                closeLoginModal();
-            }
-        }
-        
-        // ESC 키로 모달 닫기
-        document.addEventListener('keydown', function(event) {
-            if (event.key === 'Escape') {
-                closeLoginModal();
-            }
-        });
-    </script>
 </body>
 </html>
