@@ -101,8 +101,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $is_ajax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] === 'XMLHttpRequest' ||
                (isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false);
     
-    if (empty($input_judge_id) || empty($input_password)) {
-        $error_message = '심사위원 ID와 비밀번호를 입력해주세요.';
+    if (empty($input_password)) {
+        $error_message = '비밀번호를 입력해주세요.';
         if ($is_ajax) {
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode(['success' => false, 'message' => $error_message], JSON_UNESCAPED_UNICODE);
