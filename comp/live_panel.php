@@ -3147,38 +3147,37 @@ async function exportDanceScoreReport() {
 }
 
 async function loadAdjDataForReport(eventNo, dances) {
-    const adjData = {};
-    
-    for (const dance of dances) {
-        adjData[dance] = {};
+    try {
+        const compId = "<?=addslashes($comp_id)?>";
         
-        // 각 심사위원별 .adj 파일 읽기
-        for (const judgeCode of ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O']) {
-            try {
-                const response = await fetch(`data/20250913-001/${eventNo}_${dance}_${judgeCode}.adj`);
-                if (response.ok) {
-                    const text = await response.text();
-                    const lines = text.split('\n').filter(line => line.trim());
-                    
-                    lines.forEach(line => {
-                        const parts = line.split('\t');
-                        if (parts.length >= 2) {
-                            const playerNumber = parts[0];
-                            const recall = parts[1] === '1' ? '1' : '0';
-                            if (!adjData[dance][playerNumber]) {
-                                adjData[dance][playerNumber] = {};
-                            }
-                            adjData[dance][playerNumber][judgeCode] = recall;
-                        }
-                    });
-                }
-            } catch (error) {
-                console.log(`No data for ${eventNo}_${dance}_${judgeCode}.adj`);
+        const response = await fetch('load_adj_data.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                comp_id: compId,
+                event_no: eventNo,
+                dances: dances
+            })
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+                return result.data;
+            } else {
+                console.error('Failed to load adj data:', result.message);
+                return {};
             }
+        } else {
+            console.error('HTTP error loading adj data:', response.status);
+            return {};
         }
+    } catch (error) {
+        console.error('Error loading adj data:', error);
+        return {};
     }
-    
-    return adjData;
 }
 
 // 동기적으로 .adj 파일을 로드하는 함수 (비활성화됨 - 데모 데이터 사용)
