@@ -22,9 +22,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     foreach ($dances as $dance) {
         $adjData[$dance] = [];
         
-        // 각 심사위원별 .adj 파일 읽기
-        for ($judgeCode = 'A'; $judgeCode <= 'O'; $judgeCode++) {
-            $filename = "data/$comp_id/{$event_no}_{$dance}_{$judgeCode}.adj";
+        // 각 심사위원별 .adj 파일 읽기 (12-24)
+        for ($judgeNum = 12; $judgeNum <= 24; $judgeNum++) {
+            $filename = "data/$comp_id/{$event_no}_{$dance}_{$judgeNum}.adj";
             
             if (file_exists($filename)) {
                 $content = file_get_contents($filename);
@@ -34,15 +34,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $line = trim($line);
                     if (empty($line)) continue;
                     
-                    $parts = explode("\t", $line);
-                    if (count($parts) >= 2) {
-                        $playerNumber = $parts[0];
-                        $recall = $parts[1] === '1' ? '1' : '0';
-                        
+                    // .adj 파일 형식: 각 줄에 선수 번호만 있음 (리콜된 선수)
+                    $playerNumber = trim($line, '"');
+                    if (!empty($playerNumber)) {
                         if (!isset($adjData[$dance][$playerNumber])) {
                             $adjData[$dance][$playerNumber] = [];
                         }
-                        $adjData[$dance][$playerNumber][$judgeCode] = $recall;
+                        $adjData[$dance][$playerNumber][$judgeNum] = '1'; // 리콜됨
                     }
                 }
             }

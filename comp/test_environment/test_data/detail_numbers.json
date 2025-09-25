@@ -1,0 +1,1640 @@
+[
+    {
+        "event_idx": 0,
+        "raw_no": "1",
+        "group_no": "1",
+        "detail_no": "1-1",
+        "name": "솔로 일반부 스탠다드 1종목 (T)",
+        "dances": [
+            "T",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 1,
+        "raw_no": "1",
+        "group_no": "1",
+        "detail_no": "1-2",
+        "name": "초등부 스탠다드 2종목 (W T)",
+        "dances": [
+            "W",
+            "T",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 2,
+        "raw_no": "2",
+        "group_no": "2",
+        "detail_no": "2-1",
+        "name": "유치부 라틴 1종목 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 3,
+        "raw_no": "3",
+        "group_no": "3",
+        "detail_no": "3-1",
+        "name": "솔로 초등부 저학년 라틴 2종목 (R J)",
+        "dances": [
+            "R",
+            "J",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 4,
+        "raw_no": "3",
+        "group_no": "3",
+        "detail_no": "3-2",
+        "name": "솔로 유치부 라틴 1종목 (R )",
+        "dances": [
+            "R",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 5,
+        "raw_no": "4",
+        "group_no": "4",
+        "detail_no": "4-1",
+        "name": "솔로 초등부 저학년 라틴 2종목 (C J)",
+        "dances": [
+            "C",
+            "J",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 6,
+        "raw_no": "4",
+        "group_no": "4",
+        "detail_no": "4-2",
+        "name": "솔로 초등부 저학년 라틴 1종목 (J)",
+        "dances": [
+            "J",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 7,
+        "raw_no": "5",
+        "group_no": "5",
+        "detail_no": "5-1",
+        "name": "솔로 유치부 라틴 1종목 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 8,
+        "raw_no": "5",
+        "group_no": "5",
+        "detail_no": "5-2",
+        "name": "솔로 유치부 라틴 2종목 (C R)",
+        "dances": [
+            "C",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 9,
+        "raw_no": "5",
+        "group_no": "5",
+        "detail_no": "5-3",
+        "name": "솔로 초등부 저학년 라틴 1종목 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 10,
+        "raw_no": "5",
+        "group_no": "5",
+        "detail_no": "5-4",
+        "name": "솔로 초등부 저학년 라틴 1종목 (R)",
+        "dances": [
+            "R",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 11,
+        "raw_no": "6",
+        "group_no": "6",
+        "detail_no": "6-1",
+        "name": "솔로 초등부 저학년 라틴 3종목 (C R S)",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 12,
+        "raw_no": "6",
+        "group_no": "6",
+        "detail_no": "6-2",
+        "name": "솔로 초등부 고학년 라틴 1종목 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 13,
+        "raw_no": "6",
+        "group_no": "6",
+        "detail_no": "6-3",
+        "name": "솔로 초등부 고학년 라틴 1종목 (R)",
+        "dances": [
+            "R",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 14,
+        "raw_no": "6",
+        "group_no": "6",
+        "detail_no": "6-4",
+        "name": "솔로 초등부 고학년 라틴 1종목 (S)",
+        "dances": [
+            "SA",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 15,
+        "raw_no": "7",
+        "group_no": "7",
+        "detail_no": "7-1",
+        "name": "솔로 초등부 저학년 라틴 3종목 (C R J)",
+        "dances": [
+            "C",
+            "R",
+            "J",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 16,
+        "raw_no": "7",
+        "group_no": "7",
+        "detail_no": "7-2",
+        "name": "솔로 초등부 고학년 라틴 1종목 (J)",
+        "dances": [
+            "J",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 17,
+        "raw_no": "7",
+        "group_no": "7",
+        "detail_no": "7-3",
+        "name": "솔로 초등부 고학년 라틴 2종목 (R J)",
+        "dances": [
+            "R",
+            "J",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 18,
+        "raw_no": "8",
+        "group_no": "8",
+        "detail_no": "8-1",
+        "name": "솔로 초등부 고학년 라틴 3종목 (C R S)",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 19,
+        "raw_no": "8",
+        "group_no": "8",
+        "detail_no": "8-2",
+        "name": "솔로 중등부 라틴 3종목 (C R S)",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 20,
+        "raw_no": "8",
+        "group_no": "8",
+        "detail_no": "8-3",
+        "name": "솔로 중등부 1종목 (R)",
+        "dances": [
+            "R",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 21,
+        "raw_no": "9",
+        "group_no": "9",
+        "detail_no": "9-1",
+        "name": "솔로 초등부 저학년 라틴 2종목 (C R)",
+        "dances": [
+            "C",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 22,
+        "raw_no": "10",
+        "group_no": "10",
+        "detail_no": "10-1",
+        "name": "솔로 중등부 라틴 3종목 (C R J)",
+        "dances": [
+            "C",
+            "R",
+            "J",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 23,
+        "raw_no": "10",
+        "group_no": "10",
+        "detail_no": "10-2",
+        "name": "솔로 초등부 고학년 라틴 3종목 (C R J)",
+        "dances": [
+            "C",
+            "R",
+            "J",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 24,
+        "raw_no": "10",
+        "group_no": "10",
+        "detail_no": "10-3",
+        "name": "솔로 일반부 라틴 2종목 (C J)",
+        "dances": [
+            "C",
+            "J",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 25,
+        "raw_no": "11",
+        "group_no": "11",
+        "detail_no": "11-1",
+        "name": "솔로 초등부 고학년 라틴 4종목",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "J",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 26,
+        "raw_no": "11",
+        "group_no": "11",
+        "detail_no": "11-2",
+        "name": "솔로 중등부 라틴 4종목",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "J",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 27,
+        "raw_no": "12",
+        "group_no": "12",
+        "detail_no": "12-1",
+        "name": "솔로 일반부 라틴 3종목 (C R S)",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 28,
+        "raw_no": "12",
+        "group_no": "12",
+        "detail_no": "12-2",
+        "name": "솔로 대학부 라틴 3종목 (C R S)",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 29,
+        "raw_no": "12",
+        "group_no": "12",
+        "detail_no": "12-3",
+        "name": "솔로 고등부 라틴 3종목 (C R S)",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 30,
+        "raw_no": "13",
+        "group_no": "13",
+        "detail_no": "13-1",
+        "name": "솔로 초등부 고학년 5종목",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "P",
+            "J"
+        ]
+    },
+    {
+        "event_idx": 31,
+        "raw_no": "13",
+        "group_no": "13",
+        "detail_no": "13-2",
+        "name": "솔로 중등부 라틴 5종목",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "P",
+            "J"
+        ]
+    },
+    {
+        "event_idx": 32,
+        "raw_no": "14",
+        "group_no": "14",
+        "detail_no": "14-1",
+        "name": "솔로 일반부 라틴 2종목 (C R)",
+        "dances": [
+            "C",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 33,
+        "raw_no": "14",
+        "group_no": "14",
+        "detail_no": "14-2",
+        "name": "솔로 일반부 라틴 1종목 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 34,
+        "raw_no": "14",
+        "group_no": "14",
+        "detail_no": "14-3",
+        "name": "솔로 고등부 라틴 2종목 (C R)",
+        "dances": [
+            "C",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 35,
+        "raw_no": "14",
+        "group_no": "14",
+        "detail_no": "14-4",
+        "name": "솔로 중등부 라틴 2종목 (C R)",
+        "dances": [
+            "C",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 36,
+        "raw_no": "15",
+        "group_no": "15",
+        "detail_no": "15-1",
+        "name": "솔로 일반부 라틴 2종목 (S R)",
+        "dances": [
+            "SA",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 37,
+        "raw_no": "15",
+        "group_no": "15",
+        "detail_no": "15-2",
+        "name": "솔로 고등부 라틴 2종목 (S R)",
+        "dances": [
+            "SA",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 38,
+        "raw_no": "15",
+        "group_no": "15",
+        "detail_no": "15-3",
+        "name": "솔로 일반부 라틴 1종목 (S)",
+        "dances": [
+            "SA",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 39,
+        "raw_no": "15",
+        "group_no": "15",
+        "detail_no": "15-4",
+        "name": "솔로 일반부 라틴 1종목 (R)",
+        "dances": [
+            "R",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 40,
+        "raw_no": "16",
+        "group_no": "16",
+        "detail_no": "16-1",
+        "name": "솔로 고등부 라틴 3종목 (C R J)",
+        "dances": [
+            "C",
+            "R",
+            "J",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 41,
+        "raw_no": "16",
+        "group_no": "16",
+        "detail_no": "16-2",
+        "name": "솔로 중등부 라틴 1종목 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 42,
+        "raw_no": "16",
+        "group_no": "16",
+        "detail_no": "16-3",
+        "name": "솔로 일반부 라틴 1종목 (J)",
+        "dances": [
+            "J",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 43,
+        "raw_no": "17",
+        "group_no": "17",
+        "detail_no": "17-1",
+        "name": "솔로 대학부 스탠다드 5종목",
+        "dances": [
+            "W",
+            "T",
+            "V",
+            "S",
+            "Q"
+        ]
+    },
+    {
+        "event_idx": 44,
+        "raw_no": "17",
+        "group_no": "17",
+        "detail_no": "17-2",
+        "name": "솔로 일반부 스탠다드 2종목 (W T)",
+        "dances": [
+            "W",
+            "T",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 45,
+        "raw_no": "17",
+        "group_no": "17",
+        "detail_no": "17-3",
+        "name": "초등부 스탠다드 3종목 (W T Q)",
+        "dances": [
+            "W",
+            "T",
+            "Q",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 46,
+        "raw_no": "17",
+        "group_no": "17",
+        "detail_no": "17-4",
+        "name": "초등부 스탠다드 1종목 (W)",
+        "dances": [
+            "Q",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 47,
+        "raw_no": "17",
+        "group_no": "17",
+        "detail_no": "17-5",
+        "name": "일반부 스탠다드 5종목",
+        "dances": [
+            "W",
+            "T",
+            "V",
+            "S",
+            "Q"
+        ]
+    },
+    {
+        "event_idx": 48,
+        "raw_no": "17",
+        "group_no": "17",
+        "detail_no": "17-6",
+        "name": "포메이션 리허설",
+        "dances": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 49,
+        "raw_no": "18",
+        "group_no": "18",
+        "detail_no": "18-1",
+        "name": "프로-암 클로즈 라틴 1종목 (R)",
+        "dances": [
+            "R",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 50,
+        "raw_no": "19",
+        "group_no": "19",
+        "detail_no": "19-1",
+        "name": "프로-암 오픈 라틴 1종목 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 51,
+        "raw_no": "20",
+        "group_no": "20",
+        "detail_no": "20-1",
+        "name": "프로-암 오픈 라틴 1종목 (R)",
+        "dances": [
+            "R",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 52,
+        "raw_no": "20",
+        "group_no": "20",
+        "detail_no": "20-2",
+        "name": "프로-암 오픈 라틴 2종목 (R S)",
+        "dances": [
+            "SA",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 53,
+        "raw_no": "21",
+        "group_no": "21",
+        "detail_no": "21-1",
+        "name": "프로-암 클로즈 라틴 1종목 (J)",
+        "dances": [
+            "J",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 54,
+        "raw_no": "21",
+        "group_no": "21",
+        "detail_no": "21-2",
+        "name": "일반부 라틴 1종목 (J)",
+        "dances": [
+            "J",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 55,
+        "raw_no": "22",
+        "group_no": "22",
+        "detail_no": "22-1",
+        "name": "프로-암 오픈 라틴 2종목 (C R)",
+        "dances": [
+            "C",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 56,
+        "raw_no": "23",
+        "group_no": "23",
+        "detail_no": "23-1",
+        "name": "프로-암 오픈 스탠다드 5종목",
+        "dances": [
+            "W",
+            "T",
+            "S",
+            "Q",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 57,
+        "raw_no": "23",
+        "group_no": "23",
+        "detail_no": "23-2",
+        "name": "프로-암 오픈 스탠다드 3종목",
+        "dances": [
+            "W",
+            "T",
+            "S",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 58,
+        "raw_no": "23",
+        "group_no": "23",
+        "detail_no": "23-3",
+        "name": "프로-암 오픈 스탠다드 1종목 (W)",
+        "dances": [
+            "W",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 59,
+        "raw_no": "23",
+        "group_no": "23",
+        "detail_no": "23-4",
+        "name": "클로즈 1종목 (W)",
+        "dances": [
+            "W",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 60,
+        "raw_no": "23",
+        "group_no": "23",
+        "detail_no": "23-5",
+        "name": "프로-암 오픈 스탠다드 1종목 (SF)",
+        "dances": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 61,
+        "raw_no": "24",
+        "group_no": "24",
+        "detail_no": "24-1",
+        "name": "프로-암 오픈 라틴 3종목 (CRC)",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 62,
+        "raw_no": "25",
+        "group_no": "25",
+        "detail_no": "25-1",
+        "name": "듀오 라틴 3종목",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 63,
+        "raw_no": "25",
+        "group_no": "25",
+        "detail_no": "25-2",
+        "name": "듀오 라틴 1종목",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 64,
+        "raw_no": "25",
+        "group_no": "25",
+        "detail_no": "25-3",
+        "name": "동호인 라틴 1종목 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 65,
+        "raw_no": "25",
+        "group_no": "25",
+        "detail_no": "25-4",
+        "name": "동호인 라틴 1종목 (S)",
+        "dances": [
+            "SA",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 66,
+        "raw_no": "26",
+        "group_no": "26",
+        "detail_no": "26-1",
+        "name": "트리오 라틴 2종목(S R)",
+        "dances": [
+            "C",
+            "SA",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 67,
+        "raw_no": "27",
+        "group_no": "27",
+        "detail_no": "27-1",
+        "name": "매니아 스탠다드 3종목 (W T SF)",
+        "dances": [
+            "W",
+            "T",
+            "S",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 68,
+        "raw_no": "28",
+        "group_no": "28",
+        "detail_no": "28-1",
+        "name": "프로페셔널 라틴",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "P",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 69,
+        "raw_no": "29",
+        "group_no": "29",
+        "detail_no": "29-1",
+        "name": "포메이션A조",
+        "dances": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 70,
+        "raw_no": "29",
+        "group_no": "29",
+        "detail_no": "29-2",
+        "name": "포메이션B조",
+        "dances": [
+            "0",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 71,
+        "raw_no": "30",
+        "group_no": "30",
+        "detail_no": "30-1",
+        "name": "프로페셔널 라틴",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "P",
+            "J"
+        ]
+    },
+    {
+        "event_idx": 72,
+        "raw_no": "31",
+        "group_no": "31",
+        "detail_no": "31-1",
+        "name": "프로페셔널 스탠다드",
+        "dances": [
+            "W",
+            "T",
+            "V",
+            "S",
+            "Q"
+        ]
+    },
+    {
+        "event_idx": 73,
+        "raw_no": "32",
+        "group_no": "32",
+        "detail_no": "32-1",
+        "name": "아마추어 라틴 S",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "P",
+            "J"
+        ]
+    },
+    {
+        "event_idx": 74,
+        "raw_no": "32",
+        "group_no": "32",
+        "detail_no": "32-2",
+        "name": "일반부 라틴 5종목 S",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "P",
+            "J"
+        ]
+    },
+    {
+        "event_idx": 75,
+        "raw_no": "32",
+        "group_no": "32",
+        "detail_no": "32-3",
+        "name": "아마추어 라틴 C",
+        "dances": [
+            "SA",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 76,
+        "raw_no": "32",
+        "group_no": "32",
+        "detail_no": "32-4",
+        "name": "동호인 라틴 2종목 (C R)",
+        "dances": [
+            "C",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 77,
+        "raw_no": "32",
+        "group_no": "32",
+        "detail_no": "32-5",
+        "name": "동호인 라틴 1종목 (S)",
+        "dances": [
+            "SA",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 78,
+        "raw_no": "32",
+        "group_no": "32",
+        "detail_no": "32-6",
+        "name": "매니아 라틴 5종목",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "P",
+            "J"
+        ]
+    },
+    {
+        "event_idx": 79,
+        "raw_no": "32",
+        "group_no": "32",
+        "detail_no": "32-7",
+        "name": "일반부 라틴 2종목",
+        "dances": [
+            "C",
+            "SA",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 80,
+        "raw_no": "33",
+        "group_no": "33",
+        "detail_no": "33-1",
+        "name": "매니아 스탠다드 2종목 (W T)",
+        "dances": [
+            "W",
+            "T",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 81,
+        "raw_no": "34",
+        "group_no": "34",
+        "detail_no": "34-1",
+        "name": "듀오 라틴 3종목",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 82,
+        "raw_no": "34",
+        "group_no": "34",
+        "detail_no": "34-2",
+        "name": "듀오 라틴 1종목",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 83,
+        "raw_no": "34",
+        "group_no": "34",
+        "detail_no": "34-3",
+        "name": "동호인 라틴 1종목 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 84,
+        "raw_no": "34",
+        "group_no": "34",
+        "detail_no": "34-4",
+        "name": "동호인 라틴 1종목 (S)",
+        "dances": [
+            "SA",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 85,
+        "raw_no": "35",
+        "group_no": "35",
+        "detail_no": "35-1",
+        "name": "일반부 스탠다드 2종목 (W T)",
+        "dances": [
+            "W",
+            "T",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 86,
+        "raw_no": "35",
+        "group_no": "35",
+        "detail_no": "35-2",
+        "name": "동호인 스탠다드 2종목 (W T)",
+        "dances": [
+            "W",
+            "T",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 87,
+        "raw_no": "35",
+        "group_no": "35",
+        "detail_no": "35-3",
+        "name": "시니어 스탠다드 2종목 (W T)",
+        "dances": [
+            "W",
+            "T",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 88,
+        "raw_no": "35",
+        "group_no": "35",
+        "detail_no": "35-4",
+        "name": "그랜드 시니어 스탠다드 2종목 (W T)",
+        "dances": [
+            "W",
+            "T",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 89,
+        "raw_no": "36",
+        "group_no": "36",
+        "detail_no": "36-1",
+        "name": "트리오 라틴 2종목(S R)",
+        "dances": [
+            "SA",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 90,
+        "raw_no": "37",
+        "group_no": "37",
+        "detail_no": "37-1",
+        "name": "매니아 스탠다드 2종목 (W T)",
+        "dances": [
+            "W",
+            "T",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 91,
+        "raw_no": "38",
+        "group_no": "38",
+        "detail_no": "38-1",
+        "name": "프로-암 클로즈 라틴 1종목 (R)",
+        "dances": [
+            "R",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 92,
+        "raw_no": "39",
+        "group_no": "39",
+        "detail_no": "39-1",
+        "name": "아빠랑 딸이랑 (W)",
+        "dances": [
+            "W",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 93,
+        "raw_no": "40",
+        "group_no": "40",
+        "detail_no": "40-1",
+        "name": "프로-암 오픈 라틴 1종목 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 94,
+        "raw_no": "41",
+        "group_no": "41",
+        "detail_no": "41-1",
+        "name": "아빠랑 딸이랑 (C)",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 95,
+        "raw_no": "42",
+        "group_no": "42",
+        "detail_no": "42-1",
+        "name": "프로-암 오픈 라틴 1종목 (R)",
+        "dances": [
+            "R",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 96,
+        "raw_no": "42",
+        "group_no": "42",
+        "detail_no": "42-2",
+        "name": "프로-암 오픈 라틴 2종목 (R S)",
+        "dances": [
+            "SA",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 97,
+        "raw_no": "43",
+        "group_no": "43",
+        "detail_no": "43-1",
+        "name": "프로-암 클로즈 라틴 1종목 (J)",
+        "dances": [
+            "J",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 98,
+        "raw_no": "43",
+        "group_no": "43",
+        "detail_no": "43-2",
+        "name": "일반부 라틴 1종목 (J)",
+        "dances": [
+            "J",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 99,
+        "raw_no": "44",
+        "group_no": "44",
+        "detail_no": "44-1",
+        "name": "프로-암 오픈 라틴 2종목 (C R)",
+        "dances": [
+            "C",
+            "R",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 100,
+        "raw_no": "45",
+        "group_no": "45",
+        "detail_no": "45-1",
+        "name": "프로-암 오픈 스탠다드 5종목",
+        "dances": [
+            "W",
+            "T",
+            "S",
+            "Q",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 101,
+        "raw_no": "45",
+        "group_no": "45",
+        "detail_no": "45-2",
+        "name": "프로-암 오픈 스탠다드 3종목",
+        "dances": [
+            "W",
+            "T",
+            "S",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 102,
+        "raw_no": "45",
+        "group_no": "45",
+        "detail_no": "45-3",
+        "name": "프로-암 오픈 스탠다드 1종목 (W)",
+        "dances": [
+            "W",
+            "S",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 103,
+        "raw_no": "45",
+        "group_no": "45",
+        "detail_no": "45-4",
+        "name": "클로즈 1종목 (W)",
+        "dances": [
+            "W",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 104,
+        "raw_no": "46",
+        "group_no": "46",
+        "detail_no": "46-1",
+        "name": "프로-암 오픈 라틴 3종목 (CRC)",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 105,
+        "raw_no": "47",
+        "group_no": "47",
+        "detail_no": "47-1",
+        "name": "매니아 스탠다드 3종목 (W T SF)",
+        "dances": [
+            "W",
+            "T",
+            "S",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 106,
+        "raw_no": "48",
+        "group_no": "48",
+        "detail_no": "48-1",
+        "name": "프로페셔널 스탠다드 마스터클래스",
+        "dances": [
+            "W",
+            "T",
+            "V",
+            "S",
+            "Q"
+        ]
+    },
+    {
+        "event_idx": 107,
+        "raw_no": "49",
+        "group_no": "49",
+        "detail_no": "49-1",
+        "name": "그랜드시니어 스탠다드 3종목",
+        "dances": [
+            "W",
+            "T",
+            "S",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 108,
+        "raw_no": "49",
+        "group_no": "49",
+        "detail_no": "49-2",
+        "name": "아마추어 스탠다드",
+        "dances": [
+            "W",
+            "T",
+            "V",
+            "S",
+            "Q"
+        ]
+    },
+    {
+        "event_idx": 109,
+        "raw_no": "49",
+        "group_no": "49",
+        "detail_no": "49-3",
+        "name": "매니아 스탠다드 4종목",
+        "dances": [
+            "W",
+            "T",
+            "S",
+            "Q",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 110,
+        "raw_no": "49",
+        "group_no": "49",
+        "detail_no": "49-4",
+        "name": "일반부 스탠다드 3종목",
+        "dances": [
+            "W",
+            "T",
+            "S",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 111,
+        "raw_no": "49",
+        "group_no": "49",
+        "detail_no": "49-5",
+        "name": "동호인 스탠다드 3종목",
+        "dances": [
+            "W",
+            "T",
+            "S",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 112,
+        "raw_no": "50",
+        "group_no": "50",
+        "detail_no": "50-1",
+        "name": "아마추어 라틴 S",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 113,
+        "raw_no": "50",
+        "group_no": "50",
+        "detail_no": "50-2",
+        "name": "일반부 라틴 5종목 S",
+        "dances": [
+            "C",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 114,
+        "raw_no": "50",
+        "group_no": "50",
+        "detail_no": "50-3",
+        "name": "아마추어 라틴 C",
+        "dances": [
+            "SA",
+            "0",
+            "0",
+            "0",
+            "0"
+        ]
+    },
+    {
+        "event_idx": 115,
+        "raw_no": "51",
+        "group_no": "51",
+        "detail_no": "51-1",
+        "name": "프로페셔널 스탠다드",
+        "dances": [
+            "W",
+            "T",
+            "V",
+            "S",
+            "Q"
+        ]
+    },
+    {
+        "event_idx": 116,
+        "raw_no": "52",
+        "group_no": "52",
+        "detail_no": "52-1",
+        "name": "프로페셔널 라틴",
+        "dances": [
+            "C",
+            "SA",
+            "R",
+            "P",
+            "J"
+        ]
+    }
+]

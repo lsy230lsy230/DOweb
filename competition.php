@@ -1183,16 +1183,16 @@ $results = getCompetitionResults($comp_data_path);
                     ?>
                     
                     <?php if (empty($event_results)): ?>
-                        <div class="empty-state">
-                            <div class="material-symbols-rounded">trophy</div>
-                            <h3>결과가 아직 발표되지 않았습니다</h3>
+                    <div class="empty-state">
+                        <div class="material-symbols-rounded">trophy</div>
+                        <h3>결과가 아직 발표되지 않았습니다</h3>
                             <p>대회 진행 중 결과가 이곳에 표시됩니다.</p>
-                        </div>
-                    <?php else: ?>
-                        <div class="item-list">
+                    </div>
+                <?php else: ?>
+                    <div class="item-list">
                             <?php foreach ($event_results as $result): ?>
-                                <div class="item-card">
-                                    <div class="item-header">
+                            <div class="item-card">
+                                <div class="item-header">
                                         <h3 class="item-title">
                                             <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 8px;">
                                                 <?= htmlspecialchars($result['event_no'] ?? '') ?>번
@@ -1209,8 +1209,8 @@ $results = getCompetitionResults($comp_data_path);
                                                 <br><small style="color: #64748b;">생성: <?= htmlspecialchars($result['generated_at']) ?></small>
                                             <?php endif; ?>
                                         </span>
-                                    </div>
-                                    <div class="item-content">
+                                </div>
+                                <div class="item-content">
                                         <?php if (isset($result['source']) && $result['source'] === 'results' && isset($result['files'])): ?>
                                             <!-- Results 폴더에서 생성된 리포트 파일들 -->
                                             <div style="margin-top: 12px;">
@@ -1237,8 +1237,8 @@ $results = getCompetitionResults($comp_data_path);
                                                             🏆 컴바인 리포트
                                                         </a>
                                                     <?php endif; ?>
-                                                </div>
-                                            </div>
+                                </div>
+                            </div>
                                         <?php elseif (isset($result['final_rankings']) && !empty($result['final_rankings'])): ?>
                                             <!-- 기존 순위 표시 -->
                                             <div style="margin-top: 12px;">
@@ -1263,8 +1263,8 @@ $results = getCompetitionResults($comp_data_path);
                                                             <div style="font-size: 0.9em; color: #94a3b8; margin-top: 4px;">
                                                                 <?php foreach ($players as $player): ?>
                                                                     <div style="margin: 2px 0;"><?= htmlspecialchars($player['player_name'] ?? "선수 {$player['player_no']}") ?></div>
-                                                                <?php endforeach; ?>
-                                                            </div>
+                        <?php endforeach; ?>
+                    </div>
                                                         </div>
                                                     <?php endforeach; ?>
                                                 </div>
@@ -1274,7 +1274,7 @@ $results = getCompetitionResults($comp_data_path);
                                                 <span class="material-symbols-rounded" style="vertical-align: middle; font-size: 18px;">schedule</span>
                                                 결과 데이터를 처리 중입니다...
                                             </p>
-                                        <?php endif; ?>
+                <?php endif; ?>
                                     </div>
                                 </div>
                             <?php endforeach; ?>
