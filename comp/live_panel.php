@@ -2229,10 +2229,29 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             const currentHost = window.location.host;
             const baseUrl = `${currentProtocol}//${currentHost}`;
             
-            // 먼저 집계 API를 호출하여 데이터를 확인
-            const apiUrl = `${baseUrl}/comp/live_aggregation_api.php?comp_id=${compId}&event_no=${eventId}`;
+            // Final Aggregation API를 호출하여 결승 결과 생성
+            const apiUrl = `${baseUrl}/comp/final_aggregation_api.php?comp_id=${compId}&event_no=${eventId}`;
             
-            console.log('집계 API 호출:', apiUrl);
+            console.log('결승 집계 API 호출:', apiUrl);
+            
+            // 로딩 인디케이터 표시
+            const loadingMsg = document.createElement('div');
+            loadingMsg.innerHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                     background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                     z-index: 10000; font-family: 'Noto Sans KR'; text-align: center;">
+                    <div style="font-size: 1.2em; margin-bottom: 15px; color: #333;">🏆 결승 결과 집계 중...</div>
+                    <div style="font-size: 0.9em; color: #666;">스케이팅 시스템으로 최종 순위를 계산하고 있습니다.</div>
+                    <div style="margin-top: 15px;">
+                        <div style="width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #3498db; 
+                             border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+                    </div>
+                </div>
+                <style>
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+            `;
+            document.body.appendChild(loadingMsg);
             
             // API 호출 후 결과 페이지 열기
             fetch(apiUrl)
@@ -2243,26 +2262,50 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     return response.json();
                 })
                 .then(data => {
-                    if (data.success) {
-                        // 성공시 집계 결과 페이지 열기
-                        const resultUrl = `${baseUrl}/comp/result_dashboard.php?comp_id=${compId}&event_no=${eventId}`;
-                        console.log('집계 성공, 결과 페이지로 이동:', resultUrl);
+                    // 로딩 인디케이터 제거
+                    document.body.removeChild(loadingMsg);
+                    
+                    if (data.event_info && data.final_rankings) {
+                        // 성공시 생성된 결과 HTML 파일 열기
+                        const resultUrl = `${baseUrl}/comp/results_reports/${compId}/Event_${eventId}/final_result.html`;
+                        console.log('결승 집계 성공, 결과 파일로 이동:', resultUrl);
                         
-                        const newWindow = window.open(resultUrl, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+                        const newWindow = window.open(resultUrl, '_blank', 'width=1200,height=900,scrollbars=yes,resizable=yes');
                         
                         if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
                             alert('팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용해주세요.');
                         } else {
-                            console.log('집계 결과 창이 열렸습니다.');
+                            console.log('결승 결과 창이 열렸습니다.');
+                            // 성공 메시지 표시
+                            setTimeout(() => {
+                                const successMsg = document.createElement('div');
+                                successMsg.innerHTML = `
+                                    <div style="position: fixed; top: 20px; right: 20px; background: #27ae60; color: white; 
+                                         padding: 15px 20px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                                         z-index: 10000; font-family: 'Noto Sans KR';">
+                                        ✅ 결승 결과가 성공적으로 생성되었습니다!
+                                    </div>
+                                `;
+                                document.body.appendChild(successMsg);
+                                setTimeout(() => {
+                                    if (successMsg.parentNode) {
+                                        document.body.removeChild(successMsg);
+                                    }
+                                }, 3000);
+                            }, 500);
                         }
                     } else {
-                        console.error('집계 실패:', data.error);
-                        alert(`집계 실패: ${data.error || '알 수 없는 오류'}`);
+                        console.error('집계 실패:', data.error || '데이터 형식 오류');
+                        alert(`집계 실패: ${data.error || '결과 데이터를 생성할 수 없습니다.'}`);
                     }
                 })
                 .catch(error => {
-                    console.error('집계 API 호출 실패:', error);
-                    alert(`집계 처리 중 오류가 발생했습니다: ${error.message}`);
+                    // 로딩 인디케이터 제거
+                    if (loadingMsg.parentNode) {
+                        document.body.removeChild(loadingMsg);
+                    }
+                    console.error('결승 집계 API 호출 실패:', error);
+                    alert(`결승 집계 처리 중 오류가 발생했습니다: ${error.message}`);
                 });
         }
         
