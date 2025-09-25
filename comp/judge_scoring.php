@@ -408,6 +408,9 @@ if ($event_data && isset($event_data['dances'])) {
 $saved_scores = null;
 $judge_id = $_SESSION['scoring_judge_id'] ?? 'unknown';
 
+// 디버그: 심사위원 ID 확인
+error_log("Judge ID from session: '{$judge_id}', Event: '{$event_no}'");
+
 if ($is_final) {
     // Load final round scores - check individual dance files for this judge
     $adj_files = glob("$data_dir/{$event_no}_*.adj");

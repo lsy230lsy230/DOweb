@@ -1,7 +1,13 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+// JSON 출력을 위한 헤더 설정
+if (!headers_sent()) {
+    header('Content-Type: application/json; charset=utf-8');
+}
+
+// 오류 출력 비활성화 (JSON 응답을 위해)
+error_reporting(0);
+ini_set('display_errors', 0);
+ini_set('log_errors', 0);
 
 $comp_id = $_GET['comp_id'] ?? '';
 $event_no = $_GET['event_no'] ?? '';
@@ -26,12 +32,13 @@ $events = [];
 $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 foreach ($lines as $line) {
     $parts = explode(",", $line);  // 쉼표로 분리
-    if (count($parts) >= 12) {  // 충분한 컬럼이 있는지 확인
+    if (count($parts) >= 14) {  // 충분한 컬럼이 있는지 확인
         $events[] = [
             'no' => trim($parts[0]),
             'desc' => trim($parts[1]),
             'round' => trim($parts[2]),
-            'detail_no' => trim($parts[11]),  // 12번째 컬럼이 detail_no
+            'detail_no' => trim($parts[11]),  // 12번째 컬럼이 detail_no (패널)
+            'event_no' => trim($parts[13]),   // 14번째 컬럼이 이벤트 번호 (1-1, 1-2 등)
             'dances' => array_filter(array_map('trim', array_slice($parts, 6, 5))), // 7-11번째 컬럼이 댄스
             'panel' => trim($parts[11])  // 12번째 컬럼이 패널
         ];
@@ -44,7 +51,8 @@ error_log("Looking for event_no: " . $event_no);
 error_log("Available events: " . json_encode($events));
 
 foreach ($events as $event) {
-    $event_key = $event['detail_no'] ? $event['detail_no'] : $event['no'];
+    // event_no (1-1, 1-2 등) 또는 detail_no (SA, LA 등)로 매칭
+    $event_key = $event['event_no'] ?: $event['detail_no'] ?: $event['no'];
     error_log("Checking event_key: " . $event_key . " against " . $event_no);
     if ($event_key == $event_no) {
         $current_event = $event;
@@ -77,12 +85,13 @@ $players = [];
 if (file_exists($players_file)) {
     $lines = file($players_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
-        $parts = explode("\t", $line);
-        if (count($parts) >= 3) {
+        $line = trim($line);
+        if (!empty($line)) {
+            // 선수 번호만 있는 경우
             $players[] = [
-                'number' => trim($parts[0]),
-                'male' => trim($parts[1]),
-                'female' => trim($parts[2])
+                'number' => $line,
+                'male' => '',
+                'female' => ''
             ];
         }
     }
@@ -94,7 +103,7 @@ $adjudicators = [];
 if (file_exists($adjudicators_file)) {
     $lines = file($adjudicators_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
-        $parts = explode("\t", $line);
+        $parts = explode(",", $line);  // 쉼표로 분리
         if (count($parts) >= 2) {
             $adjudicators[] = [
                 'code' => trim($parts[0]),
@@ -103,6 +112,7 @@ if (file_exists($adjudicators_file)) {
         }
     }
 }
+error_log("심사위원 수: " . count($adjudicators));
 
 // 댄스별 채점 데이터 수집
 $dance_results = [];
