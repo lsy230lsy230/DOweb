@@ -79,7 +79,23 @@ if (!$current_event) {
     exit;
 }
 
-// 선수 정보 로드
+// 전체 선수 데이터베이스 로드
+$all_players_file = "data/{$comp_id}/players.txt";
+$all_players = [];
+if (file_exists($all_players_file)) {
+    $lines = file($all_players_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        $cols = array_map('trim', explode(',', $line));
+        if (count($cols) >= 3) {
+            $all_players[$cols[0]] = [
+                'male' => $cols[1] ?? '',
+                'female' => $cols[2] ?? '',
+            ];
+        }
+    }
+}
+
+// 현재 이벤트의 선수 정보 로드
 $players_file = "data/{$comp_id}/players_{$event_no}.txt";
 $players = [];
 if (file_exists($players_file)) {
@@ -87,32 +103,65 @@ if (file_exists($players_file)) {
     foreach ($lines as $line) {
         $line = trim($line);
         if (!empty($line)) {
-            // 선수 번호만 있는 경우
-            $players[] = [
-                'number' => $line,
-                'male' => '',
-                'female' => ''
-            ];
+            // 전체 선수 데이터베이스에서 이름 정보 가져오기
+            $player_data = $all_players[$line] ?? null;
+            if ($player_data) {
+                $players[] = [
+                    'number' => $line,
+                    'male' => $player_data['male'],
+                    'female' => $player_data['female']
+                ];
+            } else {
+                // 데이터베이스에 없는 경우 기본값
+                $players[] = [
+                    'number' => $line,
+                    'male' => '',
+                    'female' => ''
+                ];
+            }
         }
     }
 }
 
+// 패널 매핑 로드
+$panel_map_file = "data/{$comp_id}/panel_list.json";
+$panel_map = [];
+if (file_exists($panel_map_file)) {
+    $panel_map = json_decode(file_get_contents($panel_map_file), true);
+}
+
 // 심사위원 정보 로드
 $adjudicators_file = "data/{$comp_id}/adjudicators.txt";
-$adjudicators = [];
+$all_adjudicators = [];
 if (file_exists($adjudicators_file)) {
     $lines = file($adjudicators_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         $parts = explode(",", $line);  // 쉼표로 분리
         if (count($parts) >= 2) {
-            $adjudicators[] = [
+            $all_adjudicators[trim($parts[0])] = [
                 'code' => trim($parts[0]),
                 'name' => trim($parts[1])
             ];
         }
     }
 }
-error_log("심사위원 수: " . count($adjudicators));
+
+// 현재 이벤트의 패널에 해당하는 심사위원만 필터링
+$adjudicators = [];
+$panel_code = $current_event['panel'] ?? '';
+if ($panel_code && !empty($panel_map)) {
+    foreach ($panel_map as $mapping) {
+        if ($mapping['panel_code'] === $panel_code && isset($all_adjudicators[$mapping['adj_code']])) {
+            $adjudicators[] = $all_adjudicators[$mapping['adj_code']];
+        }
+    }
+} else {
+    // 패널 매핑이 없으면 모든 심사위원 사용
+    $adjudicators = array_values($all_adjudicators);
+}
+
+error_log("패널 코드: " . $panel_code);
+error_log("해당 패널 심사위원 수: " . count($adjudicators));
 
 // 댄스별 채점 데이터 수집
 $dance_results = [];
