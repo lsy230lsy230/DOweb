@@ -235,7 +235,8 @@ foreach ($events as $event) {
             'group_no' => $group_key,
             'group_name' => $event['desc'],
             'events' => [],
-            'is_multi' => false
+            'is_multi' => false,
+            'recall_count' => intval($event['recall_count'] ?? 0)
         ];
     }
     
