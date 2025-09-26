@@ -154,6 +154,25 @@ try {
         return $player['recall_count'] >= $recall_threshold;
     });
     
+    // 심사위원 이름 매핑 로드
+    $adjudicators_file = "$data_dir/adjudicators.txt";
+    $adjudicator_names = [];
+    if (file_exists($adjudicators_file)) {
+        $lines = file($adjudicators_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $parts = explode(',', $line);
+            if (count($parts) >= 2) {
+                $adjudicator_names[trim($parts[0])] = trim($parts[1]);
+            }
+        }
+    }
+    
+    // 심사위원 이름 배열 생성
+    $judge_names = [];
+    foreach ($judges as $judge) {
+        $judge_names[] = $adjudicator_names[$judge] ?? "Judge $judge";
+    }
+    
     // 결과 반환
     $result = [
         'success' => true,
@@ -163,7 +182,8 @@ try {
         'recall_threshold' => $recall_threshold,
         'player_recalls' => $player_recalls,
         'advancing_players' => array_values($advancing_players),
-        'judges' => $judges
+        'judges' => $judges,
+        'judge_names' => $judge_names
     ];
     
     echo json_encode($result, JSON_UNESCAPED_UNICODE);

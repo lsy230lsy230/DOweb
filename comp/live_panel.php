@@ -777,6 +777,119 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             opacity: 0.7;
         }
         
+        .recall-count-value {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            transition: all 0.2s;
+        }
+        
+        .recall-count-value:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+        
+        .recall-edit-icon {
+            margin-left: 5px;
+            font-size: 10px;
+            opacity: 0.7;
+        }
+        
+        .recall-edit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .recall-edit-content {
+            background: white;
+            border-radius: 8px;
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .recall-edit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .recall-edit-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .recall-edit-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+        }
+        
+        .recall-edit-body {
+            padding: 20px;
+        }
+        
+        .recall-edit-field {
+            margin-bottom: 20px;
+        }
+        
+        .recall-edit-field label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .recall-edit-field input {
+            width: 100px;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .recall-edit-unit {
+            margin-left: 8px;
+            color: #666;
+        }
+        
+        .recall-edit-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .recall-edit-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .recall-edit-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            padding: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+        
         .dance-edit-modal {
             position: fixed;
             top: 0;
@@ -3078,6 +3191,15 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 <span class="dance-edit-icon">✏️</span>
                             </div>
                         </div>
+                        <div class="info-item">
+                            <div class="info-label">Recall 수</div>
+                            <div class="recall-count-value" 
+                                 onclick="openRecallEditModal('${groupId}')"
+                                 title="Recall 수 수정">
+                                ${group.recall_count || 0}명
+                                <span class="recall-edit-icon">✏️</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -4096,21 +4218,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 <td width='50%' valign='top' style='font-weight:bold;'>2025년 9월 13일</td>
                                 <td width='40%' align='right'>Results Copyright of</td>
                             </tr>
-                            <tr>
-                                <td width='50%'>
-                                    <a href='#'>Home</a> | 
-                                    <a href='#'>Summary</a> | 
-                                    <a href='#' target='_new'>PDF</a>
-                                </td>
-                                <td width='30%' align='right' valign='top'>
-                                    <a href='#'>DanceScore Scrutineering Software</a>
-                                </td>
-                            </tr>
                         </table>
                         <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial;'>
                             <tr>
                                 <td style='font-weight:bold; padding-top:1em;' align='left'>${currentEvent.desc || '집계 결과'} - ${currentEvent.round || 'Semi'}</td>
-                                <td style='font-weight:bold; padding-top:1em;' align='right'>Recalled ${data.advancing_players.length} Couples to Next Round</td>
+                                <td style='font-weight:bold; padding-top:1em;' align='right'>${data.advancing_players.length}커플이 다음라운에 진출합니다</td>
                             </tr>
                         </table>
                         <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:0.5em;'>
@@ -4122,10 +4234,49 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                     리콜 기준: ${data.recall_threshold}명 이상
                                 </td>
                             </tr>
+                            <tr>
+                                <td style='font-size:0.9em; color:#666; padding-top:0.5em;' align='left'>
+                                    <strong>심사위원:</strong> ${data.judge_names.join(', ')}
+                                </td>
+                            </tr>
                         </table>
             `;
             
-            // 상세 리콜 테이블 (DanceSportLive 스타일)
+            // 요약 테이블 (등위 순서) - 먼저 표시
+            html += `
+                <table cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:1em; border-bottom:thin;'>
+                    <tr>
+                        <th width='2%' align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'> </th>
+                        <th width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Marks</th>
+                        <th width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Tag</th>
+                        <th width='40%' align='left' style='margin-top:2em; padding-left:2em; color:#FFF; background-color:#333'>Competitor Name(s)</th>
+                        <th width='10%' align='left' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333; padding-left:3em; padding-right:3em;'>From</th>
+                    </tr>
+            `;
+            
+            // 모든 선수를 등위 순서로 표시 (리콜 여부에 따라 구분)
+            data.player_recalls.forEach((player, index) => {
+                const isAdvancing = player.recall_count >= data.recall_threshold;
+                const bgColor = isAdvancing ? '#e8f5e8' : '#f5f5f5'; // 진출자는 연한 초록, 탈락자는 연한 회색
+                const borderStyle = isAdvancing ? 'border-left: 4px solid #28a745;' : 'border-left: 4px solid #dc3545;';
+                const statusText = isAdvancing ? '✅ 진출' : '❌ 탈락';
+                
+                html += `
+                    <tr style='font-weight:bold;'>
+                        <td width='2%' align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}; ${borderStyle}'>${index + 1}</td>
+                        <td width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>(${player.recall_count})</td>
+                        <td width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${player.player_number}</td>
+                        <td width='40%' align='left' style='margin-top:2em; padding-left:2em; color:#000; background-color:${bgColor}'>${player.player_name} <span style='font-size:0.8em; color:${isAdvancing ? '#28a745' : '#dc3545'};'>${statusText}</span></td>
+                        <td width='10%' align='left' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}; padding-left:3em; padding-right:3em;'>${currentEvent.desc || 'Previous Round'}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
+                </table>
+            `;
+            
+            // 상세 리콜 테이블 (DanceSportLive 스타일) - 나중에 표시
             html += `
                 <table cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:1em; border-bottom:thin;'>
                     <tr>
@@ -4180,38 +4331,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 </table>
             `;
             
-            // 요약 테이블 (DanceSportLive 스타일)
             html += `
-                <table cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:1em; border-bottom:thin;'>
-                    <tr>
-                        <th width='2%' align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'> </th>
-                        <th width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Marks</th>
-                        <th width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Tag</th>
-                        <th width='40%' align='left' style='margin-top:2em; padding-left:2em; color:#FFF; background-color:#333'>Competitor Name(s)</th>
-                        <th width='10%' align='left' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333; padding-left:3em; padding-right:3em;'>From</th>
-                    </tr>
-            `;
-            
-            // 진출자만 요약 테이블에 표시
-            data.advancing_players.forEach((player, index) => {
-                const bgColor = '#eee';
-                html += `
-                    <tr style='font-weight:bold;'>
-                        <td width='2%' align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${index + 1}</td>
-                        <td width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>(${player.recall_count})</td>
-                        <td width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${player.player_number}</td>
-                        <td width='40%' align='left' style='margin-top:2em; padding-left:2em; color:#000; background-color:${bgColor}'>${player.player_name}</td>
-                        <td width='10%' align='left' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}; padding-left:3em; padding-right:3em;'>${currentEvent.desc || 'Previous Round'}</td>
-                    </tr>
-                `;
-            });
-            
-            html += `
-                </table>
                     </div>
                     <div class="dancesport-footer">
                         <p style="padding:10px 0; background:#575757; color:#fff; position:relative; clear:both; text-align:center;">
-                            <a href="#" style="color:#fff;">DanceScore Scrutineering Software</a>
+                            DanceScore Scrutineering Software
                         </p>
                     </div>
                 </div>
@@ -4560,6 +4684,104 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             if (modal) {
                 modal.remove();
             }
+        }
+        
+        // Recall 수 편집 모달 열기
+        function openRecallEditModal(groupId) {
+            const group = groupData.find(g => g.group_no == groupId);
+            
+            if (!group) {
+                alert('그룹 정보를 찾을 수 없습니다.');
+                return;
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'recall-edit-modal';
+            modal.innerHTML = `
+                <div class="recall-edit-content">
+                    <div class="recall-edit-header">
+                        <div class="recall-edit-title">Recall 수 수정 - 통합이벤트 ${groupId}</div>
+                        <button class="recall-edit-close" onclick="closeRecallEditModal()">&times;</button>
+                    </div>
+                    
+                    <div class="recall-edit-body">
+                        <div class="recall-edit-field">
+                            <label for="recallCountInput">Recall 수:</label>
+                            <input type="number" id="recallCountInput" value="${group.recall_count || 0}" min="0" max="50">
+                            <span class="recall-edit-unit">명</span>
+                        </div>
+                        <div class="recall-edit-info">
+                            <p>• Recall 수는 다음 라운드로 진출할 선수의 수를 의미합니다.</p>
+                            <p>• 0으로 설정하면 심사위원 수의 절반을 기준으로 합니다.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="recall-edit-buttons">
+                        <button class="btn-cancel" onclick="closeRecallEditModal()">취소</button>
+                        <button class="btn-save" onclick="saveRecallCount('${groupId}')">저장</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        // Recall 수 편집 모달 닫기
+        function closeRecallEditModal() {
+            const modal = document.querySelector('.recall-edit-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Recall 수 저장
+        function saveRecallCount(groupId) {
+            const recallCount = parseInt(document.getElementById('recallCountInput').value);
+            
+            if (isNaN(recallCount) || recallCount < 0) {
+                alert('올바른 Recall 수를 입력해주세요.');
+                return;
+            }
+            
+            // 그룹 데이터 업데이트
+            const group = groupData.find(g => g.group_no == groupId);
+            if (group) {
+                group.recall_count = recallCount;
+                
+                // UI 업데이트
+                updateRightPanel(selectedEvent, selectedGroup);
+                
+                // RunOrder_Tablet.txt 업데이트 (서버로 전송)
+                updateRunOrderFile(groupId, recallCount);
+            }
+            
+            closeRecallEditModal();
+        }
+        
+        // RunOrder_Tablet.txt 파일 업데이트
+        function updateRunOrderFile(groupId, recallCount) {
+            // 서버로 Recall 수 업데이트 요청
+            fetch('update_recall_count.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    group_id: groupId,
+                    recall_count: recallCount
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Recall 수가 업데이트되었습니다.');
+                } else {
+                    console.error('Recall 수 업데이트 실패:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Recall 수 업데이트 오류:', error);
+            });
         }
         
         // 실시간 업데이트 기능
