@@ -71,6 +71,13 @@ foreach ($events as $event) {
         error_log("Found matching event (detail_no): " . json_encode($event));
         break;
     }
+    
+    // detail_no가 "숫자-숫자" 형태인 경우 첫 번째 숫자로 매칭
+    if (preg_match('/^(\d+)-/', $event['detail_no'], $matches) && $matches[1] == $event_no) {
+        $current_event = $event;
+        error_log("Found matching event (detail_no prefix): " . json_encode($event));
+        break;
+    }
 }
 
 if (!$current_event) {
