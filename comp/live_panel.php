@@ -5876,7 +5876,18 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         function generateNextRound() {
             console.log('generateNextRound 함수 시작');
             
-            const currentEvent = events.find(ev => (ev.detail_no || ev.no) === selectedEvent);
+            // groupData에서 현재 이벤트 찾기
+            let currentEvent = null;
+            for (const group of groupData) {
+                for (const event of group.events) {
+                    if ((event.detail_no || event.no) === selectedEvent) {
+                        currentEvent = event;
+                        break;
+                    }
+                }
+                if (currentEvent) break;
+            }
+            
             console.log('현재 이벤트:', currentEvent);
             if (!currentEvent) {
                 alert('현재 이벤트 정보를 찾을 수 없습니다.');
