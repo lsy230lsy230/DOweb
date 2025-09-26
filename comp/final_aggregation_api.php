@@ -32,15 +32,15 @@ $events = [];
 $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 foreach ($lines as $line) {
     $parts = explode(",", $line);  // 쉼표로 분리
-    if (count($parts) >= 14) {  // 충분한 컬럼이 있는지 확인
+    if (count($parts) >= 10) {  // 최소 10개 컬럼이 있는지 확인
         $events[] = [
             'no' => trim($parts[0]),
             'desc' => trim($parts[1]),
-            'round' => trim($parts[2]),
-            'detail_no' => trim($parts[11]),  // 12번째 컬럼이 detail_no (패널)
-            'event_no' => trim($parts[13]),   // 14번째 컬럼이 이벤트 번호 (1-1, 1-2 등)
+            'round' => trim($parts[2]) ?: 'Preliminary',  // 라운드가 비어있으면 기본값
+            'detail_no' => trim($parts[11]) ?: trim($parts[0]),  // 패널이 있으면 사용, 없으면 이벤트 번호
+            'event_no' => trim($parts[0]),   // 첫 번째 컬럼이 이벤트 번호
             'dances' => array_filter(array_map('trim', array_slice($parts, 6, 5))), // 7-11번째 컬럼이 댄스
-            'panel' => trim($parts[11])  // 12번째 컬럼이 패널
+            'panel' => trim($parts[11]) ?: 'A'  // 패널이 있으면 사용, 없으면 기본값
         ];
     }
 }
@@ -51,12 +51,17 @@ error_log("Looking for event_no: " . $event_no);
 error_log("Available events: " . json_encode($events));
 
 foreach ($events as $event) {
-    // event_no (1-1, 1-2 등) 또는 detail_no (SA, LA 등)로 매칭
-    $event_key = $event['event_no'] ?: $event['detail_no'] ?: $event['no'];
-    error_log("Checking event_key: " . $event_key . " against " . $event_no);
-    if ($event_key == $event_no) {
+    // 이벤트 번호로 직접 매칭
+    if ($event['no'] == $event_no || $event['event_no'] == $event_no) {
         $current_event = $event;
-        error_log("Found matching event: " . json_encode($event));
+        error_log("Found matching event (exact): " . json_encode($event));
+        break;
+    }
+    
+    // 숫자로 매칭 (문자열과 숫자 비교)
+    if (is_numeric($event_no) && is_numeric($event['no']) && intval($event['no']) == intval($event_no)) {
+        $current_event = $event;
+        error_log("Found matching event (numeric): " . json_encode($event));
         break;
     }
 }

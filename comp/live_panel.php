@@ -1,6 +1,6 @@
 <?php
 // 테스트 페이지 2: 고급 멀티 이벤트 탭 구조 (실제 데이터 연동)
-$comp_id = $_GET['comp_id'] ?? '20250913-001';
+$comp_id = $_GET['comp_id'] ?? '20250907-001';
 $data_dir = __DIR__ . "/data/$comp_id";
 
 // 집계 결과 표시 모드 확인
@@ -3863,6 +3863,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 }
             }
             
+            console.log('openAggregation called with eventId:', eventId);
+            console.log('selectedEvent:', selectedEvent);
+            
             // 집계 모달 열기
             openAggregationModal(eventId);
         }
@@ -4699,6 +4702,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             const apiUrl = `${baseUrl}/comp/final_aggregation_api.php?comp_id=${compId}&event_no=${eventId}`;
             
             console.log('집계 API 호출:', apiUrl);
+            console.log('eventId:', eventId, 'type:', typeof eventId);
+            console.log('compId:', compId);
             
             fetch(apiUrl)
                 .then(response => response.json())
