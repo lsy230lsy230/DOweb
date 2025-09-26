@@ -61,6 +61,17 @@ foreach ($events as $event) {
     }
 }
 
+// event_no가 비어있는 경우 (51, 52번 이벤트) 이벤트 번호로 직접 찾기
+if (!$current_event && is_numeric($event_no)) {
+    foreach ($events as $event) {
+        if ($event['no'] === $event_no) {
+            $current_event = $event;
+            error_log("Found matching event by number: " . json_encode($event));
+            break;
+        }
+    }
+}
+
 if (!$current_event) {
     error_log("Event not found for event_no: " . $event_no);
     echo json_encode(['error' => 'Event not found', 'debug' => [
@@ -865,7 +876,12 @@ body {
     $html .= '</tbody></table></div>';
 
     // 싱글 이벤트인 경우 live_panel.php의 컨트롤 패널 적용
-    if (count($event_info['dances']) <= 2) { // 싱글 이벤트 (1-2종목)
+    // 프로페셔널 이벤트(51, 52번)는 항상 싱글 이벤트로 처리
+    $is_single_event = (count($event_info['dances']) <= 2) || 
+                       (isset($event_info['event_no']) && in_array($event_info['event_no'], ['51', '52'])) ||
+                       (isset($event_info['no']) && in_array($event_info['no'], ['51', '52']));
+    
+    if ($is_single_event) {
         $html .= '<div class="single-event-control-panel">
             <div class="control-panel-header">
                 <div class="panel-title">싱글 이벤트 컨트롤 패널</div>

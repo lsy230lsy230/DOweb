@@ -205,16 +205,29 @@ $grouped_events = [];
 foreach ($events as $event) {
     $group_key = $event['detail_no'] ? $event['no'] : $event['no'];
     
-    if (!isset($grouped_events[$group_key])) {
-        $grouped_events[$group_key] = [
-            'group_no' => $group_key,
-            'group_name' => $event['desc'],
-            'events' => [],
-            'is_multi' => false
-        ];
+    // 이미 같은 이벤트가 있는지 확인 (중복 방지)
+    $exists = false;
+    if (isset($grouped_events[$group_key])) {
+        foreach ($grouped_events[$group_key]['events'] as $existing_event) {
+            if ($existing_event['no'] === $event['no'] && $existing_event['desc'] === $event['desc']) {
+                $exists = true;
+                break;
+            }
+        }
     }
     
-    $grouped_events[$group_key]['events'][] = $event;
+    if (!$exists) {
+        if (!isset($grouped_events[$group_key])) {
+            $grouped_events[$group_key] = [
+                'group_no' => $group_key,
+                'group_name' => $event['desc'],
+                'events' => [],
+                'is_multi' => false
+            ];
+        }
+        
+        $grouped_events[$group_key]['events'][] = $event;
+    }
 }
 
 // 멀티 이벤트 확인
