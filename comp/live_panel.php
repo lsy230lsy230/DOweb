@@ -463,6 +463,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             gap: 20px;
             max-width: 1600px;
             margin: 0 auto;
+            height: 100vh;
+            overflow: hidden;
         }
         
         .left-panel {
@@ -470,7 +472,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: white;
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
         }
         
         .right-panel {
@@ -479,6 +485,16 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        #right-content {
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         .panel-header {
@@ -544,6 +560,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         .event-list {
             display: none;
             background: #f8f9fa;
+            flex: 1;
+            overflow-y: auto;
+            max-height: calc(100vh - 200px);
         }
         
         .event-list.expanded {
@@ -896,6 +915,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         .event-cards-container {
             padding: 20px;
             min-height: 400px;
+            flex: 1;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         .event-cards-grid {
@@ -903,6 +926,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             grid-template-columns: repeat(2, 1fr);
             gap: 20px;
             margin-bottom: 20px;
+            flex: 1;
+            overflow: hidden;
         }
         
         .event-card {
