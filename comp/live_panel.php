@@ -111,6 +111,14 @@ if (file_exists($runorder_file)) {
             $dance_names[] = $dance_map_en[$code] ?? $code; // 매핑된 이름 또는 코드
         }
         
+        $next_event = $cols[5] ?? ''; // 6번째 컬럼에서 next_event 읽기
+        
+        // 디버깅: 30번 이벤트의 next_event 확인
+        if ($no === '30') {
+            error_log("30번 이벤트 next_event: " . $next_event);
+            error_log("30번 이벤트 전체 컬럼: " . implode(',', $cols));
+        }
+        
         $events[] = [
             'no' => $no,
             'desc' => $desc,
@@ -122,7 +130,7 @@ if (file_exists($runorder_file)) {
             'dances' => $dance_codes,
             'dance_names' => $dance_names,
             'detail_no' => $cols[13] ?? '', // 14번째 컬럼에서 detail_no 읽기
-            'next_event' => $cols[5] ?? '' // 6번째 컬럼에서 next_event 읽기
+            'next_event' => $next_event // 6번째 컬럼에서 next_event 읽기
         ];
     }
 }
@@ -4882,16 +4890,22 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         function getNextRoundInfo(event) {
             if (!event || !event.desc) return '';
             
+            console.log('getNextRoundInfo 호출:', event);
+            console.log('event.next_event:', event.next_event);
+            
             // 먼저 next_event 정보가 있으면 사용
             if (event.next_event && event.next_event !== '') {
+                console.log('next_event 정보 사용:', event.next_event);
                 // next_event 번호로 해당 이벤트 찾기
                 for (const group of groupData) {
                     for (const groupEvent of group.events) {
                         if (groupEvent.no === event.next_event) {
+                            console.log('next_event로 찾은 이벤트:', groupEvent);
                             return `${groupEvent.no}번 ${groupEvent.round}`;
                         }
                     }
                 }
+                console.log('next_event로 이벤트를 찾지 못함:', event.next_event);
             }
             
             // next_event가 없으면 기존 로직 사용
@@ -5960,8 +5974,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             let nextEventName = currentEvent.desc.replace(/Round \d+/, 'Semi-Final').replace(/Final/, 'Semi-Final');
             
             // 먼저 next_event 정보가 있으면 사용
+            console.log('currentEvent.next_event:', currentEvent.next_event);
             if (currentEvent.next_event && currentEvent.next_event !== '') {
                 nextEventNumber = parseInt(currentEvent.next_event);
+                console.log('next_event 번호로 설정:', nextEventNumber);
                 // next_event 번호로 해당 이벤트 찾기
                 for (const group of groupData) {
                     for (const event of group.events) {
@@ -5973,6 +5989,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     }
                 }
             } else {
+                console.log('next_event 정보가 없음, 기존 로직 사용');
                 // next_event가 없으면 기존 로직 사용
                 const currentEventDesc = currentEvent.desc;
                 const currentRound = currentEvent.round;
