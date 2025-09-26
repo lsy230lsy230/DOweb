@@ -6046,12 +6046,22 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     for (let i = 1; i < rows.length; i++) {
                         const row = rows[i];
                         const cells = row.querySelectorAll('td');
+                        console.log(`행 ${i} 셀 수:`, cells.length);
+                        
+                        // 모든 셀의 내용을 확인
+                        for (let j = 0; j < cells.length; j++) {
+                            const cellText = cells[j]?.textContent?.trim();
+                            console.log(`  셀 ${j}: "${cellText}"`);
+                        }
+                        
                         if (cells.length >= 2) {
                             const number = cells[1]?.textContent?.trim(); // 등번호는 2번째 컬럼
                             
                             if (number && !isNaN(parseInt(number))) {
                                 playerNumbers.push(number);
                                 console.log(`추가된 등번호: ${number}, 현재 총 ${playerNumbers.length}개`);
+                            } else {
+                                console.log(`등번호로 인식되지 않음: "${number}"`);
                             }
                         }
                     }
