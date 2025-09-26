@@ -28,6 +28,7 @@ try {
                 'no' => trim($parts[0]),
                 'desc' => trim($parts[1]),
                 'round' => trim($parts[2]) ?: 'Final',
+                'recall_count' => intval(trim($parts[3]) ?: 0), // 4번째 컬럼이 리콜 수
                 'detail_no' => trim($parts[11]) ?: trim($parts[0]),
                 'event_no' => trim($parts[0]),
                 'dances' => array_slice($parts, 3, 8),
@@ -134,9 +135,19 @@ try {
         return $b['recall_count'] - $a['recall_count'];
     });
     
-    // 리콜 기준 계산 (심사위원 수의 절반 이상)
+    // RunOrder_Tablet.txt에서 리콜 수 가져오기
+    $recall_count = 0;
+    foreach ($events as $event) {
+        if ($event['detail_no'] == $event_no || $event['no'] == $event_no || $event['event_no'] == $event_no) {
+            // RunOrder_Tablet.txt의 4번째 컬럼이 리콜 수
+            $recall_count = intval($event['recall_count'] ?? 0);
+            break;
+        }
+    }
+    
+    // 리콜 기준 계산 (RunOrder_Tablet.txt의 리콜 수 또는 심사위원 수의 절반 이상)
     $total_judges = count($judges);
-    $recall_threshold = ceil($total_judges / 2);
+    $recall_threshold = $recall_count > 0 ? $recall_count : ceil($total_judges / 2);
     
     // 진출 선수 필터링
     $advancing_players = array_filter($player_recalls, function($player) use ($recall_threshold) {
@@ -148,6 +159,7 @@ try {
         'success' => true,
         'event_info' => $current_event,
         'total_judges' => $total_judges,
+        'recall_count_from_file' => $recall_count,
         'recall_threshold' => $recall_threshold,
         'player_recalls' => $player_recalls,
         'advancing_players' => array_values($advancing_players),

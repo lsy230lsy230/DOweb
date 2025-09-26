@@ -4084,114 +4084,138 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         function displayRecallResults(data, currentEvent, content) {
             console.log('Displaying recall results:', data);
             
+            // DanceSportLive 스타일 HTML 생성
             let html = `
-                <div class="aggregation-header">
-                    <h2>🏆 ${currentEvent.desc || '집계 결과'}</h2>
-                    <div class="event-details">
-                        <span class="event-number">이벤트 ${currentEvent.detail_no || currentEvent.no}</span>
-                        <span class="event-round">${currentEvent.round || 'Final'}</span>
+                <div class="dancesport-container">
+                    <div class="dancesport-header">
+                        <h1><center>2025 제9회 용인특례시 시민일보배</center></h1>
                     </div>
-                </div>
-            `;
-            
-            // 리콜 통계 섹션
-            html += `
-                <div class="recall-stats-section">
-                    <h3>📊 리콜 통계</h3>
-                    <div class="stats-grid">
-                        <div class="stat-item">
-                            <div class="stat-label">총 심사위원 수</div>
-                            <div class="stat-value">${data.total_judges}</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">리콜 기준</div>
-                            <div class="stat-value">${data.recall_threshold}명 이상</div>
-                        </div>
-                        <div class="stat-item">
-                            <div class="stat-label">진출 선수 수</div>
-                            <div class="stat-value">${data.advancing_players.length}명</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // 리콜 상세 결과 테이블
-            html += `
-                <div class="recall-results-section">
-                    <h3>🎯 리콜 상세 결과</h3>
-                    <table class="aggregation-table">
-                        <thead>
+                    <div class="dancesport-content">
+                        <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial;'>
                             <tr>
-                                <th>선수 번호</th>
-                                <th>선수명</th>
-                                <th>리콜 횟수</th>
-                                <th>진출 여부</th>
-                                <th>심사위원 목록</th>
+                                <td width='50%' valign='top' style='font-weight:bold;'>2025년 9월 13일</td>
+                                <td width='40%' align='right'>Results Copyright of</td>
                             </tr>
-                        </thead>
-                        <tbody>
+                            <tr>
+                                <td width='50%'>
+                                    <a href='#'>Home</a> | 
+                                    <a href='#'>Summary</a> | 
+                                    <a href='#' target='_new'>PDF</a>
+                                </td>
+                                <td width='30%' align='right' valign='top'>
+                                    <a href='#'>DanceScore Scrutineering Software</a>
+                                </td>
+                            </tr>
+                        </table>
+                        <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial;'>
+                            <tr>
+                                <td style='font-weight:bold; padding-top:1em;' align='left'>${currentEvent.desc || '집계 결과'} - ${currentEvent.round || 'Semi'}</td>
+                                <td style='font-weight:bold; padding-top:1em;' align='right'>Recalled ${data.advancing_players.length} Couples to Next Round</td>
+                            </tr>
+                        </table>
+                        <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:0.5em;'>
+                            <tr>
+                                <td style='font-size:0.9em; color:#666;' align='left'>
+                                    <strong>리콜 정보:</strong> 
+                                    파일 리콜 수: ${data.recall_count_from_file || 0}명 | 
+                                    심사위원 수: ${data.total_judges}명 | 
+                                    리콜 기준: ${data.recall_threshold}명 이상
+                                </td>
+                            </tr>
+                        </table>
+            `;
+            
+            // 상세 리콜 테이블 (DanceSportLive 스타일)
+            html += `
+                <table cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:1em; border-bottom:thin;'>
+                    <tr>
+                        <th width='100%' colspan='${data.total_judges + 3}' style='font-size:1.5em; padding-top:0.5em; padding-left:0.5em; font-weight:bold; color:#FFF; background-color:#333' align='left'>Detailed Recalls</th>
+                    </tr>
+                    <tr>
+                        <th width='3%' align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Tag</th>
+                        <th width='20%' align='left' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Competitor Name(s)</th>
+            `;
+            
+            // 심사위원 컬럼 헤더
+            data.judges.forEach((judge, index) => {
+                const letter = String.fromCharCode(65 + index); // A, B, C, ...
+                html += `
+                    <th width='2.5%' align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>${letter}</th>
+                `;
+            });
+            
+            html += `
+                        <th width='3%' align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333;'>Mark</th>     
+                    </tr>
             `;
             
             // 선수별 리콜 결과 표시
-            data.player_recalls.forEach(player => {
+            data.player_recalls.forEach((player, index) => {
                 const isAdvancing = player.recall_count >= data.recall_threshold;
-                const statusClass = isAdvancing ? 'rank-1' : 'rank-3';
-                const statusText = isAdvancing ? '✅ 진출' : '❌ 탈락';
+                const bgColor = isAdvancing ? '#eee' : '#ccc';
+                const rowStyle = `font-weight:bold; background-color:${bgColor}`;
                 
                 html += `
-                    <tr class="${statusClass}">
-                        <td>${player.player_number}</td>
-                        <td>${player.player_name}</td>
-                        <td><strong>${player.recall_count}</strong></td>
-                        <td>${statusText}</td>
-                        <td>${player.judges.join(', ')}</td>
+                    <tr style='${rowStyle}'>
+                        <td align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${index + 1}</td>
+                        <td align='left' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${player.player_name}</td>
+                `;
+                
+                // 각 심사위원별 리콜 여부 표시
+                data.judges.forEach(judge => {
+                    const recalled = player.judges.includes(judge);
+                    const mark = recalled ? '1' : '0';
+                    html += `
+                        <td align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${mark}</td>
+                    `;
+                });
+                
+                html += `
+                        <td width='4%' align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}; padding-left:1em; padding-right:0.5em;'>${player.recall_count}</td>     
                     </tr>
                 `;
             });
             
             html += `
-                        </tbody>
-                    </table>
-                </div>
+                </table>
             `;
             
-            // 다음 라운드 진출자 섹션
-            if (data.advancing_players.length > 0) {
+            // 요약 테이블 (DanceSportLive 스타일)
+            html += `
+                <table cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:1em; border-bottom:thin;'>
+                    <tr>
+                        <th width='2%' align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'> </th>
+                        <th width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Marks</th>
+                        <th width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Tag</th>
+                        <th width='40%' align='left' style='margin-top:2em; padding-left:2em; color:#FFF; background-color:#333'>Competitor Name(s)</th>
+                        <th width='10%' align='left' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333; padding-left:3em; padding-right:3em;'>From</th>
+                    </tr>
+            `;
+            
+            // 진출자만 요약 테이블에 표시
+            data.advancing_players.forEach((player, index) => {
+                const bgColor = '#eee';
                 html += `
-                    <div class="next-round-section">
-                        <div class="next-round-title">🎯 다음 라운드 진출자 (${data.advancing_players.length}명)</div>
-                        <div class="next-round-players">
+                    <tr style='font-weight:bold;'>
+                        <td width='2%' align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${index + 1}</td>
+                        <td width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>(${player.recall_count})</td>
+                        <td width='2%' align='center' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${player.player_number}</td>
+                        <td width='40%' align='left' style='margin-top:2em; padding-left:2em; color:#000; background-color:${bgColor}'>${player.player_name}</td>
+                        <td width='10%' align='left' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}; padding-left:3em; padding-right:3em;'>${currentEvent.desc || 'Previous Round'}</td>
+                    </tr>
                 `;
-                
-                data.advancing_players.forEach((player, index) => {
-                    html += `
-                        <div class="next-round-player">
-                            <div class="player-rank">${index + 1}</div>
-                            <div class="player-info">
-                                <div class="player-number">${player.player_number}번</div>
-                                <div class="player-name">${player.player_name}</div>
-                                <div class="recall-count">리콜 ${player.recall_count}회</div>
-                            </div>
-                        </div>
-                    `;
-                });
-                
-                html += `
-                        </div>
+            });
+            
+            html += `
+                </table>
                     </div>
-                `;
-            } else {
-                html += `
-                    <div class="next-round-section">
-                        <div class="next-round-title">🎯 다음 라운드 진출자</div>
-                        <div class="next-round-players">
-                            <div class="next-round-player">
-                                <div class="player-rank">진출자 없음</div>
-                            </div>
-                        </div>
+                    <div class="dancesport-footer">
+                        <p style="padding:10px 0; background:#575757; color:#fff; position:relative; clear:both; text-align:center;">
+                            <a href="#" style="color:#fff;">DanceScore Scrutineering Software</a>
+                        </p>
                     </div>
-                `;
-            }
+                </div>
+            `;
             
             content.innerHTML = html;
         }
