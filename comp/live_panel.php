@@ -117,6 +117,7 @@ if (file_exists($runorder_file)) {
             'round' => $roundtype,
             'panel' => $panel,
             'recall' => $recall,
+            'recall_count' => (is_numeric($recall) ? intval($recall) : 0),
             'heats' => $heats,
             'dances' => $dance_codes,
             'dance_names' => $dance_names,
