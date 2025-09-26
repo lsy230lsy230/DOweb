@@ -1606,6 +1606,84 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
+        /* 싱글 이벤트 카드용 추가 스타일 */
+        .event-card .judge-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            margin-bottom: 4px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        .event-card .judge-item.disabled {
+            opacity: 0.5;
+            text-decoration: line-through;
+        }
+        
+        .event-card .judge-code {
+            font-weight: bold;
+            margin-right: 8px;
+            min-width: 30px;
+        }
+        
+        .event-card .judge-name {
+            flex: 1;
+            margin-right: 8px;
+        }
+        
+        .event-card .judge-nation {
+            margin-right: 8px;
+            min-width: 30px;
+        }
+        
+        .event-card .judge-status {
+            margin-right: 8px;
+        }
+        
+        .event-card .judge-btn-exclude {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+        
+        .event-card .judge-btn-exclude:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        .event-card .player-item {
+            display: flex;
+            align-items: center;
+            padding: 4px 8px;
+            margin-bottom: 4px;
+            background: #f8f9fa;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        .event-card .player-number {
+            font-weight: bold;
+            margin-right: 8px;
+            min-width: 30px;
+        }
+        
+        .event-card .player-name {
+            flex: 1;
+        }
+        
+        .event-card .empty {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 20px;
+        }
+        
         .event-card {
             background: white;
             border: 1px solid #dee2e6;
@@ -2860,75 +2938,75 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     </div>
                 `;
     } else {
-                // 싱글 이벤트인 경우 백업 파일 스타일로 표시
+                // 싱글 이벤트인 경우 멀티 이벤트와 동일한 스타일로 표시
                 content += `
-                    <div class="single-event-panel">
-                        <div class="main-content-row">
-                            <div class="adjudicator-list-panel" id="adjudicator-list-panel">
-                                <h3>심사위원</h3>
-                                <table style="width:100%;">
-                                    <thead>
-                                        <tr>
-                                            <th style="width:2.1em;">#</th>
-                                            <th style="width:3.2em;">코드</th>
-                                            <th style="min-width:5em;">심사위원명</th>
-                                            <th style="width:2.2em;">국가</th>
-                                            <th style="width:3em;">상태</th>
-                                            <th style="width:3em;">관리</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="adjudicator-list"></tbody>
-                                </table>
-                                <div class="empty" id="judge-empty" style="display:none;">심사위원이 없습니다</div>
-                            </div>
-                            <div class="player-dance-row">
-                                <div class="player-list-panel" id="player-list-panel">
-                                    <h3>선수</h3>
-                                    <div class="player-controls-row">
-                                        <button class="add-player-btn" onclick="openPlayerModal()">선수 추가</button>
-                                        <button class="show-entry-list-btn" onclick="showEntryPlayers()">출전선수</button>
-                                        <button class="split-hit-btn" onclick="openSplitHitModal()">히트 나누기</button>
-                                        <button class="show-hit-btn" id="showHitBtn" onclick="openHitModal()">히트 확인</button>
-                                    </div>
-                                    <div class="player-list-compact" id="player-list-compact">
-                                        <ul class="player-list" id="player-list"></ul>
-                                    </div>
-                                    <div class="hit-block" id="hit-block" style="display:none;"></div>
+                    <div class="event-cards-container">
+                        <div class="event-cards-grid">
+                            <div class="event-card selected" data-event="${eventId}" onclick="selectEventFromCard('${eventId}', '${groupId}')">
+                                <div class="event-card-header">
+                                    <div class="event-number">${eventId}</div>
+                                    <div class="event-status status-${event.round.toLowerCase()}">${event.round}</div>
                                 </div>
-                                <div class="dance-block" id="dance-block">
-                                    <div class="dance-title">진행종목</div>
-                                    <div class="dance-progress-container">
-                                        <div class="dance-progress-bar">
-                                            <div class="dance-progress-fill" id="dance-progress-fill"></div>
+                                <div class="event-card-body">
+                                    <div class="event-card-left">
+                                        <div class="event-card-title">${event.desc}</div>
+                                        <div class="event-card-details">
+                                            <div class="event-card-detail-row">
+                                                <span class="event-card-detail-label">패널:</span>
+                                                <span class="event-card-detail-value">${event.panel || 'N/A'}</span>
+                                            </div>
+                                            <div class="event-card-detail-row">
+                                                <span class="event-card-detail-label">라운드:</span>
+                                                <span class="event-card-detail-value">${event.round}</span>
+                                            </div>
+                                            <div class="event-card-detail-row">
+                                                <span class="event-card-detail-label">댄스:</span>
+                                                <span class="event-card-detail-value">${event.dance_names ? event.dance_names.join(' → ') : (event.dances ? event.dances.join(' → ') : 'N/A')}</span>
+                                            </div>
                                         </div>
-                                        <div class="dance-list" id="dance-list"></div>
+                                        <div class="event-card-dances">
+                                            ${event.dance_names ? event.dance_names.join(' → ') : (event.dances ? event.dances.join(' → ') : 'N/A')}
+                                        </div>
+                                        <div class="event-card-judges">
+                                            <div class="judges-header">
+                                                <span class="event-title">심사위원</span>
+                                                <span class="judges-count" id="judges-count-${eventId}">-</span>
+                                            </div>
+                                            <div class="judges-list" id="judges-list-${eventId}">
+                                                <div class="loading">심사위원 정보를 로딩 중입니다...</div>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div class="dance-controls">
-                                        <button class="aggregation-btn" onclick="openAggregation()">집계 결과</button>
-                                        <button class="award-btn" onclick="openAwardModal()">상장 발급</button>
+                                    <div class="event-card-right">
+                                        <div class="event-card-players">
+                                            <div class="players-header">
+                                                <span>선수</span>
+                                                <span class="players-count" id="players-count-${eventId}">-</span>
+                                            </div>
+                                            <div class="players-list" id="players-list-${eventId}">
+                                                <div class="loading">선수 정보를 로딩 중입니다...</div>
+                                            </div>
+                                        </div>
+                                        <div class="event-card-actions">
+                                            <button class="event-card-btn event-card-btn-scores" onclick="openJudgeScoring('${eventId}')">
+                                                📊 점수
+                                            </button>
+                                            <button class="event-card-btn event-card-btn-aggregation" onclick="openAggregation()">
+                                                📈 집계
+                                            </button>
+                                            <button class="event-card-btn event-card-btn-awards" onclick="openAwardModal()">
+                                                🏆 상장
+                                            </button>
+                                            <button class="event-card-btn event-card-btn-players" onclick="openHitModal()">
+                                                👥 히트
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="aggregation-section">
-                            <div class="aggregation-status">
-                                <div class="status-item">
-                                    <span class="status-label">총 심사위원:</span>
-                                    <span id="total-judges">-</span>
-                                </div>
-                                <div class="status-item">
-                                    <span class="status-label">완료된 심사위원:</span>
-                                    <span id="completed-judges">-</span>
-                                </div>
-                                <div class="status-item">
-                                    <span class="status-label">진행률:</span>
-                                    <span id="progress-rate">-</span>
-                                </div>
-                            </div>
-                            <div class="aggregation-table">
-                                <h4>집계 결과</h4>
-                                <div class="aggregation-results" id="aggregation-results">
-                                    <div class="loading">집계 데이터를 로딩 중입니다...</div>
+                                <div class="event-card-footer">
+                                    <div class="judge-progress" id="judge-progress-${eventId}">
+                                        <div class="progress-text">심사위원 상태 로딩 중...</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2938,15 +3016,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             rightContent.innerHTML = content;
             
-            // 싱글 이벤트인 경우 심사위원 리스트 렌더링
+            // 싱글 이벤트인 경우 멀티 이벤트와 동일한 방식으로 렌더링
             if (!isMultiEvent) {
-                renderAdjudicatorList(event.panel, eventId);
-                // 선수 데이터 로드 및 렌더링
-                loadPlayersForCurrentEvent(eventId);
-                // 댄스 블록 렌더링
-                renderDanceBlock(eventId);
-                // 히트 데이터 로드
-                fetchHits(eventId);
+                renderEventCardContent(eventId, event);
                 // 심사위원 상태 업데이트
                 updateJudgeStatus(eventId);
             }
@@ -2981,8 +3053,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         // 심사위원 채점 패널 열기 함수
         function openJudgeScoring(eventNo, judgeCode) {
-            // 임시로 알림 표시 (실제 구현은 필요에 따라)
-            alert(`심사위원 ${judgeCode}의 채점 패널을 열겠습니다. (이벤트: ${eventNo})`);
+            if (judgeCode) {
+                // 특정 심사위원의 채점 패널
+                alert(`심사위원 ${judgeCode}의 채점 패널을 열겠습니다. (이벤트: ${eventNo})`);
+            } else {
+                // 이벤트 전체 채점 패널
+                alert(`이벤트 ${eventNo}의 채점 패널을 열겠습니다.`);
+            }
         }
         
         // 선수 리스트 렌더링 함수
@@ -3024,12 +3101,12 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         // 현재 이벤트의 선수 데이터 로드
         function loadPlayersForCurrentEvent(eventNo) {
-            if (!eventNo) return;
+            if (!eventNo) return Promise.resolve();
             
             console.log(`Loading players for event ${eventNo}...`);
             
             // 출전선수 목록 로드
-            fetch(`get_players.php?comp_id=<?=addslashes($comp_id)?>&event_no=${eventNo}`)
+            return fetch(`get_players.php?comp_id=<?=addslashes($comp_id)?>&event_no=${eventNo}`)
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
@@ -3343,7 +3420,82 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             printWindow.print();
         }
         
-        // 심사위원 리스트 렌더링 함수
+        // 이벤트 카드 내용 렌더링 함수 (싱글 이벤트용)
+        function renderEventCardContent(eventId, event) {
+            // 심사위원 정보 렌더링
+            renderEventCardJudges(eventId, event.panel);
+            // 선수 정보 렌더링
+            renderEventCardPlayers(eventId);
+        }
+        
+        // 이벤트 카드 심사위원 렌더링
+        function renderEventCardJudges(eventId, panelCode) {
+            const judgesList = document.getElementById(`judges-list-${eventId}`);
+            const judgesCount = document.getElementById(`judges-count-${eventId}`);
+            
+            if (!judgesList) return;
+            
+            const judgeLinks = panelMap.filter(m => (m.panel_code||"").toUpperCase() === (panelCode||"").toUpperCase());
+            const judgeArr = judgeLinks.map(m => allAdjudicators[m.adj_code]).filter(j=>j);
+            
+            if (!panelCode || judgeArr.length === 0) {
+                judgesList.innerHTML = '<div class="empty">심사위원이 없습니다</div>';
+                if (judgesCount) judgesCount.textContent = '0';
+                return;
+            }
+            
+            if (judgesCount) judgesCount.textContent = judgeArr.length;
+            
+            const disabled = disabledJudgesByEvent[eventId] || [];
+            let html = '';
+            judgeArr.forEach((j, i) => {
+                const isDisabled = disabled.includes(j.code);
+                html += `
+                    <div class="judge-item ${isDisabled ? 'disabled' : ''}">
+                        <span class="judge-code">${j.code}</span>
+                        <span class="judge-name">${j.name || 'Unknown'}</span>
+                        <span class="judge-nation">${j.nation || '-'}</span>
+                        <span class="judge-status waiting" id="judge-status-${j.code}" data-judge-code="${j.code}">대기</span>
+                        <button class="judge-btn-exclude" onclick="toggleAdjudicator('${eventId}','${j.code}')" ${isDisabled ? 'disabled' : ''}>X</button>
+                    </div>
+                `;
+            });
+            judgesList.innerHTML = html;
+        }
+        
+        // 이벤트 카드 선수 렌더링
+        function renderEventCardPlayers(eventId) {
+            const playersList = document.getElementById(`players-list-${eventId}`);
+            const playersCount = document.getElementById(`players-count-${eventId}`);
+            
+            if (!playersList) return;
+            
+            // 선수 데이터 로드
+            loadPlayersForCurrentEvent(eventId).then(() => {
+                const players = playersByEvent[eventId] || [];
+                
+                if (playersCount) playersCount.textContent = players.length;
+                
+                if (players.length === 0) {
+                    playersList.innerHTML = '<div class="empty">선수가 없습니다</div>';
+                    return;
+                }
+                
+                let html = '';
+                players.forEach((player, i) => {
+                    const playerName = player.name || `선수 ${player.number}`;
+                    html += `
+                        <div class="player-item">
+                            <span class="player-number">${player.number}</span>
+                            <span class="player-name">${playerName}</span>
+                        </div>
+                    `;
+                });
+                playersList.innerHTML = html;
+            });
+        }
+        
+        // 심사위원 리스트 렌더링 함수 (기존 테이블용)
         function renderAdjudicatorList(panelCode, eventNo) {
             const judgeLinks = panelMap.filter(m => (m.panel_code||"").toUpperCase() === (panelCode||"").toUpperCase());
             const judgeArr = judgeLinks.map(m => allAdjudicators[m.adj_code]).filter(j=>j);
@@ -3966,6 +4118,33 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             if (progressRateElement) {
                                 const rate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
                                 progressRateElement.textContent = rate + '%';
+                            }
+                        }
+                        
+                        // 싱글 이벤트 카드의 심사위원 상태 업데이트
+                        const eventCard = document.querySelector(`.event-card[data-event="${eventNo}"]`);
+                        if (eventCard) {
+                            let completedCount = 0;
+                            let totalCount = 0;
+                            
+                            Object.keys(data.status).forEach(judgeCode => {
+                                let statusElement = eventCard.querySelector(`#judge-status-${judgeCode}`);
+                                if (statusElement) {
+                                    let status = data.status[judgeCode];
+                                    statusElement.className = `judge-status ${status.class}`;
+                                    statusElement.textContent = status.text;
+                                    
+                                    if (status.class === 'completed') {
+                                        completedCount++;
+                                    }
+                                    totalCount++;
+                                }
+                            });
+                            
+                            // 진행률 업데이트
+                            const progressElement = eventCard.querySelector('.judge-progress .progress-text');
+                            if (progressElement) {
+                                progressElement.textContent = `${completedCount}/${totalCount} 완료`;
                             }
                         }
                     }
