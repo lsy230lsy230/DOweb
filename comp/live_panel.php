@@ -6013,7 +6013,46 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }
             
             // 선택된 커플 수만큼만 진출자 정보 수집 (등위순으로 자동 할당)
-            const players = window.advancingPlayersData.slice(0, coupleCount).map((player, index) => ({
+            // window.advancingPlayersData가 부족하면 집계 결과에서 추가로 가져오기
+            let allPlayers = window.advancingPlayersData || [];
+            
+            // 만약 요청한 수보다 적으면 집계 결과에서 추가로 가져오기
+            if (allPlayers.length < coupleCount) {
+                console.log(`진출자 데이터 부족: ${allPlayers.length} < ${coupleCount}, 집계 결과에서 추가로 가져오기`);
+                const aggregationResult = document.querySelector('#aggregationContent .aggregation-results') || 
+                                        document.querySelector('#aggregationContent') ||
+                                        document.querySelector('.aggregation-results');
+                
+                if (aggregationResult) {
+                    const summaryTable = aggregationResult.querySelector('table');
+                    if (summaryTable) {
+                        const rows = summaryTable.querySelectorAll('tr');
+                        for (let i = 1; i < rows.length && allPlayers.length < coupleCount; i++) {
+                            const row = rows[i];
+                            const cells = row.querySelectorAll('td');
+                            if (cells.length >= 3) {
+                                const rank = cells[0]?.textContent?.trim();
+                                const number = cells[1]?.textContent?.trim();
+                                const name = cells[2]?.textContent?.trim();
+                                
+                                if (rank && number && name && !isNaN(parseInt(rank))) {
+                                    // 이미 존재하는지 확인
+                                    const exists = allPlayers.some(p => p.number === number);
+                                    if (!exists) {
+                                        allPlayers.push({
+                                            number: number,
+                                            name: name,
+                                            rank: parseInt(rank)
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            const players = allPlayers.slice(0, coupleCount).map((player, index) => ({
                 oldNumber: player.number,
                 name: player.name,
                 newNumber: (index + 1).toString().padStart(2, '0'), // 01, 02, 03... 순위순
