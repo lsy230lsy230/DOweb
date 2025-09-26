@@ -715,6 +715,59 @@ body {
     background: linear-gradient(45deg, #cd7f32, #daa520) !important;
     color: white !important;
 }
+.skating-dance-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.skating-dance-table th {
+    background: linear-gradient(45deg, #2c3e50, #34495e);
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid #2c3e50;
+    font-size: 0.85em;
+}
+.skating-dance-table td {
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+    font-size: 0.85em;
+}
+.skating-dance-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.skating-dance-table tr:hover {
+    background: #e8f4f8;
+}
+.skating-dance-table .rank-1 {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #333 !important;
+}
+.skating-dance-table .rank-2 {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
+    color: #333 !important;
+}
+.skating-dance-table .rank-3 {
+    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
+    color: white !important;
+}
+.calc-cell {
+    font-weight: 600;
+    color: #2c3e50;
+    background: #f0f8ff !important;
+}
+.place-dance {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #e74c3c;
+    background: #fff5f5 !important;
+}
 .adjudicators-section {
     background: #f8f9fa;
     padding: 30px;
@@ -885,27 +938,31 @@ body {
     </table>
 </div>';
 
-    // 종목별 댄스 집계 결과
+    // 종목별 댄스 집계 결과 (스케이팅 시스템 계산 형식)
     $html .= '<div class="dance-results-section">
-    <div class="section-title">종목별 댄스 집계 결과</div>';
+    <div class="section-title">종목별 댄스 집계 결과 (스케이팅 시스템)</div>';
     
     foreach ($dance_results as $dance_code => $dance_data) {
         $dance_name = $dance_names[$dance_code] ?? $dance_code;
         $html .= '<div class="dance-result-card">
             <div class="dance-title">' . $dance_name . '</div>
-            <table class="dance-results-table">
+            <table class="skating-dance-table">
                 <thead>
                     <tr>
-                        <th>순위</th>
-                        <th>선수번호</th>
-                        <th>선수명</th>';
+                        <th>Cpl. No.</th>';
         
         // 심사위원 컬럼 헤더
         foreach ($adjudicators as $judge) {
             $html .= '<th>' . $judge['code'] . '</th>';
         }
         
-        $html .= '<th>총점</th>
+        $html .= '<th>1</th>
+                        <th>1&2</th>
+                        <th>1to3</th>
+                        <th>1to4</th>
+                        <th>1to5</th>
+                        <th>1to6</th>
+                        <th>Place Dance</th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -920,33 +977,52 @@ body {
         
         foreach ($ranked_players as $index => $player_result) {
             $player_no = $player_result['player_no'];
-            $player_info = null;
-            foreach ($players as $player) {
-                if ($player['number'] == $player_no) {
-                    $player_info = $player;
-                    break;
-                }
-            }
+            $place_dance = $player_result['rank'];
             
-            $player_name = $player_info ? ($player_info['male'] . ($player_info['female'] ? ' & ' . $player_info['female'] : '')) : '선수 ' . $player_no;
-            $rank_class = $index < 3 ? 'rank-' . ($index + 1) : '';
+            $rank_class = '';
+            if ($place_dance == 1) $rank_class = 'rank-1';
+            elseif ($place_dance == 2) $rank_class = 'rank-2';
+            elseif ($place_dance == 3) $rank_class = 'rank-3';
             
             $html .= '<tr class="' . $rank_class . '">
-                <td>' . ($index + 1) . '</td>
-                <td>' . $player_no . '</td>
-                <td>' . htmlspecialchars($player_name) . '</td>';
+                <td><strong>' . $player_no . '</strong></td>';
             
             // 각 심사위원의 점수
-            $total_score = 0;
+            $scores = [];
             foreach ($adjudicators as $judge) {
                 $score = $dance_data['judge_scores'][$judge['code']][$player_no] ?? '-';
-                if ($score !== '-') {
-                    $total_score += $score;
-                }
+                $scores[] = $score;
                 $html .= '<td>' . $score . '</td>';
             }
             
-            $html .= '<td class="total-points">' . $total_score . '</td>
+            // 스케이팅 시스템 계산
+            $calc_1 = 0;      // 1위 표 수
+            $calc_1_2 = 0;    // 1위 또는 2위 표 수
+            $calc_1to3 = 0;   // 1~3위 표 수
+            $calc_1to4 = 0;   // 1~4위 표 수
+            $calc_1to5 = 0;   // 1~5위 표 수
+            $calc_1to6 = 0;   // 1~6위 표 수
+            $sum_places = 0;  // 순위 합계
+            
+            foreach ($scores as $score) {
+                if ($score !== '-') {
+                    $sum_places += $score;
+                    if ($score == 1) $calc_1++;
+                    if ($score <= 2) $calc_1_2++;
+                    if ($score <= 3) $calc_1to3++;
+                    if ($score <= 4) $calc_1to4++;
+                    if ($score <= 5) $calc_1to5++;
+                    if ($score <= 6) $calc_1to6++;
+                }
+            }
+            
+            $html .= '<td class="calc-cell">' . $calc_1 . '</td>
+                <td class="calc-cell">' . $calc_1_2 . '</td>
+                <td class="calc-cell">' . $calc_1to3 . ' (' . $sum_places . ')</td>
+                <td class="calc-cell">' . $calc_1to4 . '</td>
+                <td class="calc-cell">' . $calc_1to5 . '</td>
+                <td class="calc-cell">' . $calc_1to6 . '</td>
+                <td class="place-dance"><strong>' . $place_dance . '</strong></td>
             </tr>';
         }
         
