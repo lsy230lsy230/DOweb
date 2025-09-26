@@ -3154,7 +3154,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                             <button class="event-card-btn event-card-btn-scores" onclick="openJudgeScoring('${eventId}')">
                                                 📊 점수
                                             </button>
-                                            <button class="event-card-btn event-card-btn-aggregation" onclick="openAggregation('${eventId}')">
+                                            <button class="event-card-btn event-card-btn-aggregation" onclick="openAggregation('${eventId}')" data-event-id="${eventId}">
                                                 📈 집계
                                             </button>
                                             <button class="event-card-btn event-card-btn-awards" onclick="openAwardModal()">
@@ -3854,17 +3854,38 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         }
         
         function openAggregation(eventId) {
-            // eventId가 없으면 현재 선택된 이벤트 사용
-            if (!eventId) {
+            console.log('openAggregation called with eventId:', eventId);
+            console.log('selectedEvent:', selectedEvent);
+            console.log('events array:', events);
+            
+            // eventId가 없거나 undefined이면 현재 선택된 이벤트 사용
+            if (!eventId || eventId === 'undefined' || eventId === 'null') {
                 eventId = selectedEvent;
+                console.log('Using selectedEvent as eventId:', eventId);
+                
                 if (!eventId) {
-                    alert('이벤트를 선택해주세요.');
-                    return;
+                    // events 배열에서 첫 번째 이벤트 사용
+                    if (events && events.length > 0) {
+                        eventId = events[0].detail_no || events[0].no;
+                        console.log('Using first event as eventId:', eventId);
+                    } else {
+                        alert('이벤트를 선택해주세요.');
+                        return;
+                    }
                 }
             }
             
-            console.log('openAggregation called with eventId:', eventId);
-            console.log('selectedEvent:', selectedEvent);
+            // eventId가 문자열인지 확인
+            if (typeof eventId !== 'string' && typeof eventId !== 'number') {
+                console.error('Invalid eventId type:', typeof eventId, eventId);
+                alert('잘못된 이벤트 ID입니다.');
+                return;
+            }
+            
+            // eventId를 문자열로 변환
+            eventId = String(eventId);
+            
+            console.log('Final eventId:', eventId, 'type:', typeof eventId);
             
             // 집계 모달 열기
             openAggregationModal(eventId);
@@ -4695,6 +4716,14 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         // 집계 실행
         function executeAggregation(eventId) {
+            console.log('executeAggregation called with eventId:', eventId, 'type:', typeof eventId);
+            
+            // eventId 검증
+            if (!eventId || eventId === 'undefined' || eventId === 'null') {
+                displayAggregationError('이벤트 ID가 올바르지 않습니다: ' + eventId);
+                return;
+            }
+            
             const compId = '<?=$comp_id?>';
             const currentProtocol = window.location.protocol;
             const currentHost = window.location.host;
