@@ -35,7 +35,7 @@ try {
                 'no' => trim($parts[0]),
                 'desc' => trim($parts[1]),
                 'round' => trim($parts[2]) ?: 'Final',
-                'recall_count' => intval(trim($parts[4]) ?: 0), // 5번째 컬럼이 리콜 수
+                'recall_count' => intval(trim($parts[4]) ?: 0), // 4번째 컬럼이 리콜 수 (인덱스 4)
                 'detail_no' => trim($parts[11]) ?: trim($parts[0]),
                 'event_no' => trim($parts[0]),
                 'dances' => array_slice($parts, 3, 8),
