@@ -5795,6 +5795,15 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
+            // 전체 참여 팀 수 계산 (집계 결과 테이블에서)
+            let totalTeams = 0;
+            const summaryTable = aggregationResult.querySelector('table');
+            if (summaryTable) {
+                const rows = summaryTable.querySelectorAll('tr');
+                // 헤더를 제외한 데이터 행 수 계산
+                totalTeams = rows.length - 1;
+            }
+            
             // 진출자 등번호 추출
             const advancingPlayers = [];
             const playerElements = aggregationResult.querySelectorAll('.next-round-player');
@@ -5852,12 +5861,12 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             console.log('다음 이벤트:', nextEventNumber, nextEventName);
             
             // 진출자 확인 및 등번호 조정 모달 표시
-            showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers);
+            showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers, totalTeams);
         }
         
         // 다음 라운드 생성 모달 표시
-        function showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers) {
-            console.log('showNextRoundModal 함수 시작:', {nextEventNumber, nextEventName, advancingPlayers});
+        function showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers, totalTeams) {
+            console.log('showNextRoundModal 함수 시작:', {nextEventNumber, nextEventName, advancingPlayers, totalTeams});
             
             // 기존 모달이 있으면 제거
             const existingModal = document.querySelector('.next-round-modal');
@@ -5881,9 +5890,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             <div class="couple-count-input">
                                 <label for="coupleCount">진출할 커플 수:</label>
                                 <input type="number" id="coupleCount" value="${advancingPlayers.length}" 
-                                       min="1" max="${advancingPlayers.length}" 
+                                       min="1" max="${totalTeams}" 
                                        onchange="updateCoupleCount()" class="couple-count-field">
-                                <span class="couple-count-info">(최대 ${advancingPlayers.length}명까지 가능)</span>
+                                <span class="couple-count-info">(최대 ${totalTeams}명까지 가능)</span>
                             </div>
                         </div>
                         <!-- 진출자 목록은 제거 - 커플 수만 조정하면 됨 -->
@@ -5925,6 +5934,33 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             // 진출자 목록 테이블이 제거되었으므로 추가 처리 불필요
         }
         
+        // recall 수 업데이트 함수
+        function updateRecallCount(eventId, recallCount) {
+            fetch('update_recall_count.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `group_id=${eventId}&recall_count=${recallCount}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Recall 수 업데이트 성공:', recallCount);
+                    // UI에서도 recall 수 업데이트
+                    const recallElement = document.querySelector(`[data-group-id="${eventId}"] .recall-count-value`);
+                    if (recallElement) {
+                        recallElement.textContent = `${recallCount}명`;
+                    }
+                } else {
+                    console.error('Recall 수 업데이트 실패:', data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Recall 수 업데이트 오류:', error);
+            });
+        }
+        
         // 다음 라운드 생성 실행
         function createNextRound(eventNumber, eventName) {
             if (!window.advancingPlayersData) {
@@ -5946,6 +5982,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 newNumber: (index + 1).toString().padStart(2, '0'), // 01, 02, 03... 순위순
                 rank: index + 1
             }));
+            
+            // 1. 먼저 recall 수를 조정
+            updateRecallCount(selectedEvent, coupleCount);
             
             // 서버에 다음 라운드 생성 요청
             fetch('create_next_round.php', {
