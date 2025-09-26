@@ -1273,7 +1273,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         }
         
         .aggregation-section {
-            background: #f8f9fa;
+            background: transparent;
             border-radius: 8px;
             padding: 1em;
             margin-top: 1em;
@@ -1306,7 +1306,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         }
         
         .aggregation-results {
-            background: #f8f9fa;
+            background: transparent;
             border-radius: 6px;
             padding: 1em;
             min-height: 200px;
@@ -1357,6 +1357,39 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: #e9b200;
             color: white;
             font-weight: bold;
+        }
+        
+        .hit-block {
+            margin-top: 0.8em;
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1em;
+        }
+        
+        .hit-title {
+            font-size: 1em;
+            color: #0d2c96;
+            margin-bottom: 0.6em;
+            font-weight: bold;
+        }
+        
+        .hit-group {
+            margin-bottom: 0.8em;
+            padding: 0.5em;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .hit-number {
+            font-weight: bold;
+            color: #495057;
+            margin-bottom: 0.3em;
+        }
+        
+        .hit-players {
+            color: #6c757d;
+            font-size: 0.9em;
         }
         
         .event-card {
@@ -2714,6 +2747,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 loadPlayersForCurrentEvent(eventId);
                 // 댄스 블록 렌더링
                 renderDanceBlock(eventId);
+                // 히트 데이터 로드
+                fetchHits(eventId);
                 // 심사위원 상태 업데이트
                 updateJudgeStatus(eventId);
             }
@@ -2727,6 +2762,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         let events = <?= json_encode($events) ?>;
         let playersByEvent = {};
         let allPlayers = <?= json_encode($player_dict) ?>;
+        let hitsByEvent = {};
         
         // 심사위원 토글 함수
         function toggleAdjudicator(eventNo, judgeCode) {
@@ -2858,6 +2894,60 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             } else {
                 danceListDiv.innerHTML = '<div class="dance-item">댄스 정보 없음</div>';
             }
+        }
+        
+        // 히트 데이터 로드 함수
+        function fetchHits(eventNo) {
+            fetch(`get_hits.php?comp_id=<?=urlencode($comp_id)?>&eventNo=${eventNo}&${Date.now()}`)
+                .then(r => {
+                    if (!r.ok) {
+                        console.warn(`히트 파일 로드 실패: ${r.status} ${r.statusText}`);
+                        return {success: false, hits: {}};
+                    }
+                    return r.json();
+                })
+                .then(data => {
+                    if (data.success && data.hits) {
+                        hitsByEvent[eventNo] = data.hits;
+                        renderHits(eventNo);
+                        console.log(`Hits loaded for event ${eventNo}:`, data.hits);
+                    } else {
+                        console.warn('히트 데이터 로드 실패:', data.error || '알 수 없는 오류');
+                        hitsByEvent[eventNo] = {};
+                        renderHits(eventNo);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error loading hits:', err);
+                    hitsByEvent[eventNo] = {};
+                    renderHits(eventNo);
+                });
+        }
+        
+        // 히트 정보 렌더링 함수
+        function renderHits(eventNo) {
+            const hitBlock = document.getElementById('hit-block');
+            if (!hitBlock) return;
+            
+            const hits = hitsByEvent[eventNo] || {};
+            const hitKeys = Object.keys(hits).sort((a, b) => Number(a) - Number(b));
+            
+            if (hitKeys.length === 0) {
+                hitBlock.style.display = 'none';
+                return;
+            }
+            
+            let html = '<div class="hit-title">히트 정보</div>';
+            hitKeys.forEach(hitNo => {
+                const players = hits[hitNo] || [];
+                html += `<div class="hit-group">`;
+                html += `<div class="hit-number">히트 ${hitNo}</div>`;
+                html += `<div class="hit-players">${players.join(', ')}</div>`;
+                html += `</div>`;
+            });
+            
+            hitBlock.innerHTML = html;
+            hitBlock.style.display = 'block';
         }
         
         // 심사위원 리스트 렌더링 함수
