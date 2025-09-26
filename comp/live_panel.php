@@ -2621,8 +2621,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: flex;
+            z-index: 10000;
+            display: flex !important;
             justify-content: center;
             align-items: center;
         }
@@ -5751,9 +5751,26 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             printWindow.print();
         }
         
+        // 테스트용 다음 라운드 모달
+        function testNextRoundModal() {
+            console.log('테스트 모달 시작');
+            const testPlayers = [
+                {number: '15', name: '염태우', newNumber: '01'},
+                {number: '16', name: '김민제', newNumber: '02'},
+                {number: '18', name: '김재희', newNumber: '03'},
+                {number: '13', name: '남기용', newNumber: '04'},
+                {number: '14', name: '이유진', newNumber: '05'},
+                {number: '17', name: '윤휘진', newNumber: '06'}
+            ];
+            showNextRoundModal(30, '프로페셔널 라틴 Semi-Final', testPlayers);
+        }
+        
         // 다음 라운드 생성
         function generateNextRound() {
+            console.log('generateNextRound 함수 시작');
+            
             const currentEvent = events.find(ev => (ev.detail_no || ev.no) === selectedEvent);
+            console.log('현재 이벤트:', currentEvent);
             if (!currentEvent) {
                 alert('현재 이벤트 정보를 찾을 수 없습니다.');
                 return;
@@ -5763,28 +5780,63 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             const aggregationResult = document.querySelector('#aggregationContent .aggregation-results') || 
                                     document.querySelector('#aggregationContent') ||
                                     document.querySelector('.aggregation-results');
+            console.log('집계 결과 요소:', aggregationResult);
+            
             if (!aggregationResult) {
                 alert('먼저 집계를 실행해주세요.');
+                console.log('집계 결과를 찾을 수 없습니다. 사용 가능한 요소들:');
+                console.log('aggregationContent:', document.querySelector('#aggregationContent'));
+                console.log('aggregation-results:', document.querySelector('.aggregation-results'));
                 return;
             }
             
             // 진출자 등번호 추출
             const advancingPlayers = [];
             const playerElements = aggregationResult.querySelectorAll('.next-round-player');
-            playerElements.forEach((playerEl, index) => {
-                const playerNumber = playerEl.querySelector('.player-number')?.textContent;
-                const playerName = playerEl.querySelector('.player-name')?.textContent;
-                if (playerNumber && playerName) {
-                    advancingPlayers.push({
-                        number: playerNumber,
-                        name: playerName,
-                        newNumber: (index + 1).toString().padStart(2, '0') // 01, 02, 03...
-                    });
+            console.log('진출자 요소들:', playerElements);
+            
+            // .next-round-player가 없으면 다른 방법으로 시도
+            if (playerElements.length === 0) {
+                // 테이블에서 진출자 정보 추출 시도
+                const tableRows = aggregationResult.querySelectorAll('table tr');
+                console.log('테이블 행들:', tableRows);
+                
+                // 집계 결과 테이블에서 진출자 정보 찾기
+                for (let i = 1; i < tableRows.length; i++) { // 헤더 제외
+                    const row = tableRows[i];
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 3) {
+                        const rank = cells[0]?.textContent?.trim();
+                        const number = cells[1]?.textContent?.trim();
+                        const name = cells[2]?.textContent?.trim();
+                        
+                        if (rank && number && name && !isNaN(parseInt(rank))) {
+                            advancingPlayers.push({
+                                number: number,
+                                name: name,
+                                newNumber: (advancingPlayers.length + 1).toString().padStart(2, '0')
+                            });
+                        }
+                    }
                 }
-            });
+            } else {
+                playerElements.forEach((playerEl, index) => {
+                    const playerNumber = playerEl.querySelector('.player-number')?.textContent;
+                    const playerName = playerEl.querySelector('.player-name')?.textContent;
+                    if (playerNumber && playerName) {
+                        advancingPlayers.push({
+                            number: playerNumber,
+                            name: playerName,
+                            newNumber: (index + 1).toString().padStart(2, '0') // 01, 02, 03...
+                        });
+                    }
+                });
+            }
+            
+            console.log('추출된 진출자들:', advancingPlayers);
             
             if (advancingPlayers.length === 0) {
-                alert('진출자가 없습니다.');
+                alert('진출자가 없습니다. 집계 결과를 확인해주세요.');
                 return;
             }
             
@@ -5792,12 +5844,22 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             const nextEventNumber = parseInt(currentEvent.no) + 1;
             const nextEventName = currentEvent.desc.replace(/Round \d+/, 'Semi-Final').replace(/Final/, 'Semi-Final');
             
+            console.log('다음 이벤트:', nextEventNumber, nextEventName);
+            
             // 진출자 확인 및 등번호 조정 모달 표시
             showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers);
         }
         
         // 다음 라운드 생성 모달 표시
         function showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers) {
+            console.log('showNextRoundModal 함수 시작:', {nextEventNumber, nextEventName, advancingPlayers});
+            
+            // 기존 모달이 있으면 제거
+            const existingModal = document.querySelector('.next-round-modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
             const modal = document.createElement('div');
             modal.className = 'next-round-modal';
             modal.innerHTML = `
@@ -5863,9 +5925,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             `;
             
             document.body.appendChild(modal);
+            console.log('모달이 DOM에 추가되었습니다:', modal);
             
             // 전역 변수에 진출자 정보 저장
             window.advancingPlayersData = advancingPlayers;
+            console.log('진출자 데이터 저장됨:', window.advancingPlayersData);
         }
         
         // 다음 라운드 모달 닫기
@@ -6062,7 +6126,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         <div class="modal-footer">
             <button class="btn-secondary" onclick="closeAggregationModal()">닫기</button>
             <button class="btn-primary" onclick="printAggregation()" id="printAggregationBtn" style="display: none;">인쇄</button>
-            <button class="btn-success" onclick="generateNextRound()" id="nextRoundBtn" style="display: none;">다음 라운드 생성</button>
+            <button class="btn-success" onclick="testNextRoundModal()" id="nextRoundBtn" style="display: none;">다음 라운드 생성</button>
         </div>
     </div>
 </div>
