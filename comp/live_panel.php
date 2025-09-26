@@ -6080,6 +6080,28 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
+            // 현재 이벤트 정보 찾기
+            const currentEvent = events.find(e => e.no == selectedEvent);
+            if (!currentEvent) {
+                alert('현재 이벤트 정보를 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 다음 라운드 정보 자동 찾기
+            const nextRoundInfo = getNextRoundInfo(currentEvent);
+            let finalEventNumber = eventNumber;
+            let finalEventName = eventName;
+            
+            if (nextRoundInfo) {
+                // "30번 Semi-Final" 형식에서 번호와 라운드 추출
+                const match = nextRoundInfo.match(/(\d+)번\s+(.+)/);
+                if (match) {
+                    finalEventNumber = parseInt(match[1]);
+                    finalEventName = `${currentEvent.desc} ${match[2]}`;
+                    console.log('자동 찾은 다음 라운드:', finalEventNumber, finalEventName);
+                }
+            }
+            
             // 등번호만 추출 (등위와 상관없이)
             let playerNumbers = [];
             
@@ -6152,16 +6174,16 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             // 서버에 다음 라운드 생성 요청
             const requestData = {
-                eventNumber: eventNumber,
-                eventName: eventName,
+                eventNumber: finalEventNumber,
+                eventName: finalEventName,
                 players: players,
                 comp_id: '20250913-001'
             };
             
             console.log('createNextRound 요청 데이터:', requestData);
             console.log('전달할 players 수:', players.length);
-            console.log('eventNumber 타입:', typeof eventNumber, '값:', eventNumber);
-            console.log('eventName 타입:', typeof eventName, '값:', eventName);
+            console.log('eventNumber 타입:', typeof finalEventNumber, '값:', finalEventNumber);
+            console.log('eventName 타입:', typeof finalEventName, '값:', finalEventName);
             console.log('players 배열:', players);
             
             fetch('create_next_round.php', {
