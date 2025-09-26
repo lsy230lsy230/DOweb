@@ -602,6 +602,62 @@ body {
     font-size: 1.2em;
     color: #e74c3c;
 }
+.dance-results-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-top: 3px solid #e9ecef;
+}
+.dance-result-card {
+    background: white;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.dance-title {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    padding: 20px 30px;
+    font-size: 1.3em;
+    font-weight: 700;
+    text-align: center;
+}
+.dance-results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+.dance-results-table th {
+    background: #34495e;
+    color: white;
+    padding: 15px 10px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid #2c3e50;
+}
+.dance-results-table td {
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+}
+.dance-results-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.dance-results-table tr:hover {
+    background: #e8f4f8;
+}
+.dance-results-table .rank-1 {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #333 !important;
+}
+.dance-results-table .rank-2 {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
+    color: #333 !important;
+}
+.dance-results-table .rank-3 {
+    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
+    color: white !important;
+}
 .adjudicators-section {
     background: #f8f9fa;
     padding: 30px;
@@ -678,32 +734,6 @@ body {
         <span class="event-badge">' . $event_info['round'] . '</span>
         ' . $event_no . '. ' . htmlspecialchars($event_info['desc']) . '
     </div>
-    <div class="event-details">
-        <div class="detail-item">
-            <div class="detail-label">이벤트 번호</div>
-            <div class="detail-value">' . $event_no . '</div>
-        </div>
-        <div class="detail-item">
-            <div class="detail-label">라운드</div>
-            <div class="detail-value">' . $event_info['round'] . '</div>
-        </div>
-        <div class="detail-item">
-            <div class="detail-label">패널</div>
-            <div class="detail-value">' . $event_info['panel'] . '</div>
-        </div>
-        <div class="detail-item">
-            <div class="detail-label">댄스</div>
-            <div class="detail-value">' . implode(', ', array_map(function($code) use ($dance_names) { return $dance_names[$code] ?? $code; }, $event_info['dances'])) . '</div>
-        </div>
-        <div class="detail-item">
-            <div class="detail-label">참가자 수</div>
-            <div class="detail-value">' . count($players) . '명</div>
-        </div>
-        <div class="detail-item">
-            <div class="detail-label">심사위원 수</div>
-            <div class="detail-value">' . count($adjudicators) . '명</div>
-        </div>
-    </div>
 </div>
 <div class="results-section">
     <div class="section-title">최종 결과</div>
@@ -772,6 +802,78 @@ body {
     }
 
     $html .= '</tbody></table></div>';
+
+    // 종목별 댄스 집계 결과
+    $html .= '<div class="dance-results-section">
+    <div class="section-title">종목별 댄스 집계 결과</div>';
+    
+    foreach ($dance_results as $dance_code => $dance_data) {
+        $dance_name = $dance_names[$dance_code] ?? $dance_code;
+        $html .= '<div class="dance-result-card">
+            <div class="dance-title">' . $dance_name . '</div>
+            <table class="dance-results-table">
+                <thead>
+                    <tr>
+                        <th>순위</th>
+                        <th>선수번호</th>
+                        <th>선수명</th>';
+        
+        // 심사위원 컬럼 헤더
+        foreach ($adjudicators as $judge) {
+            $html .= '<th>' . $judge['code'] . '</th>';
+        }
+        
+        $html .= '<th>총점</th>
+                    </tr>
+                </thead>
+                <tbody>';
+        
+        // 댄스별 순위 결과
+        $dance_rankings = $dance_data['final_rankings'];
+        $ranked_players = [];
+        foreach ($dance_rankings as $player_no => $rank) {
+            $ranked_players[] = ['player_no' => $player_no, 'rank' => $rank];
+        }
+        usort($ranked_players, function($a, $b) { return $a['rank'] - $b['rank']; });
+        
+        foreach ($ranked_players as $index => $player_result) {
+            $player_no = $player_result['player_no'];
+            $player_info = null;
+            foreach ($players as $player) {
+                if ($player['number'] == $player_no) {
+                    $player_info = $player;
+                    break;
+                }
+            }
+            
+            $player_name = $player_info ? ($player_info['male'] . ($player_info['female'] ? ' & ' . $player_info['female'] : '')) : '선수 ' . $player_no;
+            $rank_class = $index < 3 ? 'rank-' . ($index + 1) : '';
+            
+            $html .= '<tr class="' . $rank_class . '">
+                <td>' . ($index + 1) . '</td>
+                <td>' . $player_no . '</td>
+                <td>' . htmlspecialchars($player_name) . '</td>';
+            
+            // 각 심사위원의 점수
+            $total_score = 0;
+            foreach ($adjudicators as $judge) {
+                $score = $dance_data['judge_scores'][$judge['code']][$player_no] ?? '-';
+                if ($score !== '-') {
+                    $total_score += $score;
+                }
+                $html .= '<td>' . $score . '</td>';
+            }
+            
+            $html .= '<td class="total-points">' . $total_score . '</td>
+            </tr>';
+        }
+        
+        $html .= '</tbody>
+            </table>
+        </div>';
+    }
+    
+    $html .= '</div>';
 
     // 심사위원 정보
     $html .= '<div class="adjudicators-section">
