@@ -6372,7 +6372,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         <div class="modal-footer">
             <button class="btn-secondary" onclick="closeAggregationModal()">닫기</button>
             <button class="btn-primary" onclick="printAggregation()" id="printAggregationBtn" style="display: none;">인쇄</button>
-            <button class="btn-success" onclick="testNextRoundModal()" id="nextRoundBtn" style="display: none;">다음 라운드 생성</button>
+            <button class="btn-success" onclick="generateNextRound()" id="nextRoundBtn" style="display: none;">다음 라운드 생성</button>
         </div>
     </div>
 </div>
