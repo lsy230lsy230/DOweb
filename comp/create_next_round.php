@@ -53,7 +53,30 @@ try {
     // 2. 이벤트용 선수 파일 업데이트 (기존 파일 덮어쓰기)
     $playerContent = "";
     foreach ($players as $player) {
-        $playerContent .= $player['newNumber'] . "\t" . $player['name'] . "\n";
+        // 커플 이름이 이미 "남자 & 여자" 형태인지 확인
+        if (strpos($player['name'], ' & ') !== false) {
+            // 이미 커플 이름 형태
+            $playerContent .= $player['newNumber'] . "\t" . $player['name'] . "\n";
+        } else {
+            // 남자 이름만 있는 경우, 전체 선수 정보에서 커플 이름 찾기
+            $all_players_file = "$data_dir/players.txt";
+            $couple_name = $player['name']; // 기본값
+            
+            if (file_exists($all_players_file)) {
+                $lines = file($all_players_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                foreach ($lines as $line) {
+                    $parts = explode(',', $line);
+                    if (count($parts) >= 3 && trim($parts[0]) == $player['oldNumber']) {
+                        $male_name = trim($parts[1]);
+                        $female_name = trim($parts[2]);
+                        $couple_name = $male_name . ' & ' . $female_name;
+                        break;
+                    }
+                }
+            }
+            
+            $playerContent .= $player['newNumber'] . "\t" . $couple_name . "\n";
+        }
     }
     
     if (file_put_contents($players_file, $playerContent) === false) {
