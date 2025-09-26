@@ -602,6 +602,63 @@ body {
     font-size: 1.2em;
     color: #e74c3c;
 }
+.skating-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-top: 3px solid #e9ecef;
+}
+.skating-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.skating-table th {
+    background: linear-gradient(45deg, #2c3e50, #34495e);
+    color: white;
+    padding: 15px 10px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid #2c3e50;
+}
+.skating-table td {
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+}
+.skating-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.skating-table tr:hover {
+    background: #e8f4f8;
+}
+.skating-table .rank-1 {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #333 !important;
+}
+.skating-table .rank-2 {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
+    color: #333 !important;
+}
+.skating-table .rank-3 {
+    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
+    color: white !important;
+}
+.sum-places {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #e74c3c;
+    background: #fff5f5 !important;
+}
+.place-skating {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #2c3e50;
+    background: #f0f8ff !important;
+}
 .dance-results-section {
     background: #f8f9fa;
     padding: 30px;
@@ -778,6 +835,55 @@ body {
     }
 
     $html .= '</tbody></table></div>';
+
+    // Rules 1-9 스케이팅 집계표
+    $html .= '<div class="skating-section">
+    <div class="section-title">Rules 1 - 9 (스케이팅 집계표)</div>
+    <table class="skating-table">
+        <thead>
+            <tr>
+                <th>Cpl.NO</th>';
+    
+    // 댄스별 헤더
+    foreach ($dance_results as $dance_code => $dance_data) {
+        $dance_name = $dance_names[$dance_code] ?? $dance_code;
+        $html .= '<th>' . $dance_name . '</th>';
+    }
+    
+    $html .= '<th>SUM of Places</th>
+                <th>Place Skating</th>
+            </tr>
+        </thead>
+        <tbody>';
+    
+    // 스케이팅 결과 행들
+    foreach ($final_rankings as $index => $ranking) {
+        $player_no = $ranking['player_no'];
+        $place = $ranking['final_rank'];
+        $sum_of_places = $ranking['sum_of_places'];
+        
+        $rank_class = '';
+        if ($place == 1) $rank_class = 'rank-1';
+        elseif ($place == 2) $rank_class = 'rank-2';
+        elseif ($place == 3) $rank_class = 'rank-3';
+        
+        $html .= '<tr class="' . $rank_class . '">
+            <td><strong>' . $player_no . '</strong></td>';
+        
+        // 각 댄스별 점수
+        foreach ($dance_results as $dance_code => $dance_data) {
+            $dance_rank = $dance_data['final_rankings'][$player_no] ?? '-';
+            $html .= '<td>' . $dance_rank . '</td>';
+        }
+        
+        $html .= '<td class="sum-places"><strong>' . $sum_of_places . '</strong></td>
+            <td class="place-skating"><strong>' . $place . '</strong></td>
+        </tr>';
+    }
+    
+    $html .= '</tbody>
+    </table>
+</div>';
 
     // 종목별 댄스 집계 결과
     $html .= '<div class="dance-results-section">
