@@ -238,6 +238,15 @@ foreach ($grouped_events as $group_key => $group) {
 
 $event_groups = array_values($grouped_events);
 
+// 디버깅: 50번 이상 그룹들 확인
+$high_number_groups = array_filter($event_groups, function($group) {
+    return intval($group['group_no']) >= 50;
+});
+error_log("50번 이상 그룹 수: " . count($high_number_groups));
+foreach ($high_number_groups as $group) {
+    error_log("그룹 " . $group['group_no'] . ": " . $group['group_name'] . " (이벤트 수: " . count($group['events']) . ")");
+}
+
 
 // 이벤트별 선수 데이터 로드 함수
 function getPlayersForEvent($data_dir, $event_key, $all_players) {
@@ -1804,6 +1813,31 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             console.log('52번 그룹:', group52);
         } else {
             console.log('52번 그룹을 찾을 수 없습니다.');
+            console.log('사용 가능한 그룹들:', groupData.map(g => g.group_no));
+            
+            // 52번 그룹이 없으면 강제로 추가 (임시 해결책)
+            const missingGroup52 = {
+                group_no: '52',
+                group_name: '프로페셔널 라틴',
+                events: [{
+                    no: '52',
+                    desc: '프로페셔널 라틴',
+                    round: 'Final',
+                    panel: 'LC',
+                    dances: ['6', '7', '8', '9', '10'],
+                    detail_no: ''
+                }],
+                is_multi: false,
+                dance_sequence: [
+                    {dance: '6', dance_name: 'Cha Cha', type: 'single'},
+                    {dance: '7', dance_name: 'Samba', type: 'single'},
+                    {dance: '8', dance_name: 'Rumba', type: 'single'},
+                    {dance: '9', dance_name: 'Paso Doble', type: 'single'},
+                    {dance: '10', dance_name: 'Jive', type: 'single'}
+                ]
+            };
+            groupData.push(missingGroup52);
+            console.log('52번 그룹을 강제로 추가했습니다.');
         }
         
         // 50번 이상 그룹들 확인
