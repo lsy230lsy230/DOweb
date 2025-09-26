@@ -1856,7 +1856,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: #f8f9fa;
             border-radius: 8px;
             padding: 15px;
-            margin-top: 15px;
+            margin-top: 0;
         }
         
         .judges-header {
@@ -2056,6 +2056,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: #e8f5e8;
             border-radius: 8px;
             padding: 15px;
+            margin-top: 0;
         }
         
         .players-header {
