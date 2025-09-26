@@ -1782,7 +1782,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             flex: 1;
             padding: 15px;
             border-right: 1px solid #dee2e6;
-            background: #fafbfc;
+            background: white;
         }
         
         .event-card-right {
@@ -1857,6 +1857,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             border-radius: 8px;
             padding: 15px;
             margin-top: 0;
+            border: 1px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .judges-header {
@@ -2057,6 +2059,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             border-radius: 8px;
             padding: 15px;
             margin-top: 0;
+            border: 1px solid #28a745;
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.1);
         }
         
         .players-header {
