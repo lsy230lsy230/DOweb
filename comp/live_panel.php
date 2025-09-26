@@ -1055,24 +1055,23 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             font-size: 14px;
         }
         
-        .main-content-column {
+        .main-content-row {
             display: flex;
-            flex-direction: column;
-            gap: 1em;
+            flex-direction: row;
+            gap: 1.2em;
             height: 93%;
         }
         
         .adjudicator-list-panel {
-            flex: 0 0 auto;
+            flex: 0 0 40%;
             background: #eaf0ff;
             border-radius: 8px;
             margin-top: 0.2em;
-            padding: 1em;
+            padding: 1em 1em 1em 1em;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: stretch;
-            max-height: 200px;
         }
         
         .adjudicator-list-panel h3 {
@@ -1172,11 +1171,19 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             text-align: center;
         }
         
+        .player-dance-row {
+            flex: 1;
+            display: flex;
+            flex-direction: row;
+            gap: 1em;
+        }
+        
         .player-list-panel {
             background: #eaf0ff;
             border-radius: 8px;
             padding: 1em;
-            flex: 0 0 auto;
+            flex: 1;
+            min-width: 0;
         }
         
         .player-list-panel h3 {
@@ -1207,15 +1214,20 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: #218838;
         }
         
-        .player-list-compact {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.3em;
-            padding: 0.5em;
-            background: white;
+        .player-list-scrollbox {
+            max-height: 200px;
+            overflow-y: auto;
             border: 1px solid #ddd;
             border-radius: 4px;
-            max-height: 120px;
+            background: white;
+        }
+        
+        .player-list-compact {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+            padding: 0.5em;
+            max-height: 300px;
             overflow-y: auto;
         }
         
@@ -1225,43 +1237,25 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             margin: 0;
         }
         
-        .player-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.3em;
-        }
-        
         .player-list li {
-            padding: 0.3em 0.6em;
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
+            padding: 0.3em 0.5em;
+            border-bottom: 1px solid #eee;
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 0.3em;
-            font-size: 0.85em;
-            white-space: nowrap;
+            font-size: 0.9em;
         }
         
-        .player-x-btn {
-            background: #dc3232;
-            color: #fff;
-            border: none;
-            border-radius: 3px;
-            padding: 1px 4px;
-            font-size: 0.7em;
-            cursor: pointer;
-            margin-left: 0.3em;
+        .player-list li:last-child {
+            border-bottom: none;
         }
         
         .dance-block {
             background: #eaf0ff;
             border-radius: 8px;
             padding: 1em;
-            flex: 0 0 auto;
+            flex: 1;
+            min-width: 0;
         }
         
         .dance-title {
@@ -1292,19 +1286,18 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         }
         
         .dance-list {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
             gap: 0.5em;
         }
         
         .dance-item {
             background: white;
-            padding: 0.5em;
+            padding: 0.4em;
             border-radius: 4px;
             border: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            text-align: center;
+            font-size: 0.9em;
         }
         
         .aggregation-section {
@@ -1381,12 +1374,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: rgba(255,255,255,0.8);
             border: 1px solid #fdcb6e;
             border-radius: 0.3em;
-            padding: 0.3em 0.6em;
+            padding: 0.5em;
             text-align: center;
-            font-size: 0.8em;
+            font-size: 0.9em;
             color: #885e00;
-            white-space: nowrap;
-            min-width: 80px;
+            margin-bottom: 0.5em;
         }
         
         .dance-item.current {
@@ -2795,27 +2787,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 // 싱글 이벤트인 경우 백업 파일 스타일로 표시
                 content += `
                     <div class="single-event-panel">
-                        <div class="event-header-panel">
-                            <div class="event-header-box">
-                                <div class="event-row1">
-                                    <div class="event-number-display">
-                                        <span class="event-number">${eventId}</span>
-                                    </div>
-                                    <div class="event-title-display">
-                                        <span class="event-title">${event.desc}</span>
-                                    </div>
-                                </div>
-                                <div class="event-row2">
-                                    <span class="ev-row2-label">패널:</span>
-                                    <span class="ev-row2-value">${event.panel || 'N/A'}</span>
-                                    <span class="ev-row2-label">라운드:</span>
-                                    <span class="ev-row2-value">${event.round}</span>
-                                    <span class="ev-row2-label">댄스:</span>
-                                    <span class="ev-row2-value">${event.dance_names ? event.dance_names.join(' → ') : (event.dances ? event.dances.join(' → ') : 'N/A')}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="main-content-column">
+                        <div class="main-content-row">
                             <div class="adjudicator-list-panel" id="adjudicator-list-panel">
                                 <h3>심사위원</h3>
                                 <table style="width:100%;">
@@ -2833,26 +2805,28 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 </table>
                                 <div class="empty" id="judge-empty" style="display:none;">심사위원이 없습니다</div>
                             </div>
-                            <div class="player-list-panel" id="player-list-panel">
-                                <h3>선수</h3>
-                                <div class="player-controls-row">
-                                    <button class="add-player-btn" onclick="openPlayerModal()">선수 추가</button>
-                                    <button class="show-entry-list-btn" onclick="showEntryPlayers()">출전선수</button>
-                                    <button class="split-hit-btn" onclick="openSplitHitModal()">히트 나누기</button>
-                                    <button class="show-hit-btn" id="showHitBtn" onclick="openHitModal()">히트 확인</button>
-                                </div>
-                                <div class="player-list-compact" id="player-list-compact">
-                                    <ul class="player-list" id="player-list"></ul>
-                                </div>
-                                <div class="hit-block" id="hit-block" style="display:none;"></div>
-                            </div>
-                            <div class="dance-block" id="dance-block">
-                                <div class="dance-title">진행종목</div>
-                                <div class="dance-progress-container">
-                                    <div class="dance-progress-bar">
-                                        <div class="dance-progress-fill" id="dance-progress-fill"></div>
+                            <div class="player-dance-row">
+                                <div class="player-list-panel" id="player-list-panel">
+                                    <h3>선수</h3>
+                                    <div class="player-controls-row">
+                                        <button class="add-player-btn" onclick="openPlayerModal()">선수 추가</button>
+                                        <button class="show-entry-list-btn" onclick="showEntryPlayers()">출전선수</button>
+                                        <button class="split-hit-btn" onclick="openSplitHitModal()">히트 나누기</button>
+                                        <button class="show-hit-btn" id="showHitBtn" onclick="openHitModal()">히트 확인</button>
                                     </div>
-                                    <div class="dance-list" id="dance-list"></div>
+                                    <div class="player-list-compact" id="player-list-compact">
+                                        <ul class="player-list" id="player-list"></ul>
+                                    </div>
+                                    <div class="hit-block" id="hit-block" style="display:none;"></div>
+                                </div>
+                                <div class="dance-block" id="dance-block">
+                                    <div class="dance-title">진행종목</div>
+                                    <div class="dance-progress-container">
+                                        <div class="dance-progress-bar">
+                                            <div class="dance-progress-fill" id="dance-progress-fill"></div>
+                                        </div>
+                                        <div class="dance-list" id="dance-list"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
