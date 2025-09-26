@@ -5947,6 +5947,20 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             console.log('다음 이벤트:', nextEventNumber, nextEventName);
             
+            // 현재 이벤트 정보로 다음 라운드 자동 찾기
+            const currentEvent = events.find(e => e.no == selectedEvent);
+            if (currentEvent) {
+                const nextRoundInfo = getNextRoundInfo(currentEvent);
+                if (nextRoundInfo) {
+                    const match = nextRoundInfo.match(/(\d+)번\s+(.+)/);
+                    if (match) {
+                        nextEventNumber = parseInt(match[1]);
+                        nextEventName = `${currentEvent.desc} ${match[2]}`;
+                        console.log('모달용 자동 찾은 다음 라운드:', nextEventNumber, nextEventName);
+                    }
+                }
+            }
+            
             // 진출자 확인 및 등번호 조정 모달 표시
             showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers, totalTeams);
         }
