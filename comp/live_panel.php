@@ -710,6 +710,24 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             opacity: 0.7;
         }
         
+        .recall-count-value {
+            color: #e74c3c;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .recall-count-value:hover {
+            text-decoration: underline;
+        }
+        
+        .recall-edit-icon {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+        
         .right-subtitle {
             font-size: 12px;
             opacity: 0.8;
