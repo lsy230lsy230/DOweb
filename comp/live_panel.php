@@ -3191,6 +3191,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 <span class="dance-edit-icon">✏️</span>
                             </div>
                         </div>
+                        ${shouldShowRecallCount(group.events[0]) ? `
                         <div class="info-item">
                             <div class="info-label">Recall 수</div>
                             <div class="recall-count-value" 
@@ -3200,6 +3201,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 <span class="recall-edit-icon">✏️</span>
                             </div>
                         </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -4276,60 +4278,65 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 </table>
             `;
             
-            // 상세 리콜 테이블 (DanceSportLive 스타일) - 나중에 표시
-            html += `
-                <table cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:1em; border-bottom:thin;'>
-                    <tr>
-                        <th width='100%' colspan='${data.total_judges + 3}' style='font-size:1.5em; padding-top:0.5em; padding-left:0.5em; font-weight:bold; color:#FFF; background-color:#333' align='left'>Detailed Recalls</th>
-                    </tr>
-                    <tr>
-                        <th width='3%' align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Tag</th>
-                        <th width='20%' align='left' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Competitor Name(s)</th>
-            `;
-            
-            // 심사위원 컬럼 헤더
-            data.judges.forEach((judge, index) => {
-                const letter = String.fromCharCode(65 + index); // A, B, C, ...
-                html += `
-                    <th width='2.5%' align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>${letter}</th>
-                `;
-            });
-            
-            html += `
-                        <th width='3%' align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333;'>Mark</th>     
-                    </tr>
-            `;
-            
-            // 선수별 리콜 결과 표시
-            data.player_recalls.forEach((player, index) => {
-                const isAdvancing = player.recall_count >= data.recall_threshold;
-                const bgColor = isAdvancing ? '#eee' : '#ccc';
-                const rowStyle = `font-weight:bold; background-color:${bgColor}`;
-                
-                html += `
-                    <tr style='${rowStyle}'>
-                        <td align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${index + 1}</td>
-                        <td align='left' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${player.player_name}</td>
-                `;
-                
-                // 각 심사위원별 리콜 여부 표시
-                data.judges.forEach(judge => {
-                    const recalled = player.judges.includes(judge);
-                    const mark = recalled ? '1' : '0';
+            // 댄스별 상세 리콜 테이블 (DanceSportLive 스타일) - 나중에 표시
+            if (data.dance_recalls) {
+                Object.keys(data.dance_recalls).forEach(danceCode => {
+                    const danceData = data.dance_recalls[danceCode];
                     html += `
-                        <td align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${mark}</td>
+                        <table cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:1em; border-bottom:thin;'>
+                            <tr>
+                                <th width='100%' colspan='${data.total_judges + 3}' style='font-size:1.5em; padding-top:0.5em; padding-left:0.5em; font-weight:bold; color:#FFF; background-color:#333' align='left'>${danceData.dance_name}</th>
+                            </tr>
+                            <tr>
+                                <th width='3%' align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Tag</th>
+                                <th width='20%' align='left' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>Competitor Name(s)</th>
+                    `;
+                    
+                    // 심사위원 컬럼 헤더
+                    data.judges.forEach((judge, index) => {
+                        const letter = String.fromCharCode(65 + index); // A, B, C, ...
+                        html += `
+                            <th width='2.5%' align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333'>${letter}</th>
+                        `;
+                    });
+                    
+                    html += `
+                                <th width='3%' align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#FFF; background-color:#333;'>Mark</th>     
+                            </tr>
+                    `;
+                    
+                    // 선수별 리콜 결과 표시
+                    danceData.player_recalls.forEach((player, index) => {
+                        const isAdvancing = player.recall_count >= data.recall_threshold;
+                        const bgColor = isAdvancing ? '#eee' : '#ccc';
+                        const rowStyle = `font-weight:bold; background-color:${bgColor}`;
+                        
+                        html += `
+                            <tr style='${rowStyle}'>
+                                <td align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${index + 1}</td>
+                                <td align='left' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${player.player_name}</td>
+                        `;
+                        
+                        // 각 심사위원별 리콜 여부 표시
+                        data.judges.forEach(judge => {
+                            const recalled = player.judges.includes(judge);
+                            const mark = recalled ? '1' : '0';
+                            html += `
+                                <td align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${mark}</td>
+                            `;
+                        });
+                        
+                        html += `
+                                <td width='4%' align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}; padding-left:1em; padding-right:0.5em;'>${player.recall_count}</td>     
+                            </tr>
+                        `;
+                    });
+                    
+                    html += `
+                        </table>
                     `;
                 });
-                
-                html += `
-                        <td width='4%' align='center' style='margin-top:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}; padding-left:1em; padding-right:0.5em;'>${player.recall_count}</td>     
-                    </tr>
-                `;
-            });
-            
-            html += `
-                </table>
-            `;
+            }
             
             html += `
                     </div>
@@ -4538,6 +4545,15 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                  item.type === 'individual' ? '(개별)' : '';
                 return `${item.dance_name || item.dance}${typeLabel}`;
             }).join(' → ');
+        }
+        
+        // Recall 수 표시 여부 결정 함수
+        function shouldShowRecallCount(event) {
+            if (!event || !event.round) return false;
+            
+            const round = event.round.toLowerCase();
+            // 예선전(Round 1, Round 2 등)과 준결승(Semi-Final)에서만 Recall 수 표시
+            return round.includes('round') || round.includes('semi');
         }
         
         function openDanceEditModal(groupId) {

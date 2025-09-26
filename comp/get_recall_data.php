@@ -90,7 +90,68 @@ try {
         }
     }
     
-    // 리콜 데이터 분석
+    // 댄스별 리콜 데이터 분석
+    $dance_recalls = [];
+    $dance_names = [
+        '6' => 'Cha Cha Cha',
+        '7' => 'Samba', 
+        '8' => 'Rumba',
+        '9' => 'Paso Doble'
+    ];
+    
+    // 각 댄스별로 리콜 데이터 분석
+    foreach ($dance_names as $dance_code => $dance_name) {
+        $dance_recall_files = glob("$data_dir/{$event_no}_{$dance_code}_*.adj");
+        $dance_player_recalls = [];
+        
+        foreach ($players as $player_num) {
+            $recall_count = 0;
+            $recalling_judges = [];
+            
+            foreach ($dance_recall_files as $file) {
+                $filename = basename($file);
+                // 파일명에서 심사위원 번호 추출 (예: 28_6_12.adj -> 12)
+                if (preg_match('/_(\d+)\.adj$/', $filename, $matches)) {
+                    $judge_num = $matches[1];
+                    
+                    // 현재 패널의 심사위원인지 확인
+                    if (in_array($judge_num, $judges)) {
+                        $content = file_get_contents($file);
+                        $lines = explode("\n", trim($content));
+                        
+                        foreach ($lines as $line) {
+                            $line = trim($line, '"');
+                            if ($line === $player_num) {
+                                $recall_count++;
+                                $recalling_judges[] = $judge_num;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            $player_name = $player_names[$player_num] ?? "선수 $player_num";
+            $dance_player_recalls[] = [
+                'player_number' => $player_num,
+                'player_name' => $player_name,
+                'recall_count' => $recall_count,
+                'judges' => $recalling_judges
+            ];
+        }
+        
+        // 리콜 횟수로 정렬 (내림차순)
+        usort($dance_player_recalls, function($a, $b) {
+            return $b['recall_count'] - $a['recall_count'];
+        });
+        
+        $dance_recalls[$dance_code] = [
+            'dance_name' => $dance_name,
+            'player_recalls' => $dance_player_recalls
+        ];
+    }
+    
+    // 전체 리콜 데이터 (기존 로직 유지)
     $player_recalls = [];
     $recall_files = glob("$data_dir/{$event_no}_*_*.adj");
     
@@ -183,7 +244,8 @@ try {
         'player_recalls' => $player_recalls,
         'advancing_players' => array_values($advancing_players),
         'judges' => $judges,
-        'judge_names' => $judge_names
+        'judge_names' => $judge_names,
+        'dance_recalls' => $dance_recalls
     ];
     
     echo json_encode($result, JSON_UNESCAPED_UNICODE);
