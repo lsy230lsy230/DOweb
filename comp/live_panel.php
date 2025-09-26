@@ -5853,6 +5853,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             // 전체 참여 팀 수 계산 (API에서 가져온 total_participants 사용)
             let totalTeams = window.totalParticipants || 0;
+            console.log('window.totalParticipants:', window.totalParticipants);
             console.log('API에서 가져온 전체 참가자 수:', totalTeams);
             
             // 만약 API에서 가져온 값이 없으면 테이블에서 계산
@@ -5961,6 +5962,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         // recall 수 업데이트 함수
         function updateRecallCount(eventId, recallCount) {
+            console.log('updateRecallCount 호출:', {eventId, recallCount});
+            
             fetch('update_recall_count.php', {
                 method: 'POST',
                 headers: {
@@ -6009,7 +6012,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }));
             
             // 1. 먼저 recall 수를 조정
-            updateRecallCount(selectedEvent, coupleCount);
+            const currentEventId = events.find(ev => (ev.detail_no || ev.no) === selectedEvent)?.no || selectedEvent;
+            console.log('현재 이벤트 ID:', currentEventId, '선택된 이벤트:', selectedEvent);
+            updateRecallCount(currentEventId, coupleCount);
             
             // 서버에 다음 라운드 생성 요청
             const requestData = {
