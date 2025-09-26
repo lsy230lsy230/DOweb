@@ -63,8 +63,8 @@ try {
     foreach ($players as $player) {
         // 커플 이름이 이미 "남자 & 여자" 형태인지 확인
         if (strpos($player['name'], ' & ') !== false) {
-            // 이미 커플 이름 형태
-            $playerContent .= $player['newNumber'] . "\t" . $player['name'] . "\n";
+            // 이미 커플 이름 형태 - 원래 등번호 사용
+            $playerContent .= $player['oldNumber'] . "\t" . $player['name'] . "\n";
         } else {
             // 남자 이름만 있는 경우, 전체 선수 정보에서 커플 이름 찾기
             $all_players_file = "$data_dir/players.txt";
@@ -83,7 +83,8 @@ try {
                 }
             }
             
-            $playerContent .= $player['newNumber'] . "\t" . $couple_name . "\n";
+            // 원래 등번호 사용
+            $playerContent .= $player['oldNumber'] . "\t" . $couple_name . "\n";
         }
     }
     
