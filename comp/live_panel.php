@@ -6015,6 +6015,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             // 선택된 커플 수만큼만 진출자 정보 수집 (등위순으로 자동 할당)
             // window.advancingPlayersData가 부족하면 집계 결과에서 추가로 가져오기
             let allPlayers = window.advancingPlayersData || [];
+            console.log('초기 allPlayers 수:', allPlayers.length, '요청된 coupleCount:', coupleCount);
             
             // 만약 요청한 수보다 적으면 집계 결과에서 추가로 가져오기
             if (allPlayers.length < coupleCount) {
@@ -6024,9 +6025,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                         document.querySelector('.aggregation-results');
                 
                 if (aggregationResult) {
+                    console.log('집계 결과 요소 찾음:', aggregationResult);
                     const summaryTable = aggregationResult.querySelector('table');
                     if (summaryTable) {
+                        console.log('집계 테이블 찾음:', summaryTable);
                         const rows = summaryTable.querySelectorAll('tr');
+                        console.log('테이블 행 수:', rows.length);
+                        
                         for (let i = 1; i < rows.length && allPlayers.length < coupleCount; i++) {
                             const row = rows[i];
                             const cells = row.querySelectorAll('td');
@@ -6044,11 +6049,16 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                             name: name,
                                             rank: parseInt(rank)
                                         });
+                                        console.log(`추가된 선수: ${rank}위 ${number}번 ${name}, 현재 총 ${allPlayers.length}명`);
                                     }
                                 }
                             }
                         }
+                    } else {
+                        console.log('집계 테이블을 찾을 수 없음');
                     }
+                } else {
+                    console.log('집계 결과 요소를 찾을 수 없음');
                 }
             }
             
