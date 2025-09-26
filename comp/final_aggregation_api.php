@@ -36,7 +36,7 @@ foreach ($lines as $line) {
         $events[] = [
             'no' => trim($parts[0]),
             'desc' => trim($parts[1]),
-            'round' => trim($parts[2]) ?: 'Preliminary',  // 라운드가 비어있으면 기본값
+            'round' => trim($parts[2]) ?: 'Final',  // 라운드가 비어있으면 Final
             'detail_no' => trim($parts[11]) ?: trim($parts[0]),  // 패널이 있으면 사용, 없으면 이벤트 번호
             'event_no' => trim($parts[0]),   // 첫 번째 컬럼이 이벤트 번호
             'dances' => array_filter(array_map('trim', array_slice($parts, 6, 5))), // 7-11번째 컬럼이 댄스
@@ -64,11 +64,18 @@ foreach ($events as $event) {
         error_log("Found matching event (numeric): " . json_encode($event));
         break;
     }
+    
+    // detail_no로 매칭
+    if ($event['detail_no'] == $event_no) {
+        $current_event = $event;
+        error_log("Found matching event (detail_no): " . json_encode($event));
+        break;
+    }
 }
 
 if (!$current_event) {
     error_log("Event not found for event_no: " . $event_no);
-    echo json_encode(['error' => 'Event not found', 'debug' => [
+    echo json_encode(['success' => false, 'error' => 'Event not found', 'debug' => [
         'requested_event' => $event_no,
         'requested_event_type' => gettype($event_no),
         'available_events' => array_map(function($e) {

@@ -4711,12 +4711,20 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     document.getElementById('aggregationLoading').style.display = 'none';
                     document.getElementById('aggregationContent').style.display = 'block';
                     
+                    console.log('집계 API 응답:', data);
+                    
                     if (data.success) {
                         displayAggregationResult(data, eventId);
                         document.getElementById('printAggregationBtn').style.display = 'inline-block';
                         document.getElementById('nextRoundBtn').style.display = 'inline-block';
                     } else {
-                        displayAggregationError(data.error || '집계 처리 중 오류가 발생했습니다.');
+                        let errorMessage = data.error || '집계 처리 중 오류가 발생했습니다.';
+                        if (data.debug) {
+                            errorMessage += '\n\n디버그 정보:\n';
+                            errorMessage += '요청된 이벤트: ' + data.debug.requested_event + '\n';
+                            errorMessage += '사용 가능한 이벤트: ' + JSON.stringify(data.debug.available_events, null, 2);
+                        }
+                        displayAggregationError(errorMessage);
                     }
                 })
                 .catch(error => {
@@ -4813,9 +4821,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         function displayAggregationError(errorMessage) {
             const content = document.getElementById('aggregationContent');
             content.innerHTML = `
-                <div class="error-message">
+                <div class="error-message" style="padding: 20px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; color: #721c24;">
                     <h3>❌ 집계 오류</h3>
-                    <p>${errorMessage}</p>
+                    <p style="white-space: pre-line; font-family: monospace; font-size: 12px;">${errorMessage}</p>
                 </div>
             `;
         }
