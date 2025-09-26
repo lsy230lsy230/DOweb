@@ -2,7 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 
 $comp_id = $_GET['comp_id'] ?? '20250913-001';
-$event_no = $_GET['event_no'] ?? '';
+$event_no = $_GET['event_no'] ?? '28'; // 테스트용 기본값
 
 if (!$event_no) {
     echo json_encode(['success' => false, 'error' => '이벤트 번호가 필요합니다.']);
@@ -35,7 +35,7 @@ try {
                 'no' => trim($parts[0]),
                 'desc' => trim($parts[1]),
                 'round' => trim($parts[2]) ?: 'Final',
-                'recall_count' => intval(trim($parts[4]) ?: 0), // 4번째 컬럼이 리콜 수 (인덱스 4)
+                'recall_count' => intval(trim($parts[4]) ?: 0), // 5번째 컬럼이 리콜 수 (인덱스 4)
                 'detail_no' => trim($parts[11]) ?: trim($parts[0]),
                 'event_no' => trim($parts[0]),
                 'dances' => array_slice($parts, 3, 8),

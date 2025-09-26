@@ -37,8 +37,8 @@ try {
             
             // 그룹 ID와 매칭되는 이벤트 찾기
             if ($event_no == $group_id || $detail_no == $group_id) {
-                // 4번째 컬럼(리콜 수) 업데이트
-                $parts[3] = $recall_count;
+                // 5번째 컬럼(리콜 수) 업데이트 (인덱스 4)
+                $parts[4] = $recall_count;
                 $lines[$index] = implode(',', $parts);
                 $updated = true;
                 break;

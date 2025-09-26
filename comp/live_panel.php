@@ -2613,6 +2613,119 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: #218838;
         }
         
+        /* 다음 라운드 생성 모달 스타일 */
+        .next-round-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .next-round-modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .next-round-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+        
+        .next-round-modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .next-round-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .next-round-modal-close:hover {
+            color: #000;
+        }
+        
+        .next-round-modal-body {
+            padding: 20px;
+        }
+        
+        .advancing-players-list h4 {
+            margin-top: 20px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .players-table {
+            overflow-x: auto;
+        }
+        
+        .players-table table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .players-table th,
+        .players-table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+        }
+        
+        .players-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .players-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .player-number-input {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .tie-checkbox {
+            transform: scale(1.2);
+        }
+        
+        .next-round-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+        }
+        
         .no-selection {
             text-align: center;
             padding: 60px 20px;
@@ -5601,8 +5714,191 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            // 다음 라운드 이벤트 생성 로직
-            alert('다음 라운드 생성 기능을 구현 중입니다.');
+            // 집계 결과에서 진출자 정보 가져오기
+            const aggregationResult = document.querySelector('.aggregation-results');
+            if (!aggregationResult) {
+                alert('먼저 집계를 실행해주세요.');
+                return;
+            }
+            
+            // 진출자 등번호 추출
+            const advancingPlayers = [];
+            const playerElements = aggregationResult.querySelectorAll('.next-round-player');
+            playerElements.forEach((playerEl, index) => {
+                const playerNumber = playerEl.querySelector('.player-number')?.textContent;
+                const playerName = playerEl.querySelector('.player-name')?.textContent;
+                if (playerNumber && playerName) {
+                    advancingPlayers.push({
+                        number: playerNumber,
+                        name: playerName,
+                        newNumber: (index + 1).toString().padStart(2, '0') // 01, 02, 03...
+                    });
+                }
+            });
+            
+            if (advancingPlayers.length === 0) {
+                alert('진출자가 없습니다.');
+                return;
+            }
+            
+            // 다음 라운드 이벤트 번호 계산 (현재 이벤트 + 1)
+            const nextEventNumber = parseInt(currentEvent.no) + 1;
+            const nextEventName = currentEvent.desc.replace(/Round \d+/, 'Semi-Final').replace(/Final/, 'Semi-Final');
+            
+            // 진출자 확인 및 등번호 조정 모달 표시
+            showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers);
+        }
+        
+        // 다음 라운드 생성 모달 표시
+        function showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers) {
+            const modal = document.createElement('div');
+            modal.className = 'next-round-modal';
+            modal.innerHTML = `
+                <div class="next-round-modal-content">
+                    <div class="next-round-modal-header">
+                        <h3>다음 라운드 생성 - 이벤트 ${nextEventNumber}</h3>
+                        <button class="next-round-modal-close" onclick="closeNextRoundModal()">&times;</button>
+                    </div>
+                    <div class="next-round-modal-body">
+                        <p><strong>이벤트명:</strong> ${nextEventName}</p>
+                        <p><strong>진출자 수:</strong> ${advancingPlayers.length}명</p>
+                        <div class="advancing-players-list">
+                            <h4>진출자 등번호 조정</h4>
+                            <div class="players-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>순위</th>
+                                            <th>기존 등번호</th>
+                                            <th>선수명</th>
+                                            <th>새 등번호</th>
+                                            <th>동점자</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="advancing-players-tbody">
+                                        ${advancingPlayers.map((player, index) => `
+                                            <tr>
+                                                <td>${index + 1}</td>
+                                                <td>${player.number}</td>
+                                                <td>${player.name}</td>
+                                                <td>
+                                                    <input type="text" value="${player.newNumber}" 
+                                                           onchange="updatePlayerNumber(${index}, this.value)"
+                                                           class="player-number-input">
+                                                </td>
+                                                <td>
+                                                    <input type="checkbox" onchange="toggleTie(${index})" 
+                                                           class="tie-checkbox">
+                                                </td>
+                                            </tr>
+                                        `).join('')}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="next-round-actions">
+                            <button onclick="createNextRound(${nextEventNumber}, '${nextEventName}')" 
+                                    class="btn btn-primary">다음 라운드 생성</button>
+                            <button onclick="closeNextRoundModal()" class="btn btn-secondary">취소</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 전역 변수에 진출자 정보 저장
+            window.advancingPlayersData = advancingPlayers;
+        }
+        
+        // 다음 라운드 모달 닫기
+        function closeNextRoundModal() {
+            const modal = document.querySelector('.next-round-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // 선수 등번호 업데이트
+        function updatePlayerNumber(index, newNumber) {
+            if (window.advancingPlayersData && window.advancingPlayersData[index]) {
+                window.advancingPlayersData[index].newNumber = newNumber;
+            }
+        }
+        
+        // 동점자 토글
+        function toggleTie(index) {
+            const checkbox = event.target;
+            const row = checkbox.closest('tr');
+            const nextRow = row.nextElementSibling;
+            
+            if (checkbox.checked) {
+                // 동점자로 설정 - 다음 행과 같은 등번호로 설정
+                if (nextRow) {
+                    const nextInput = nextRow.querySelector('.player-number-input');
+                    const currentInput = row.querySelector('.player-number-input');
+                    nextInput.value = currentInput.value;
+                    nextInput.disabled = true;
+                    nextInput.style.backgroundColor = '#f0f0f0';
+                }
+            } else {
+                // 동점자 해제
+                if (nextRow) {
+                    const nextInput = nextRow.querySelector('.player-number-input');
+                    nextInput.disabled = false;
+                    nextInput.style.backgroundColor = '';
+                    // 다음 선수의 등번호를 순서대로 설정
+                    const nextIndex = parseInt(index) + 1;
+                    if (window.advancingPlayersData && window.advancingPlayersData[nextIndex]) {
+                        nextInput.value = (nextIndex + 1).toString().padStart(2, '0');
+                    }
+                }
+            }
+        }
+        
+        // 다음 라운드 생성 실행
+        function createNextRound(eventNumber, eventName) {
+            if (!window.advancingPlayersData) {
+                alert('진출자 정보를 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 진출자 등번호 정보 수집
+            const players = window.advancingPlayersData.map((player, index) => ({
+                oldNumber: player.number,
+                name: player.name,
+                newNumber: player.newNumber,
+                rank: index + 1
+            }));
+            
+            // 서버에 다음 라운드 생성 요청
+            fetch('create_next_round.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    eventNumber: eventNumber,
+                    eventName: eventName,
+                    players: players,
+                    comp_id: '20250913-001'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`이벤트 ${eventNumber}이 성공적으로 생성되었습니다.`);
+                    closeNextRoundModal();
+                    // 페이지 새로고침하여 새 이벤트 표시
+                    location.reload();
+                } else {
+                    alert('다음 라운드 생성 실패: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('다음 라운드 생성 중 오류가 발생했습니다.');
+            });
         }
 </script>
 
