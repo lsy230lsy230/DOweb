@@ -84,15 +84,18 @@ try {
         }
     }
     
-    // 선수 이름 매핑 로드
+    // 선수 이름 매핑 로드 (커플 이름 생성)
     $player_names_file = "$data_dir/players.txt";
     $player_names = [];
     if (file_exists($player_names_file)) {
         $lines = file($player_names_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         foreach ($lines as $line) {
             $parts = explode(',', $line);
-            if (count($parts) >= 2) {
-                $player_names[trim($parts[0])] = trim($parts[1]);
+            if (count($parts) >= 3) {
+                $number = trim($parts[0]);
+                $male_name = trim($parts[1]);
+                $female_name = trim($parts[2]);
+                $player_names[$number] = $male_name . ' & ' . $female_name;
             }
         }
     }

@@ -5882,16 +5882,14 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             </div>
                         </div>
                         <div class="advancing-players-list">
-                            <h4>진출자 등번호 조정</h4>
+                            <h4>진출자 목록 (등위순)</h4>
                             <div class="players-table">
                                 <table>
                                     <thead>
                                         <tr>
                                             <th>순위</th>
-                                            <th>기존 등번호</th>
+                                            <th>등번호</th>
                                             <th>선수명</th>
-                                            <th>새 등번호</th>
-                                            <th>동점자</th>
                                         </tr>
                                     </thead>
                                     <tbody id="advancing-players-tbody">
@@ -5900,15 +5898,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                                 <td>${index + 1}</td>
                                                 <td>${player.number}</td>
                                                 <td>${player.name}</td>
-                                                <td>
-                                                    <input type="text" value="${player.newNumber}" 
-                                                           onchange="updatePlayerNumber(${index}, this.value)"
-                                                           class="player-number-input">
-                                                </td>
-                                                <td>
-                                                    <input type="checkbox" onchange="toggleTie(${index})" 
-                                                           class="tie-checkbox">
-                                                </td>
                                             </tr>
                                         `).join('')}
                                     </tbody>
@@ -5937,13 +5926,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             const modal = document.querySelector('.next-round-modal');
             if (modal) {
                 modal.remove();
-            }
-        }
-        
-        // 선수 등번호 업데이트
-        function updatePlayerNumber(index, newNumber) {
-            if (window.advancingPlayersData && window.advancingPlayersData[index]) {
-                window.advancingPlayersData[index].newNumber = newNumber;
             }
         }
         
@@ -5977,36 +5959,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }
         }
         
-        // 동점자 토글
-        function toggleTie(index) {
-            const checkbox = event.target;
-            const row = checkbox.closest('tr');
-            const nextRow = row.nextElementSibling;
-            
-            if (checkbox.checked) {
-                // 동점자로 설정 - 다음 행과 같은 등번호로 설정
-                if (nextRow) {
-                    const nextInput = nextRow.querySelector('.player-number-input');
-                    const currentInput = row.querySelector('.player-number-input');
-                    nextInput.value = currentInput.value;
-                    nextInput.disabled = true;
-                    nextInput.style.backgroundColor = '#f0f0f0';
-                }
-            } else {
-                // 동점자 해제
-                if (nextRow) {
-                    const nextInput = nextRow.querySelector('.player-number-input');
-                    nextInput.disabled = false;
-                    nextInput.style.backgroundColor = '';
-                    // 다음 선수의 등번호를 순서대로 설정
-                    const nextIndex = parseInt(index) + 1;
-                    if (window.advancingPlayersData && window.advancingPlayersData[nextIndex]) {
-                        nextInput.value = (nextIndex + 1).toString().padStart(2, '0');
-                    }
-                }
-            }
-        }
-        
         // 다음 라운드 생성 실행
         function createNextRound(eventNumber, eventName) {
             if (!window.advancingPlayersData) {
@@ -6021,11 +5973,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            // 선택된 커플 수만큼만 진출자 정보 수집
+            // 선택된 커플 수만큼만 진출자 정보 수집 (등위순으로 자동 할당)
             const players = window.advancingPlayersData.slice(0, coupleCount).map((player, index) => ({
                 oldNumber: player.number,
                 name: player.name,
-                newNumber: player.newNumber,
+                newNumber: (index + 1).toString().padStart(2, '0'), // 01, 02, 03... 순위순
                 rank: index + 1
             }));
             
