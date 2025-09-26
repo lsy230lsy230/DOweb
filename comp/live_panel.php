@@ -6034,8 +6034,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 if (data.success) {
                     alert(`이벤트 ${eventNumber}이 성공적으로 생성되었습니다.`);
                     closeNextRoundModal();
-                    // 페이지 새로고침하여 새 이벤트 표시
-                    location.reload();
+                    // 모달만 닫고 페이지는 새로고침하지 않음
                 } else {
                     alert('다음 라운드 생성 실패: ' + data.error);
                 }
