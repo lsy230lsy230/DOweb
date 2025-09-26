@@ -79,23 +79,7 @@ if (!$current_event) {
     exit;
 }
 
-// 전체 선수 데이터베이스 로드
-$all_players_file = "data/{$comp_id}/players.txt";
-$all_players = [];
-if (file_exists($all_players_file)) {
-    $lines = file($all_players_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        $cols = array_map('trim', explode(',', $line));
-        if (count($cols) >= 3) {
-            $all_players[$cols[0]] = [
-                'male' => $cols[1] ?? '',
-                'female' => $cols[2] ?? '',
-            ];
-        }
-    }
-}
-
-// 현재 이벤트의 선수 정보 로드
+// 선수 정보 로드
 $players_file = "data/{$comp_id}/players_{$event_no}.txt";
 $players = [];
 if (file_exists($players_file)) {
@@ -103,65 +87,32 @@ if (file_exists($players_file)) {
     foreach ($lines as $line) {
         $line = trim($line);
         if (!empty($line)) {
-            // 전체 선수 데이터베이스에서 이름 정보 가져오기
-            $player_data = $all_players[$line] ?? null;
-            if ($player_data) {
-                $players[] = [
-                    'number' => $line,
-                    'male' => $player_data['male'],
-                    'female' => $player_data['female']
-                ];
-            } else {
-                // 데이터베이스에 없는 경우 기본값
-                $players[] = [
-                    'number' => $line,
-                    'male' => '',
-                    'female' => ''
-                ];
-            }
+            // 선수 번호만 있는 경우
+            $players[] = [
+                'number' => $line,
+                'male' => '',
+                'female' => ''
+            ];
         }
     }
 }
 
-// 패널 매핑 로드
-$panel_map_file = "data/{$comp_id}/panel_list.json";
-$panel_map = [];
-if (file_exists($panel_map_file)) {
-    $panel_map = json_decode(file_get_contents($panel_map_file), true);
-}
-
 // 심사위원 정보 로드
 $adjudicators_file = "data/{$comp_id}/adjudicators.txt";
-$all_adjudicators = [];
+$adjudicators = [];
 if (file_exists($adjudicators_file)) {
     $lines = file($adjudicators_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
         $parts = explode(",", $line);  // 쉼표로 분리
         if (count($parts) >= 2) {
-            $all_adjudicators[trim($parts[0])] = [
+            $adjudicators[] = [
                 'code' => trim($parts[0]),
                 'name' => trim($parts[1])
             ];
         }
     }
 }
-
-// 현재 이벤트의 패널에 해당하는 심사위원만 필터링
-$adjudicators = [];
-$panel_code = $current_event['panel'] ?? '';
-if ($panel_code && !empty($panel_map)) {
-    foreach ($panel_map as $mapping) {
-        if ($mapping['panel_code'] === $panel_code && isset($all_adjudicators[$mapping['adj_code']])) {
-            $adjudicators[] = $all_adjudicators[$mapping['adj_code']];
-        }
-    }
-} else {
-    // 패널 매핑이 없으면 모든 심사위원 사용
-    $adjudicators = array_values($all_adjudicators);
-}
-
-error_log("패널 코드: " . $panel_code);
-error_log("해당 패널 심사위원 수: " . count($adjudicators));
+error_log("심사위원 수: " . count($adjudicators));
 
 // 댄스별 채점 데이터 수집
 $dance_results = [];
@@ -602,244 +553,185 @@ body {
     font-size: 1.2em;
     color: #e74c3c;
 }
-.skating-section {
-    background: #f8f9fa;
-    padding: 30px;
-    border-top: 3px solid #e9ecef;
-}
-.skating-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95em;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-.skating-table th {
-    background: linear-gradient(45deg, #2c3e50, #34495e);
-    color: white;
-    padding: 15px 10px;
-    text-align: center;
-    font-weight: 600;
-    border-bottom: 2px solid #2c3e50;
-}
-.skating-table td {
-    padding: 12px 10px;
-    text-align: center;
-    border-bottom: 1px solid #ecf0f1;
-}
-.skating-table tr:nth-child(even) {
-    background: #f8f9fa;
-}
-.skating-table tr:hover {
-    background: #e8f4f8;
-}
-.skating-table .rank-1 {
-    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
-    color: #333 !important;
-}
-.skating-table .rank-2 {
-    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
-    color: #333 !important;
-}
-.skating-table .rank-3 {
-    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
-    color: white !important;
-}
-.sum-places {
-    font-weight: 700;
-    font-size: 1.1em;
-    color: #e74c3c;
-    background: #fff5f5 !important;
-}
-.place-skating {
-    font-weight: 700;
-    font-size: 1.1em;
-    color: #2c3e50;
-    background: #f0f8ff !important;
-}
-.dance-results-section {
-    background: #f8f9fa;
-    padding: 30px;
-    border-top: 3px solid #e9ecef;
-}
-.dance-result-card {
-    background: white;
-    margin-bottom: 30px;
-    border-radius: 15px;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    overflow: hidden;
-}
-.dance-title {
-    background: linear-gradient(45deg, #3498db, #2980b9);
-    color: white;
-    padding: 20px 30px;
-    font-size: 1.3em;
-    font-weight: 700;
-    text-align: center;
-}
-.dance-results-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.95em;
-}
-.dance-results-table th {
-    background: #34495e;
-    color: white;
-    padding: 15px 10px;
-    text-align: center;
-    font-weight: 600;
-    border-bottom: 2px solid #2c3e50;
-}
-.dance-results-table td {
-    padding: 12px 10px;
-    text-align: center;
-    border-bottom: 1px solid #ecf0f1;
-}
-.dance-results-table tr:nth-child(even) {
-    background: #f8f9fa;
-}
-.dance-results-table tr:hover {
-    background: #e8f4f8;
-}
-.dance-results-table .rank-1 {
-    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
-    color: #333 !important;
-}
-.dance-results-table .rank-2 {
-    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
-    color: #333 !important;
-}
-.dance-results-table .rank-3 {
-    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
-    color: white !important;
-}
-.skating-dance-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9em;
-    background: white;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-}
-.skating-dance-table th {
-    background: linear-gradient(45deg, #2c3e50, #34495e);
-    color: white;
-    padding: 12px 8px;
-    text-align: center;
-    font-weight: 600;
-    border-bottom: 2px solid #2c3e50;
-    font-size: 0.85em;
-}
-.skating-dance-table td {
-    padding: 10px 8px;
-    text-align: center;
-    border-bottom: 1px solid #ecf0f1;
-    font-size: 0.85em;
-}
-.skating-dance-table tr:nth-child(even) {
-    background: #f8f9fa;
-}
-.skating-dance-table tr:hover {
-    background: #e8f4f8;
-}
-.skating-dance-table .rank-1 {
-    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
-    color: #333 !important;
-}
-.skating-dance-table .rank-2 {
-    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
-    color: #333 !important;
-}
-.skating-dance-table .rank-3 {
-    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
-    color: white !important;
-}
-.calc-cell {
-    font-weight: 600;
-    color: #2c3e50;
-    background: #f0f8ff !important;
-}
-.place-dance {
-    font-weight: 700;
-    font-size: 1.1em;
-    color: #e74c3c;
-    background: #fff5f5 !important;
-}
-/* 과반수 규칙에 따른 색상 강조 */
-.calc-majority-1 {
-    background: linear-gradient(45deg, #ff6b6b, #ff8e8e) !important;
-    color: white !important;
-    font-weight: 700 !important;
-    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5) !important;
-}
-.calc-majority-1-2 {
-    background: linear-gradient(45deg, #4ecdc4, #7dd3fc) !important;
-    color: white !important;
-    font-weight: 700 !important;
-    box-shadow: 0 0 10px rgba(78, 205, 196, 0.5) !important;
-}
-.calc-majority-1to3 {
-    background: linear-gradient(45deg, #45b7d1, #74c0fc) !important;
-    color: white !important;
-    font-weight: 700 !important;
-    box-shadow: 0 0 10px rgba(69, 183, 209, 0.5) !important;
-}
-.calc-majority-1to4 {
-    background: linear-gradient(45deg, #96ceb4, #a8e6cf) !important;
-    color: white !important;
-    font-weight: 700 !important;
-    box-shadow: 0 0 10px rgba(150, 206, 180, 0.5) !important;
-}
-.calc-majority-1to5 {
-    background: linear-gradient(45deg, #feca57, #ffd93d) !important;
-    color: #333 !important;
-    font-weight: 700 !important;
-    box-shadow: 0 0 10px rgba(254, 202, 87, 0.5) !important;
-}
-.calc-majority-1to6 {
-    background: linear-gradient(45deg, #ff9ff3, #f368e0) !important;
-    color: white !important;
-    font-weight: 700 !important;
-    box-shadow: 0 0 10px rgba(255, 159, 243, 0.5) !important;
-}
 .adjudicators-section {
     background: #f8f9fa;
-    padding: 20px;
+    padding: 30px;
     border-top: 3px solid #e9ecef;
 }
 .adjudicators-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 8px;
-    margin-top: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
 }
 .adjudicator-card {
     background: white;
-    padding: 8px;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 15px;
+    transition: transform 0.2s ease;
+}
+.adjudicator-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
 }
 .adjudicator-code {
     background: linear-gradient(45deg, #3498db, #2980b9);
     color: white;
-    width: 24px;
-    height: 24px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-    font-size: 0.8em;
+    font-weight: 700;
+    font-size: 1.1em;
 }
 .adjudicator-name {
-    font-weight: 400;
-    font-size: 0.8em;
+    font-weight: 600;
+    color: #2c3e50;
+}
+/* 싱글 이벤트 컨트롤 패널 스타일 */
+.single-event-control-panel {
+    background: #f8f9fa;
+    padding: 30px;
+    border-top: 3px solid #e9ecef;
+    margin-top: 20px;
+}
+.control-panel-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+.panel-title {
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 10px;
+}
+.panel-subtitle {
+    font-size: 1em;
+    color: #666;
+}
+.dance-sequence {
+    color: #3498db;
+    font-weight: 600;
+}
+.control-panel-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.event-details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.detail-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-left: 4px solid #3498db;
+}
+.detail-title {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #ecf0f1;
+}
+.detail-content {
+    font-size: 0.95em;
+    line-height: 1.6;
+    color: #555;
+}
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 30px 0;
+    flex-wrap: wrap;
+}
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.95em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+.btn-info {
+    background: linear-gradient(45deg, #17a2b8, #138496);
+    color: white;
+}
+.btn-info:hover {
+    background: linear-gradient(45deg, #138496, #117a8b);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+}
+.btn-success {
+    background: linear-gradient(45deg, #28a745, #1e7e34);
+    color: white;
+}
+.btn-success:hover {
+    background: linear-gradient(45deg, #1e7e34, #155724);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+}
+.btn-warning {
+    background: linear-gradient(45deg, #ffc107, #e0a800);
+    color: #212529;
+}
+.btn-warning:hover {
+    background: linear-gradient(45deg, #e0a800, #d39e00);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+.judges-section {
+    margin-top: 30px;
+}
+.judges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 15px;
+}
+.judge-card {
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    border-left: 3px solid #3498db;
+    transition: transform 0.2s ease;
+}
+.judge-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+.judge-code {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9em;
+    margin: 0 auto 8px;
+}
+.judge-name {
+    font-weight: 600;
+    font-size: 0.85em;
     color: #2c3e50;
 }
 .footer {
@@ -877,22 +769,55 @@ body {
         <span class="event-badge">' . $event_info['round'] . '</span>
         ' . $event_no . '. ' . htmlspecialchars($event_info['desc']) . '
     </div>
+    <div class="event-details">
+        <div class="detail-item">
+            <div class="detail-label">이벤트 번호</div>
+            <div class="detail-value">' . $event_no . '</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">라운드</div>
+            <div class="detail-value">' . $event_info['round'] . '</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">패널</div>
+            <div class="detail-value">' . $event_info['panel'] . '</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">댄스</div>
+            <div class="detail-value">' . implode(', ', array_map(function($code) use ($dance_names) { return $dance_names[$code] ?? $code; }, $event_info['dances'])) . '</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">참가자 수</div>
+            <div class="detail-value">' . count($players) . '명</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">심사위원 수</div>
+            <div class="detail-value">' . count($adjudicators) . '명</div>
+        </div>
+    </div>
 </div>
 <div class="results-section">
     <div class="section-title">최종 결과</div>
     <table class="results-table">';
 
-    // 결과 테이블 헤더 (최종결과는 간단하게)
+    // 결과 테이블 헤더
     $html .= '<thead><tr>
-        <th>순위</th>
-        <th>번호</th>
-        <th>선수명</th>
-    </tr></thead><tbody>';
+<th>순위</th>
+<th>번호</th>
+<th>선수명</th>';
 
-    // 최종 순위 결과 (간단한 형태)
+    // 심사위원 컬럼 헤더
+    foreach ($adjudicators as $index => $judge) {
+        $html .= '<th>' . $judge['code'] . '</th>';
+    }
+
+    $html .= '<th>총점</th></tr></thead><tbody>';
+
+    // 결과 행들
     foreach ($final_rankings as $index => $ranking) {
         $player_no = $ranking['player_no'];
         $place = $ranking['final_rank'];
+        $points = $ranking['sum_of_places'];
         
         // 선수 정보 찾기
         $player_info = null;
@@ -914,184 +839,111 @@ body {
         elseif ($place == 3) $rank_class = 'rank-3';
         
         $html .= '<tr class="' . $rank_class . '">
-            <td><strong>' . $place . '</strong></td>
-            <td><strong>' . $player_no . '</strong></td>
-            <td class="player-name">' . htmlspecialchars($player_name) . '</td>
-        </tr>';
+<td><strong>' . $place . '</strong></td>
+<td><strong>' . $player_no . '</strong></td>
+<td class="player-name">' . htmlspecialchars($player_name) . '</td>';
+
+        // 각 심사위원의 채점 결과
+        foreach ($adjudicators as $judge) {
+            $judge_code = $judge['code'];
+            $score = '';
+            
+            // 해당 심사위원의 채점 찾기
+            foreach ($dance_results as $dance_code => $dance_data) {
+                if (isset($dance_data['judge_scores'][$judge_code][$player_no])) {
+                    $score = $dance_data['judge_scores'][$judge_code][$player_no];
+                    break;
+                }
+            }
+            
+            $html .= '<td class="judge-score">' . $score . '</td>';
+        }
+
+        $html .= '<td class="total-points">' . $points . '</td></tr>';
     }
 
     $html .= '</tbody></table></div>';
 
-    // Rules 1-9 스케이팅 집계표
-    $html .= '<div class="skating-section">
-    <div class="section-title">Rules 1 - 9 (스케이팅 집계표)</div>
-    <table class="skating-table">
-        <thead>
-            <tr>
-                <th>Cpl.NO</th>';
-    
-    // 댄스별 헤더
-    foreach ($dance_results as $dance_code => $dance_data) {
-        $dance_name = $dance_names[$dance_code] ?? $dance_code;
-        $html .= '<th>' . $dance_name . '</th>';
-    }
-    
-    $html .= '<th>SUM of Places</th>
-                <th>Place Skating</th>
-            </tr>
-        </thead>
-        <tbody>';
-    
-    // 스케이팅 결과 행들
-    foreach ($final_rankings as $index => $ranking) {
-        $player_no = $ranking['player_no'];
-        $place = $ranking['final_rank'];
-        $sum_of_places = $ranking['sum_of_places'];
+    // 싱글 이벤트인 경우 live_panel.php의 컨트롤 패널 적용
+    if (count($event_info['dances']) <= 2) { // 싱글 이벤트 (1-2종목)
+        $html .= '<div class="single-event-control-panel">
+            <div class="control-panel-header">
+                <div class="panel-title">싱글 이벤트 컨트롤 패널</div>
+                <div class="panel-subtitle">
+                    <strong>패널:</strong> ' . $event_info['panel'] . ' | 
+                    <strong>댄스:</strong> 
+                    <span class="dance-sequence">' . implode(' → ', array_map(function($code) use ($dance_names) { return $dance_names[$code] ?? $code; }, $event_info['dances'])) . '</span>
+                </div>
+            </div>
+            
+            <div class="control-panel-content">
+                <div class="event-details-grid">
+                    <div class="detail-card">
+                        <div class="detail-title">이벤트 정보</div>
+                        <div class="detail-content">
+                            <strong>이벤트 번호:</strong> ' . $event_no . '<br>
+                            <strong>라운드:</strong> ' . $event_info['round'] . '<br>
+                            <strong>카테고리:</strong> ' . htmlspecialchars($event_info['desc']) . '
+                        </div>
+                    </div>
+                    
+                    <div class="detail-card">
+                        <div class="detail-title">참가자 정보</div>
+                        <div class="detail-content">
+                            <strong>참가자 수:</strong> ' . count($players) . '명<br>
+                            <strong>심사위원 수:</strong> ' . count($adjudicators) . '명<br>
+                            <strong>댄스 종목:</strong> ' . count($event_info['dances']) . '종목
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn btn-info" onclick="viewScores(\'' . $event_no . '\')">
+                        📊 점수 보기
+                    </button>
+                    <button class="btn btn-success" onclick="openAggregation(\'' . $event_no . '\')">
+                        📈 결과 집계
+                    </button>
+                    <button class="btn btn-warning" onclick="openAwards(\'' . $event_no . '\')">
+                        🏆 상장 발급
+                    </button>
+                </div>
+                
+                <div class="judges-section">
+                    <div class="section-title">심사위원 현황</div>
+                    <div class="judges-grid">';
         
-        $rank_class = '';
-        if ($place == 1) $rank_class = 'rank-1';
-        elseif ($place == 2) $rank_class = 'rank-2';
-        elseif ($place == 3) $rank_class = 'rank-3';
-        
-        $html .= '<tr class="' . $rank_class . '">
-            <td><strong>' . $player_no . '</strong></td>';
-        
-        // 각 댄스별 점수
-        foreach ($dance_results as $dance_code => $dance_data) {
-            $dance_rank = $dance_data['final_rankings'][$player_no] ?? '-';
-            $html .= '<td>' . $dance_rank . '</td>';
-        }
-        
-        $html .= '<td class="sum-places"><strong>' . $sum_of_places . '</strong></td>
-            <td class="place-skating"><strong>' . $place . '</strong></td>
-        </tr>';
-    }
-    
-    $html .= '</tbody>
-    </table>
-</div>';
-
-    // 종목별 댄스 집계 결과 (스케이팅 시스템 계산 형식)
-    $html .= '<div class="dance-results-section">
-    <div class="section-title">종목별 댄스 집계 결과 (스케이팅 시스템)</div>';
-    
-    foreach ($dance_results as $dance_code => $dance_data) {
-        $dance_name = $dance_names[$dance_code] ?? $dance_code;
-        $html .= '<div class="dance-result-card">
-            <div class="dance-title">' . $dance_name . '</div>
-            <table class="skating-dance-table">
-                <thead>
-                    <tr>
-                        <th>Cpl. No.</th>';
-        
-        // 심사위원 컬럼 헤더
+        // 심사위원 카드들
         foreach ($adjudicators as $judge) {
-            $html .= '<th>' . $judge['code'] . '</th>';
+            $html .= '<div class="judge-card">
+                <div class="judge-code">' . $judge['code'] . '</div>
+                <div class="judge-name">' . htmlspecialchars($judge['name']) . '</div>
+            </div>';
         }
         
-        $html .= '<th>1</th>
-                        <th>1&2</th>
-                        <th>1to3</th>
-                        <th>1to4</th>
-                        <th>1to5</th>
-                        <th>1to6</th>
-                        <th>Place Dance</th>
-                    </tr>
-                </thead>
-                <tbody>';
-        
-        // 댄스별 순위 결과
-        $dance_rankings = $dance_data['final_rankings'];
-        $ranked_players = [];
-        foreach ($dance_rankings as $player_no => $rank) {
-            $ranked_players[] = ['player_no' => $player_no, 'rank' => $rank];
-        }
-        usort($ranked_players, function($a, $b) { return $a['rank'] - $b['rank']; });
-        
-        foreach ($ranked_players as $index => $player_result) {
-            $player_no = $player_result['player_no'];
-            $place_dance = $player_result['rank'];
-            
-            $rank_class = '';
-            if ($place_dance == 1) $rank_class = 'rank-1';
-            elseif ($place_dance == 2) $rank_class = 'rank-2';
-            elseif ($place_dance == 3) $rank_class = 'rank-3';
-            
-            $html .= '<tr class="' . $rank_class . '">
-                <td><strong>' . $player_no . '</strong></td>';
-            
-            // 각 심사위원의 점수
-            $scores = [];
-            foreach ($adjudicators as $judge) {
-                $score = $dance_data['judge_scores'][$judge['code']][$player_no] ?? '-';
-                $scores[] = $score;
-                $html .= '<td>' . $score . '</td>';
-            }
-            
-            // 스케이팅 시스템 계산
-            $calc_1 = 0;      // 1위 표 수
-            $calc_1_2 = 0;    // 1위 또는 2위 표 수
-            $calc_1to3 = 0;   // 1~3위 표 수
-            $calc_1to4 = 0;   // 1~4위 표 수
-            $calc_1to5 = 0;   // 1~5위 표 수
-            $calc_1to6 = 0;   // 1~6위 표 수
-            $sum_places = 0;  // 순위 합계
-            
-            foreach ($scores as $score) {
-                if ($score !== '-') {
-                    $sum_places += $score;
-                    if ($score == 1) $calc_1++;
-                    if ($score <= 2) $calc_1_2++;
-                    if ($score <= 3) $calc_1to3++;
-                    if ($score <= 4) $calc_1to4++;
-                    if ($score <= 5) $calc_1to5++;
-                    if ($score <= 6) $calc_1to6++;
-                }
-            }
-            
-            // 과반수 규칙에 따른 색상 결정 (9명 심사위원, 과반수 5명)
-            $majority = 5;
-            
-            $calc_1_class = ($calc_1 >= $majority) ? 'calc-majority-1' : '';
-            $calc_1_2_class = ($calc_1 < $majority && $calc_1_2 >= $majority) ? 'calc-majority-1-2' : '';
-            $calc_1to3_class = ($calc_1 < $majority && $calc_1_2 < $majority && $calc_1to3 >= $majority) ? 'calc-majority-1to3' : '';
-            $calc_1to4_class = ($calc_1 < $majority && $calc_1_2 < $majority && $calc_1to3 < $majority && $calc_1to4 >= $majority) ? 'calc-majority-1to4' : '';
-            $calc_1to5_class = ($calc_1 < $majority && $calc_1_2 < $majority && $calc_1to3 < $majority && $calc_1to4 < $majority && $calc_1to5 >= $majority) ? 'calc-majority-1to5' : '';
-            $calc_1to6_class = ($calc_1 < $majority && $calc_1_2 < $majority && $calc_1to3 < $majority && $calc_1to4 < $majority && $calc_1to5 < $majority && $calc_1to6 >= $majority) ? 'calc-majority-1to6' : '';
-            
-            $html .= '<td class="calc-cell ' . $calc_1_class . '">' . $calc_1 . '</td>
-                <td class="calc-cell ' . $calc_1_2_class . '">' . $calc_1_2 . '</td>
-                <td class="calc-cell ' . $calc_1to3_class . '">' . $calc_1to3 . ' (' . $sum_places . ')</td>
-                <td class="calc-cell ' . $calc_1to4_class . '">' . $calc_1to4 . '</td>
-                <td class="calc-cell ' . $calc_1to5_class . '">' . $calc_1to5 . '</td>
-                <td class="calc-cell ' . $calc_1to6_class . '">' . $calc_1to6 . '</td>
-                <td class="place-dance"><strong>' . $place_dance . '</strong></td>
-            </tr>';
-        }
-        
-        $html .= '</tbody>
-            </table>
+        $html .= '</div>
+                </div>
+            </div>
         </div>';
-    }
-    
-    $html .= '</div>';
+    } else {
+        // 멀티 이벤트인 경우 기존 심사위원 섹션
+        $html .= '<div class="adjudicators-section">
+        <div class="section-title">심사위원</div>
+        <div class="adjudicators-grid">';
 
-    // 심사위원 정보
-    $html .= '<div class="adjudicators-section">
-    <div class="section-title">심사위원</div>
-    <div class="adjudicators-grid">';
+        // 심사위원 카드들
+        foreach ($adjudicators as $judge) {
+            $html .= '<div class="adjudicator-card">
+                <div class="adjudicator-code">' . $judge['code'] . '</div>
+                <div class="adjudicator-name">' . htmlspecialchars($judge['name']) . '</div>
+            </div>';
+        }
 
-    // 심사위원 카드들
-    foreach ($adjudicators as $judge) {
-        $html .= '<div class="adjudicator-card">
-            <div class="adjudicator-code">' . $judge['code'] . '</div>
-            <div class="adjudicator-name">' . htmlspecialchars($judge['name']) . '</div>
+        $html .= '</div>
         </div>';
     }
 
     $html .= '</div>
-</div>
-</div>
 <div class="footer">
     <p>&copy; 2025 <a href="http://www.danceoffice.net">DanceOffice</a> - Competition Management System</p>
     <p>Generated on ' . date('Y-m-d H:i:s') . ' | <a href="http://www.danceoffice.net">DanceOffice.net</a></p>
