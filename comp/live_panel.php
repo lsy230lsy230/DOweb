@@ -143,6 +143,19 @@ if (file_exists($adjudicator_file)) {
     }
 }
 
+// 선수 데이터 로드
+$player_file = "$data_dir/players.txt";
+$player_dict = [];
+if (file_exists($player_file)) {
+    $lines = file($player_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        $cols = array_map('trim', explode(',', $line));
+        if (count($cols) < 2) continue;
+        $number = (string)$cols[0];
+        $player_dict[$number] = $cols[1];
+    }
+}
+
 // 패널 매핑 데이터 로드
 $panel_map_file = "$data_dir/panel_list.json";
 $panel_map = [];
@@ -2913,7 +2926,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             sorted.forEach((bib, idx) => {
                 let li = document.createElement("li");
-                const playerName = allPlayers[bib] || `선수 ${bib}`;
+                const playerName = (allPlayers && allPlayers[bib]) || `선수 ${bib}`;
                 li.innerHTML = `${bib} - ${playerName} <button class="player-x-btn" onclick="removePlayer('${bib}')">X</button>`;
                 ul.appendChild(li);
             });
@@ -3085,7 +3098,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 html += `<h4>히트 ${hitNo}</h4>`;
                 html += `<div class="modal-hit-players">`;
                 players.forEach(player => {
-                    const playerName = allPlayers[player] || `선수 ${player}`;
+                    const playerName = (allPlayers && allPlayers[player]) || `선수 ${player}`;
                     html += `<div class="modal-player-item">${player} - ${playerName}</div>`;
                 });
                 html += `</div></div>`;
@@ -3130,7 +3143,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 printContent += `<div class="hit-group">`;
                 printContent += `<div class="hit-title">히트 ${hitNo}</div>`;
                 players.forEach(player => {
-                    const playerName = allPlayers[player] || `선수 ${player}`;
+                    const playerName = (allPlayers && allPlayers[player]) || `선수 ${player}`;
                     printContent += `<div class="player-item">${player} - ${playerName}</div>`;
                 });
                 printContent += `</div>`;
