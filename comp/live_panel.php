@@ -1867,13 +1867,21 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            const event = group.events.find(e => (e.detail_no || e.no) === eventId);
+            // eventId가 숫자만 있는 경우 (예: "1"), event_no가 "1-1", "1-2" 등인 이벤트를 찾음
+            let event = group.events.find(e => (e.detail_no || e.no) === eventId);
+            
+            // eventId가 숫자만 있고 event_no가 "숫자-"로 시작하는 경우를 찾음
+            if (!event && /^\d+$/.test(eventId)) {
+                event = group.events.find(e => e.detail_no && e.detail_no.startsWith(eventId + "-"));
+            }
+            
             console.log('Found event:', event);
             
             if (!event) {
                 console.error('Event not found for eventId:', eventId);
-            return;
-        }
+                console.log('Available events:', group.events.map(e => ({ no: e.no, detail_no: e.detail_no, desc: e.desc })));
+                return;
+            }
         
             const isMultiEvent = group.events.length > 1;
             console.log('isMultiEvent:', isMultiEvent);
