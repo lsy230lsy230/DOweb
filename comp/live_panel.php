@@ -2266,6 +2266,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         let currentPlayers = [];
         let disabledJudgesByEvent = {};
         
+        // 그룹 토글 함수들
         function toggleGroup(groupNo) {
             const group = document.querySelector(`[data-group="${groupNo}"]`);
             const eventList = document.getElementById(`group-${groupNo}`);
@@ -2676,7 +2677,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         // 전역 변수들
         let panelMap = <?= json_encode($panel_map) ?>;
         let allAdjudicators = <?= json_encode($adjudicator_dict) ?>;
-        let disabledJudgesByEvent = {};
         let events = <?= json_encode($events) ?>;
         
         // 심사위원 토글 함수
@@ -3466,25 +3466,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 console.error('Error saving players:', error);
                 alert('저장 중 오류가 발생했습니다.');
             });
-        }
-        
-        // 심사위원 제외/포함 토글
-        function toggleAdjudicator(eventNo, judgeCode) {
-            if (!disabledJudgesByEvent[eventNo]) {
-                disabledJudgesByEvent[eventNo] = [];
-            }
-            const arr = disabledJudgesByEvent[eventNo];
-            const idx = arr.indexOf(judgeCode);
-            if (idx === -1) {
-                arr.push(judgeCode);
-            } else {
-                arr.splice(idx, 1);
-            }
-            
-            // 해당 이벤트의 카드 새로고침
-            if (selectedEvent === eventNo) {
-                updateRightPanel(selectedEvent, selectedGroup);
-            }
         }
         
         
