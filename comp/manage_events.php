@@ -307,6 +307,43 @@ foreach ($events as $idx => &$event) {
     }
 }
 
+// 자동 계산된 라운드 정보를 RunOrder_Tablet.txt에 저장
+$updated_lines = [];
+if (file_exists($runorder_file)) {
+    $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $event_counter = 0;
+    
+    foreach ($lines as $line_idx => $line) {
+        if (preg_match('/^bom/', $line)) {
+            $updated_lines[] = $line;
+            continue;
+        }
+        
+        $cols = array_map('trim', explode(',', $line));
+        
+        // 자동 계산된 라운드 정보 적용
+        if (isset($events[$event_counter])) {
+            $event = $events[$event_counter];
+            
+            // 라운드 정보 업데이트 (3번째 컬럼)
+            if (isset($round_info[$event_counter])) {
+                $cols[2] = $round_info[$event_counter];
+            }
+            
+            // 다음 이벤트 번호 업데이트 (6번째 컬럼)
+            if (isset($next_event_info[$event_counter])) {
+                $cols[5] = $next_event_info[$event_counter];
+            }
+        }
+        
+        $updated_lines[] = implode(',', $cols);
+        $event_counter++;
+    }
+    
+    // 파일 저장
+    file_put_contents($runorder_file, implode("\n", $updated_lines) . "\n");
+}
+
 // 라운드 정보 강제 재계산 (디버깅용)
 if (isset($_GET['recalculate_rounds'])) {
     $round_calculation = calculateRoundInfo($events);
