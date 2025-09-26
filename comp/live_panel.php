@@ -747,7 +747,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         .group-title {
             font-size: 16px;
             font-weight: bold;
-            color: #2c3e50;
+            color: white;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -1153,7 +1153,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         .event-title {
             font-size: 1.1em;
             font-weight: 600;
-            color: #2c3e50;
+            color: white;
         }
         
         .ev-row2-label {
@@ -2207,7 +2207,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         .event-title {
             font-size: 14px;
             font-weight: bold;
-            color: #2c3e50;
+            color: white;
             margin-bottom: 8px;
         }
         
