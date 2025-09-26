@@ -2665,7 +2665,79 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             rightContent.innerHTML = content;
             
+            // 싱글 이벤트인 경우 심사위원 리스트 렌더링
+            if (!isMultiEvent) {
+                renderAdjudicatorList(event.panel, eventId);
+            }
+            
             // 실시간 업데이트는 startJudgeStatusMonitoring에서 처리
+        }
+        
+        // 전역 변수들
+        let panelMap = <?= json_encode($panel_map) ?>;
+        let allAdjudicators = <?= json_encode($adjudicator_dict) ?>;
+        let disabledJudgesByEvent = {};
+        let events = <?= json_encode($events) ?>;
+        
+        // 심사위원 토글 함수
+        function toggleAdjudicator(eventNo, judgeCode) {
+            if (!disabledJudgesByEvent[eventNo]) disabledJudgesByEvent[eventNo] = [];
+            const arr = disabledJudgesByEvent[eventNo];
+            const idx = arr.indexOf(judgeCode);
+            if (idx === -1) {
+                arr.push(judgeCode);
+            } else {
+                arr.splice(idx, 1);
+            }
+            // 심사위원 리스트 다시 렌더링
+            const currentEvent = events.find(ev => (ev.detail_no || ev.no) === eventNo);
+            if (currentEvent) {
+                renderAdjudicatorList(currentEvent.panel, eventNo);
+            }
+        }
+        
+        // 심사위원 채점 패널 열기 함수
+        function openJudgeScoring(eventNo, judgeCode) {
+            // 임시로 알림 표시 (실제 구현은 필요에 따라)
+            alert(`심사위원 ${judgeCode}의 채점 패널을 열겠습니다. (이벤트: ${eventNo})`);
+        }
+        
+        // 심사위원 리스트 렌더링 함수
+        function renderAdjudicatorList(panelCode, eventNo) {
+            const judgeLinks = panelMap.filter(m => (m.panel_code||"").toUpperCase() === (panelCode||"").toUpperCase());
+            const judgeArr = judgeLinks.map(m => allAdjudicators[m.adj_code]).filter(j=>j);
+            const tbody = document.getElementById("adjudicator-list");
+            const empty = document.getElementById("judge-empty");
+            
+            if (!tbody) return;
+            
+            tbody.innerHTML = "";
+            if (!panelCode || judgeArr.length === 0) {
+                if (empty) empty.style.display = "";
+                return;
+            }
+            if (empty) empty.style.display = "none";
+            
+            const disabled = disabledJudgesByEvent[eventNo] || [];
+            judgeArr.forEach((j, i) => {
+                const isDisabled = disabled.includes(j.code);
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${i + 1}</td>
+                    <td>${j.code}</td>
+                    <td>${j.name || 'Unknown'}</td>
+                    <td>${j.nation || '-'}</td>
+                    <td>
+                        <span class="judge-status waiting" id="judge-status-${j.code}" data-judge-code="${j.code}">대기</span>
+                    </td>
+                    <td>
+                        <div class="adjudicator-buttons">
+                            <button class="adjudicator-x-btn" onclick="toggleAdjudicator('${eventNo}','${j.code}')" title="이 이벤트에서 심사위원 제외" ${isDisabled ? 'disabled' : ''}>X</button>
+                            <button class="judge-scoring-btn" onclick="openJudgeScoring('${eventNo}','${j.code}')" title="심사위원 채점 패널 열기" data-judge-code="${j.code}">✏️</button>
+                        </div>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
         }
         
         function selectEventFromCard(eventId, groupId) {
