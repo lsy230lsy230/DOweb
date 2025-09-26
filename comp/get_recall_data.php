@@ -253,9 +253,14 @@ try {
     // 전체 참가자 수 계산 (모든 선수 파일에서)
     $total_participants = 0;
     $players_file = "$data_dir/players_{$event_id}.txt";
+    error_log("참가자 파일 경로: $players_file");
     if (file_exists($players_file)) {
         $lines = file($players_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
         $total_participants = count($lines);
+        error_log("참가자 파일에서 읽은 라인 수: " . count($lines));
+        error_log("계산된 전체 참가자 수: $total_participants");
+    } else {
+        error_log("참가자 파일이 존재하지 않음: $players_file");
     }
     
     // 결과 반환

@@ -4492,7 +4492,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             // 전체 참가자 수를 전역 변수로 저장
             window.totalParticipants = data.total_participants || 0;
-            console.log('전체 참가자 수:', window.totalParticipants);
+            console.log('API 응답 데이터:', data);
+            console.log('data.total_participants:', data.total_participants);
+            console.log('설정된 window.totalParticipants:', window.totalParticipants);
             
             // DanceSportLive 스타일 HTML 생성
             let html = `
