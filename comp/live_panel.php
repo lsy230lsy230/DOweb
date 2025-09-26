@@ -476,9 +476,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             gap: 20px;
             max-width: 1600px;
             margin: 0 auto;
-            height: calc(100vh - 40px);
+            height: 100vh;
             overflow: hidden;
-            margin-top: 20px;
         }
         
         .left-panel {
@@ -1618,11 +1617,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         .event-card .judge-item {
             display: flex;
             align-items: center;
-            padding: 4px 8px;
-            margin-bottom: 4px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            font-size: 11px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .event-card .judge-item.disabled {
@@ -1668,11 +1669,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         .event-card .player-item {
             display: flex;
             align-items: center;
-            padding: 4px 8px;
-            margin-bottom: 4px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            font-size: 11px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
+            background: white;
+            border: 1px solid #28a745;
+            border-radius: 6px;
+            font-size: 12px;
+            box-shadow: 0 1px 3px rgba(40, 167, 69, 0.1);
         }
         
         .event-card .player-number {
@@ -1807,12 +1810,18 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         .event-card-judges {
             height: 100%;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
         }
         
         .judges-header {
             margin-bottom: 12px;
             padding-bottom: 8px;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 2px solid #0d2c96;
+            font-weight: bold;
+            color: #0d2c96;
         }
         
         .event-title {
@@ -2000,16 +2009,21 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         }
         
         .event-card-players {
-                    margin-bottom: 15px;
-                }
+            margin-bottom: 15px;
+            background: #e8f5e8;
+            border-radius: 8px;
+            padding: 15px;
+        }
         
         .players-header {
-            font-size: 11px;
-                    font-weight: bold;
-            color: #2c3e50;
-            margin-bottom: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #28a745;
+            margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #28a745;
             align-items: center;
         }
         
@@ -2675,9 +2689,12 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         // 50번 이상 그룹들 확인
         const highNumberGroups = groupData.filter(g => parseInt(g.group_no) >= 50);
         console.log('50번 이상 그룹들:', highNumberGroups.map(g => g.group_no));
+        let expandedGroups = new Set();
+        let completedGroups = new Set();
         let hideCompleted = false;
         let currentEventForPlayerModal = null;
         let currentPlayers = [];
+        let disabledJudgesByEvent = {};
         
         
         function toggleCompletedGroups() {
@@ -2957,23 +2974,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 <div class="event-card-body">
                                     <div class="event-card-left">
                                         <div class="event-card-title">${event.desc}</div>
-                                        <div class="event-card-details">
-                                            <div class="event-card-detail-row">
-                                                <span class="event-card-detail-label">패널:</span>
-                                                <span class="event-card-detail-value">${event.panel || 'N/A'}</span>
-                                            </div>
-                                            <div class="event-card-detail-row">
-                                                <span class="event-card-detail-label">라운드:</span>
-                                                <span class="event-card-detail-value">${event.round}</span>
-                                            </div>
-                                            <div class="event-card-detail-row">
-                                                <span class="event-card-detail-label">댄스:</span>
-                                                <span class="event-card-detail-value">${event.dance_names ? event.dance_names.join(' → ') : (event.dances ? event.dances.join(' → ') : 'N/A')}</span>
-                                            </div>
-                                        </div>
-                                        <div class="event-card-dances">
-                                            ${event.dance_names ? event.dance_names.join(' → ') : (event.dances ? event.dances.join(' → ') : 'N/A')}
-                                        </div>
                                         <div class="event-card-judges">
                                             <div class="judges-header">
                                                 <span class="event-title">심사위원</span>
@@ -3040,8 +3040,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         let playersByEvent = {};
         let allPlayers = <?= json_encode($player_dict) ?>;
         let hitsByEvent = {};
-        let expandedGroups = new Set();
-        let completedGroups = new Set();
         
         // 그룹 토글 함수들 (HTML에서 호출되므로 먼저 정의)
         function toggleGroup(groupNo) {
