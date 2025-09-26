@@ -235,7 +235,11 @@ try {
         foreach ($lines as $line) {
             $parts = explode(',', $line);
             if (count($parts) >= 2) {
-                $adjudicator_names[trim($parts[0])] = trim($parts[1]);
+                $judge_code = trim($parts[0]);
+                $judge_name = trim($parts[1]); // 2번째 컬럼이 이름
+                if (!empty($judge_name)) {
+                    $adjudicator_names[$judge_code] = $judge_name;
+                }
             }
         }
     }
