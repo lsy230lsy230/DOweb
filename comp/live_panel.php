@@ -6012,76 +6012,60 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            // 선택된 커플 수만큼만 진출자 정보 수집 (등위순으로 자동 할당)
-            // window.advancingPlayersData가 부족하면 집계 결과에서 추가로 가져오기
-            let allPlayers = window.advancingPlayersData || [];
-            console.log('초기 allPlayers 수:', allPlayers.length, '요청된 coupleCount:', coupleCount);
+            // 등번호만 추출 (등위와 상관없이)
+            let playerNumbers = [];
             
-            // 만약 요청한 수보다 적으면 집계 결과에서 추가로 가져오기
-            if (allPlayers.length < coupleCount) {
-                console.log(`진출자 데이터 부족: ${allPlayers.length} < ${coupleCount}, 집계 결과에서 추가로 가져오기`);
-                const aggregationResult = document.querySelector('#aggregationContent .aggregation-results') || 
-                                        document.querySelector('#aggregationContent') ||
-                                        document.querySelector('.aggregation-results');
+            // 집계 결과에서 등번호만 추출
+            const aggregationResult = document.querySelector('#aggregationContent .aggregation-results') || 
+                                    document.querySelector('#aggregationContent') ||
+                                    document.querySelector('.aggregation-results');
+            
+            if (aggregationResult) {
+                console.log('집계 결과에서 등번호 추출 시작');
                 
-                if (aggregationResult) {
-                    console.log('집계 결과 요소 찾음:', aggregationResult);
-                    
-                    // 모든 테이블을 찾아서 데이터가 있는 테이블 선택
-                    const allTables = aggregationResult.querySelectorAll('table');
-                    console.log('찾은 테이블 수:', allTables.length);
-                    
-                    let summaryTable = null;
-                    for (let i = 0; i < allTables.length; i++) {
-                        const table = allTables[i];
-                        const rows = table.querySelectorAll('tr');
-                        console.log(`테이블 ${i} 행 수:`, rows.length);
-                        if (rows.length > 1) { // 헤더 + 데이터 행이 있는 테이블
-                            summaryTable = table;
-                            console.log(`데이터가 있는 테이블 선택: 테이블 ${i}`);
-                            break;
-                        }
+                // 모든 테이블을 찾아서 데이터가 있는 테이블 선택
+                const allTables = aggregationResult.querySelectorAll('table');
+                console.log('찾은 테이블 수:', allTables.length);
+                
+                let summaryTable = null;
+                for (let i = 0; i < allTables.length; i++) {
+                    const table = allTables[i];
+                    const rows = table.querySelectorAll('tr');
+                    console.log(`테이블 ${i} 행 수:`, rows.length);
+                    if (rows.length > 1) { // 헤더 + 데이터 행이 있는 테이블
+                        summaryTable = table;
+                        console.log(`데이터가 있는 테이블 선택: 테이블 ${i}`);
+                        break;
                     }
+                }
+                
+                if (summaryTable) {
+                    const rows = summaryTable.querySelectorAll('tr');
+                    console.log('선택된 테이블 행 수:', rows.length);
                     
-                    if (summaryTable) {
-                        console.log('선택된 집계 테이블:', summaryTable);
-                        const rows = summaryTable.querySelectorAll('tr');
-                        console.log('선택된 테이블 행 수:', rows.length);
-                        
-                        for (let i = 1; i < rows.length && allPlayers.length < coupleCount; i++) {
-                            const row = rows[i];
-                            const cells = row.querySelectorAll('td');
-                            if (cells.length >= 3) {
-                                const rank = cells[0]?.textContent?.trim();
-                                const number = cells[1]?.textContent?.trim();
-                                const name = cells[2]?.textContent?.trim();
-                                
-                                if (rank && number && name && !isNaN(parseInt(rank))) {
-                                    // 이미 존재하는지 확인
-                                    const exists = allPlayers.some(p => p.number === number);
-                                    if (!exists) {
-                                        allPlayers.push({
-                                            number: number,
-                                            name: name,
-                                            rank: parseInt(rank)
-                                        });
-                                        console.log(`추가된 선수: ${rank}위 ${number}번 ${name}, 현재 총 ${allPlayers.length}명`);
-                                    }
-                                }
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        const cells = row.querySelectorAll('td');
+                        if (cells.length >= 2) {
+                            const number = cells[1]?.textContent?.trim(); // 등번호는 2번째 컬럼
+                            
+                            if (number && !isNaN(parseInt(number))) {
+                                playerNumbers.push(number);
+                                console.log(`추가된 등번호: ${number}, 현재 총 ${playerNumbers.length}개`);
                             }
                         }
-                    } else {
-                        console.log('집계 테이블을 찾을 수 없음');
                     }
-                } else {
-                    console.log('집계 결과 요소를 찾을 수 없음');
                 }
             }
             
-            const players = allPlayers.slice(0, coupleCount).map((player, index) => ({
-                oldNumber: player.number,
-                name: player.name,
-                newNumber: (index + 1).toString().padStart(2, '0'), // 01, 02, 03... 순위순
+            // 요청된 수만큼만 등번호 선택
+            const selectedNumbers = playerNumbers.slice(0, coupleCount);
+            console.log(`선택된 등번호들:`, selectedNumbers);
+            
+            const players = selectedNumbers.map((number, index) => ({
+                oldNumber: number,
+                name: `선수${number}`, // 이름은 임시로 설정
+                newNumber: (index + 1).toString().padStart(2, '0'), // 01, 02, 03... 순서대로
                 rank: index + 1
             }));
             
