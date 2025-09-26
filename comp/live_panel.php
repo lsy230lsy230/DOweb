@@ -5795,15 +5795,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            // 전체 참여 팀 수 계산 (집계 결과 테이블에서)
-            let totalTeams = 0;
-            const summaryTable = aggregationResult.querySelector('table');
-            if (summaryTable) {
-                const rows = summaryTable.querySelectorAll('tr');
-                // 헤더를 제외한 데이터 행 수 계산
-                totalTeams = rows.length - 1;
-            }
-            
             // 진출자 등번호 추출
             const advancingPlayers = [];
             const playerElements = aggregationResult.querySelectorAll('.next-round-player');
@@ -5852,6 +5843,22 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             if (advancingPlayers.length === 0) {
                 alert('진출자가 없습니다. 집계 결과를 확인해주세요.');
                 return;
+            }
+            
+            // 전체 참여 팀 수 계산 (집계 결과 테이블에서)
+            let totalTeams = 0;
+            const summaryTable = aggregationResult.querySelector('table');
+            if (summaryTable) {
+                const rows = summaryTable.querySelectorAll('tr');
+                // 헤더를 제외한 데이터 행 수 계산
+                totalTeams = rows.length - 1;
+                console.log('집계 테이블에서 계산된 팀 수:', totalTeams);
+            }
+            
+            // 만약 테이블에서 계산이 안되면 진출자 수를 기본값으로 사용
+            if (totalTeams === 0) {
+                totalTeams = advancingPlayers.length;
+                console.log('테이블 계산 실패, 진출자 수를 기본값으로 사용:', totalTeams);
             }
             
             // 다음 라운드 이벤트 번호 계산 (현재 이벤트 + 1)
