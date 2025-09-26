@@ -768,6 +768,43 @@ body {
     color: #e74c3c;
     background: #fff5f5 !important;
 }
+/* 과반수 규칙에 따른 색상 강조 */
+.calc-majority-1 {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5) !important;
+}
+.calc-majority-1-2 {
+    background: linear-gradient(45deg, #4ecdc4, #7dd3fc) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(78, 205, 196, 0.5) !important;
+}
+.calc-majority-1to3 {
+    background: linear-gradient(45deg, #45b7d1, #74c0fc) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(69, 183, 209, 0.5) !important;
+}
+.calc-majority-1to4 {
+    background: linear-gradient(45deg, #96ceb4, #a8e6cf) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(150, 206, 180, 0.5) !important;
+}
+.calc-majority-1to5 {
+    background: linear-gradient(45deg, #feca57, #ffd93d) !important;
+    color: #333 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(254, 202, 87, 0.5) !important;
+}
+.calc-majority-1to6 {
+    background: linear-gradient(45deg, #ff9ff3, #f368e0) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(255, 159, 243, 0.5) !important;
+}
 .adjudicators-section {
     background: #f8f9fa;
     padding: 30px;
@@ -1016,12 +1053,30 @@ body {
                 }
             }
             
-            $html .= '<td class="calc-cell">' . $calc_1 . '</td>
-                <td class="calc-cell">' . $calc_1_2 . '</td>
-                <td class="calc-cell">' . $calc_1to3 . ' (' . $sum_places . ')</td>
-                <td class="calc-cell">' . $calc_1to4 . '</td>
-                <td class="calc-cell">' . $calc_1to5 . '</td>
-                <td class="calc-cell">' . $calc_1to6 . '</td>
+            // 과반수 규칙에 따른 색상 결정 (9명 심사위원, 과반수 5명)
+            $majority = 5;
+            $highlight_class = '';
+            
+            if ($calc_1 >= $majority) {
+                $highlight_class = 'calc-majority-1';
+            } elseif ($calc_1_2 >= $majority) {
+                $highlight_class = 'calc-majority-1-2';
+            } elseif ($calc_1to3 >= $majority) {
+                $highlight_class = 'calc-majority-1to3';
+            } elseif ($calc_1to4 >= $majority) {
+                $highlight_class = 'calc-majority-1to4';
+            } elseif ($calc_1to5 >= $majority) {
+                $highlight_class = 'calc-majority-1to5';
+            } elseif ($calc_1to6 >= $majority) {
+                $highlight_class = 'calc-majority-1to6';
+            }
+            
+            $html .= '<td class="calc-cell ' . $highlight_class . '">' . $calc_1 . '</td>
+                <td class="calc-cell ' . $highlight_class . '">' . $calc_1_2 . '</td>
+                <td class="calc-cell ' . $highlight_class . '">' . $calc_1to3 . ' (' . $sum_places . ')</td>
+                <td class="calc-cell ' . $highlight_class . '">' . $calc_1to4 . '</td>
+                <td class="calc-cell ' . $calc_1to5 . '</td>
+                <td class="calc-cell ' . $calc_1to6 . '</td>
                 <td class="place-dance"><strong>' . $place_dance . '</strong></td>
             </tr>';
         }
