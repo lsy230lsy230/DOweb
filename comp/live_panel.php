@@ -1042,6 +1042,282 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             font-size: 14px;
         }
         
+        .main-content-row {
+            display: flex;
+            flex-direction: row;
+            gap: 1.2em;
+            height: 93%;
+        }
+        
+        .adjudicator-list-panel {
+            flex: 0 0 40%;
+            background: #eaf0ff;
+            border-radius: 8px;
+            margin-top: 0.2em;
+            padding: 1em 1em 1em 1em;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+        }
+        
+        .adjudicator-list-panel h3 {
+            font-size: 1.1em;
+            color: #0d2c96;
+            margin: 0 0 0.6em 0;
+        }
+        
+        .adjudicator-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .adjudicator-list li {
+            margin-bottom: 0.28em;
+            padding: 0.13em 0.2em;
+            background: #fff;
+            border-radius: 4px;
+            font-size: 0.97em;
+            color: #282828;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .adjudicator-list li.disabled {
+            color: #aaa;
+            text-decoration: line-through;
+            background: #f5f5f5;
+        }
+        
+        .adjudicator-x-btn {
+            background: #dc3232;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-left: 0.5em;
+        }
+        
+        .adjudicator-x-btn:disabled {
+            background: #ccc;
+            color: #888;
+            cursor: default;
+        }
+        
+        .adjudicator-list-panel .empty {
+            color: #888;
+            margin-top: 0.7em;
+            font-size: 0.98em;
+        }
+        
+        .adjudicator-list-panel table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .adjudicator-list-panel th {
+            font-size: 0.9em;
+            color: #0d2c96;
+            padding: 0.3em 0.2em;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .adjudicator-list-panel td {
+            padding: 0.3em 0.2em;
+            font-size: 0.9em;
+        }
+        
+        .adjudicator-list-panel td:nth-child(1) {
+            width: 6%;
+        }
+        
+        .adjudicator-list-panel td:nth-child(2) {
+            width: 10%;
+        }
+        
+        .adjudicator-list-panel td:nth-child(3) {
+            width: 30%;
+        }
+        
+        .adjudicator-list-panel td:nth-child(4) {
+            width: 12%;
+        }
+        
+        .adjudicator-list-panel td:nth-child(5) {
+            width: 12%;
+            text-align: center;
+        }
+        
+        .adjudicator-list-panel td:nth-child(6) {
+            width: 30%;
+            text-align: center;
+        }
+        
+        .player-dance-row {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
+        
+        .player-list-panel {
+            background: #eaf0ff;
+            border-radius: 8px;
+            padding: 1em;
+            flex: 1;
+        }
+        
+        .player-list-panel h3 {
+            font-size: 1.1em;
+            color: #0d2c96;
+            margin: 0 0 0.6em 0;
+        }
+        
+        .player-controls-row {
+            display: flex;
+            gap: 0.5em;
+            margin-bottom: 1em;
+            flex-wrap: wrap;
+        }
+        
+        .add-player-btn, .show-entry-list-btn, .split-hit-btn, .show-hit-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5em 1em;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .add-player-btn:hover, .show-entry-list-btn:hover, .split-hit-btn:hover, .show-hit-btn:hover {
+            background: #218838;
+        }
+        
+        .player-list-scrollbox {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+        
+        .player-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .player-list li {
+            padding: 0.5em;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dance-block {
+            background: #eaf0ff;
+            border-radius: 8px;
+            padding: 1em;
+            flex: 1;
+        }
+        
+        .dance-title {
+            font-size: 1.1em;
+            color: #0d2c96;
+            margin: 0 0 0.6em 0;
+            font-weight: bold;
+        }
+        
+        .dance-progress-container {
+            margin-top: 1em;
+        }
+        
+        .dance-progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 1em;
+        }
+        
+        .dance-progress-fill {
+            height: 100%;
+            background: #28a745;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .dance-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5em;
+        }
+        
+        .dance-item {
+            background: white;
+            padding: 0.5em;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .aggregation-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1em;
+            margin-top: 1em;
+        }
+        
+        .aggregation-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1em;
+            margin-bottom: 2em;
+        }
+        
+        .status-item {
+            background: #f8f9fa;
+            padding: 1em;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-label {
+            font-weight: 600;
+            color: #495057;
+        }
+        
+        .aggregation-table h4 {
+            margin: 0 0 1em 0;
+            color: #495057;
+        }
+        
+        .aggregation-results {
+            background: #f8f9fa;
+            border-radius: 6px;
+            padding: 1em;
+            min-height: 200px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
         .event-card {
             background: white;
             border: 1px solid #dee2e6;
@@ -2318,11 +2594,68 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 </div>
                             </div>
                         </div>
-                        <div class="event-content-panel">
-                            <div class="judge-status-section">
-                                <h3>심사위원 상태</h3>
-                                <div class="judge-progress" id="judge-progress-${eventId}">
-                                    <div class="progress-text">심사위원 상태 로딩 중...</div>
+                        <div class="main-content-row">
+                            <div class="adjudicator-list-panel" id="adjudicator-list-panel">
+                                <h3>심사위원</h3>
+                                <table style="width:100%;">
+                                    <thead>
+                                        <tr>
+                                            <th style="width:2.1em;">#</th>
+                                            <th style="width:3.2em;">코드</th>
+                                            <th style="min-width:5em;">심사위원명</th>
+                                            <th style="width:2.2em;">국가</th>
+                                            <th style="width:3em;">상태</th>
+                                            <th style="width:3em;">관리</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="adjudicator-list"></tbody>
+                                </table>
+                                <div class="empty" id="judge-empty" style="display:none;">심사위원이 없습니다</div>
+                            </div>
+                            <div class="player-dance-row">
+                                <div class="player-list-panel" id="player-list-panel">
+                                    <h3>선수</h3>
+                                    <div class="player-controls-row">
+                                        <button class="add-player-btn" onclick="openPlayerModal()">선수 추가</button>
+                                        <button class="show-entry-list-btn" onclick="showEntryPlayers()">출전선수</button>
+                                        <button class="split-hit-btn" onclick="openSplitHitModal()">히트 나누기</button>
+                                        <button class="show-hit-btn" id="showHitBtn" onclick="openHitModal()">히트 확인</button>
+                                    </div>
+                                    <div class="player-list-scrollbox" id="player-list-scrollbox">
+                                        <ul class="player-list" id="player-list"></ul>
+                                    </div>
+                                    <div class="hit-block" id="hit-block" style="display:none;"></div>
+                                </div>
+                                <div class="dance-block" id="dance-block">
+                                    <div class="dance-title">진행종목</div>
+                                    <div class="dance-progress-container">
+                                        <div class="dance-progress-bar">
+                                            <div class="dance-progress-fill" id="dance-progress-fill"></div>
+                                        </div>
+                                        <div class="dance-list" id="dance-list"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="aggregation-section">
+                            <div class="aggregation-status">
+                                <div class="status-item">
+                                    <span class="status-label">총 심사위원:</span>
+                                    <span id="total-judges">-</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">완료된 심사위원:</span>
+                                    <span id="completed-judges">-</span>
+                                </div>
+                                <div class="status-item">
+                                    <span class="status-label">진행률:</span>
+                                    <span id="progress-rate">-</span>
+                                </div>
+                            </div>
+                            <div class="aggregation-table">
+                                <h4>집계 결과</h4>
+                                <div class="aggregation-results" id="aggregation-results">
+                                    <div class="loading">집계 데이터를 로딩 중입니다...</div>
                                 </div>
                             </div>
                         </div>
