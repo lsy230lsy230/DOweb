@@ -5873,9 +5873,34 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 console.log('모든 계산 실패, 진출자 수를 기본값으로 사용:', totalTeams);
             }
             
-            // 다음 라운드 이벤트 번호 계산 (현재 이벤트 + 1)
-            const nextEventNumber = parseInt(currentEvent.no) + 1;
-            const nextEventName = currentEvent.desc.replace(/Round \d+/, 'Semi-Final').replace(/Final/, 'Semi-Final');
+            // 다음 라운드 이벤트 번호 계산 (RunOrder_Tablet.txt에서 실제 다음 라운드 찾기)
+            let nextEventNumber = parseInt(currentEvent.no) + 1; // 기본값
+            let nextEventName = currentEvent.desc.replace(/Round \d+/, 'Semi-Final').replace(/Final/, 'Semi-Final');
+            
+            // 실제 다음 라운드 이벤트 찾기
+            const currentEventDesc = currentEvent.desc;
+            const currentRound = currentEvent.round;
+            
+            // 라운드 순서 정의
+            const roundOrder = {
+                'Round 1': 'Semi-Final',
+                'Semi-Final': 'Final',
+                'Final': 'Final'
+            };
+            
+            const nextRound = roundOrder[currentRound] || 'Final';
+            
+            // 같은 종목의 다음 라운드 이벤트 찾기
+            for (const group of groupData) {
+                for (const event of group.events) {
+                    if (event.desc === currentEventDesc && event.round === nextRound) {
+                        nextEventNumber = parseInt(event.no);
+                        nextEventName = event.desc;
+                        console.log('실제 다음 라운드 이벤트 발견:', nextEventNumber, nextEventName);
+                        break;
+                    }
+                }
+            }
             
             console.log('다음 이벤트:', nextEventNumber, nextEventName);
             
