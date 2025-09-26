@@ -1392,6 +1392,116 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             font-size: 0.9em;
         }
         
+        /* 모달 스타일 */
+        .modal-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            background: #0d2c96;
+            color: white;
+            padding: 1em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.2em;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-body {
+            padding: 1.5em;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+        
+        .modal-footer {
+            background: #f8f9fa;
+            padding: 1em;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5em;
+        }
+        
+        .btn-primary, .btn-secondary {
+            padding: 0.5em 1em;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+        
+        .btn-primary {
+            background: #0d2c96;
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .modal-hit-group {
+            margin-bottom: 1.5em;
+            padding: 1em;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .modal-hit-group h4 {
+            margin: 0 0 0.5em 0;
+            color: #0d2c96;
+        }
+        
+        .modal-hit-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.5em;
+        }
+        
+        .modal-player-item {
+            padding: 0.3em 0.5em;
+            background: white;
+            border-radius: 4px;
+            border: 1px solid #dee2e6;
+            font-size: 0.9em;
+        }
+        
         .event-card {
             background: white;
             border: 1px solid #dee2e6;
@@ -2835,9 +2945,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        playersByEvent[eventNo] = data.players || [];
+                        // 선수 번호 배열로 변환
+                        const playerNumbers = data.players ? data.players.map(p => p.number) : [];
+                        playersByEvent[eventNo] = playerNumbers;
                         renderPlayerList(eventNo);
-                        console.log(`Players loaded for event ${eventNo}:`, data.players);
+                        console.log(`Players loaded for event ${eventNo}:`, playerNumbers);
                     } else {
                         console.error('Failed to load players:', data.message);
                         playersByEvent[eventNo] = [];
@@ -2924,30 +3036,110 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 });
         }
         
-        // 히트 정보 렌더링 함수
+        // 히트 정보 렌더링 함수 (히트 블록용 - 숨김 처리)
         function renderHits(eventNo) {
             const hitBlock = document.getElementById('hit-block');
             if (!hitBlock) return;
             
+            // 히트 블록은 항상 숨김 (모달로만 표시)
+            hitBlock.style.display = 'none';
+        }
+        
+        // 히트 모달 열기 함수
+        function openHitModal() {
+            const currentEvent = events.find(ev => (ev.detail_no || ev.no) === selectedEvent);
+            if (!currentEvent) return;
+            
+            const eventNo = currentEvent.detail_no || currentEvent.no;
+            
+            // 현재 메모리의 히트 데이터 먼저 표시
+            document.getElementById('hitModalBody').innerHTML = buildHitHtml(eventNo);
+            document.getElementById('hitModalBg').style.display = 'flex';
+            
+            // 백그라운드에서 최신 저장본 불러오기 시도
+            fetchHits(eventNo);
+            // 로드 완료 후 다시 표시
+            setTimeout(() => {
+                document.getElementById('hitModalBody').innerHTML = buildHitHtml(eventNo);
+            }, 200);
+        }
+        
+        // 히트 모달 닫기 함수
+        function closeHitModal() {
+            document.getElementById('hitModalBg').style.display = 'none';
+        }
+        
+        // 히트 HTML 생성 함수
+        function buildHitHtml(eventNo) {
             const hits = hitsByEvent[eventNo] || {};
             const hitKeys = Object.keys(hits).sort((a, b) => Number(a) - Number(b));
             
             if (hitKeys.length === 0) {
-                hitBlock.style.display = 'none';
+                return '<div class="empty">히트 정보가 없습니다.</div>';
+            }
+            
+            let html = '';
+            hitKeys.forEach(hitNo => {
+                const players = hits[hitNo] || [];
+                html += `<div class="modal-hit-group">`;
+                html += `<h4>히트 ${hitNo}</h4>`;
+                html += `<div class="modal-hit-players">`;
+                players.forEach(player => {
+                    const playerName = allPlayers[player] || `선수 ${player}`;
+                    html += `<div class="modal-player-item">${player} - ${playerName}</div>`;
+                });
+                html += `</div></div>`;
+            });
+            
+            return html;
+        }
+        
+        // 히트 인쇄 함수
+        function printHits() {
+            const currentEvent = events.find(ev => (ev.detail_no || ev.no) === selectedEvent);
+            if (!currentEvent) return;
+            
+            const eventNo = currentEvent.detail_no || currentEvent.no;
+            const hits = hitsByEvent[eventNo] || {};
+            const hitKeys = Object.keys(hits);
+            
+            if (!hitKeys.length) {
+                alert('인쇄할 히트가 없습니다.');
                 return;
             }
             
-            let html = '<div class="hit-title">히트 정보</div>';
-            hitKeys.forEach(hitNo => {
+            // 인쇄용 새 창 열기
+            const printWindow = window.open('', '_blank');
+            let printContent = `
+                <html>
+                <head>
+                    <title>히트 정보 - 이벤트 ${eventNo}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .hit-group { margin-bottom: 20px; }
+                        .hit-title { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+                        .player-item { margin: 5px 0; }
+                    </style>
+                </head>
+                <body>
+                    <h2>이벤트 ${eventNo} - 히트 정보</h2>
+            `;
+            
+            hitKeys.sort((a, b) => Number(a) - Number(b)).forEach(hitNo => {
                 const players = hits[hitNo] || [];
-                html += `<div class="hit-group">`;
-                html += `<div class="hit-number">히트 ${hitNo}</div>`;
-                html += `<div class="hit-players">${players.join(', ')}</div>`;
-                html += `</div>`;
+                printContent += `<div class="hit-group">`;
+                printContent += `<div class="hit-title">히트 ${hitNo}</div>`;
+                players.forEach(player => {
+                    const playerName = allPlayers[player] || `선수 ${player}`;
+                    printContent += `<div class="player-item">${player} - ${playerName}</div>`;
+                });
+                printContent += `</div>`;
             });
             
-            hitBlock.innerHTML = html;
-            hitBlock.style.display = 'block';
+            printContent += `</body></html>`;
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.print();
         }
         
         // 심사위원 리스트 렌더링 함수
@@ -3887,5 +4079,23 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }
         }
 </script>
+
+<!-- 히트 확인 모달 -->
+<div id="hitModalBg" class="modal-bg" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>히트 정보</h3>
+            <button class="modal-close" onclick="closeHitModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="hitModalBody">
+            <div class="loading">히트 정보를 로딩 중입니다...</div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeHitModal()">닫기</button>
+            <button class="btn-primary" onclick="printHits()">인쇄</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
