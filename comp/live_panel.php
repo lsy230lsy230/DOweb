@@ -476,8 +476,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             gap: 20px;
             max-width: 1600px;
             margin: 0 auto;
-            height: 100vh;
+            height: calc(100vh - 40px);
             overflow: hidden;
+            margin-top: 20px;
         }
         
         .left-panel {
@@ -1234,8 +1235,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             border-radius: 4px;
             background: white;
             padding: 0.5em;
-            max-height: 300px;
-            overflow-y: auto;
+            max-height: none;
+            overflow-y: visible;
         }
         
         .player-list {
@@ -2674,12 +2675,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         // 50번 이상 그룹들 확인
         const highNumberGroups = groupData.filter(g => parseInt(g.group_no) >= 50);
         console.log('50번 이상 그룹들:', highNumberGroups.map(g => g.group_no));
-        let expandedGroups = new Set();
-        let completedGroups = new Set();
         let hideCompleted = false;
         let currentEventForPlayerModal = null;
         let currentPlayers = [];
-        let disabledJudgesByEvent = {};
         
         
         function toggleCompletedGroups() {
@@ -3042,6 +3040,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         let playersByEvent = {};
         let allPlayers = <?= json_encode($player_dict) ?>;
         let hitsByEvent = {};
+        let expandedGroups = new Set();
+        let completedGroups = new Set();
         
         // 그룹 토글 함수들 (HTML에서 호출되므로 먼저 정의)
         function toggleGroup(groupNo) {
