@@ -4447,7 +4447,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             // DanceSportLive 스타일 HTML 생성
             let html = `
-                <div class="dancesport-container">
+                <div class="dancesport-container aggregation-results">
                     <div class="dancesport-header">
                         <h1><center>${data.competition_info?.title || '2025 제9회 용인특례시 시민일보배'}</center></h1>
                     </div>
@@ -5715,7 +5715,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }
             
             // 집계 결과에서 진출자 정보 가져오기
-            const aggregationResult = document.querySelector('.aggregation-results');
+            const aggregationResult = document.querySelector('#aggregationContent .aggregation-results') || 
+                                    document.querySelector('#aggregationContent') ||
+                                    document.querySelector('.aggregation-results');
             if (!aggregationResult) {
                 alert('먼저 집계를 실행해주세요.');
                 return;
