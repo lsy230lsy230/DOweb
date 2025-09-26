@@ -5874,6 +5874,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         // 다음 라운드 생성 모달 표시
         function showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers, totalTeams) {
             console.log('showNextRoundModal 함수 시작:', {nextEventNumber, nextEventName, advancingPlayers, totalTeams});
+            console.log('totalTeams 값:', totalTeams, '타입:', typeof totalTeams);
+            
+            // totalTeams가 undefined이면 advancingPlayers.length를 사용
+            if (totalTeams === undefined || totalTeams === null || totalTeams === 0) {
+                totalTeams = advancingPlayers.length;
+                console.log('totalTeams가 유효하지 않음, advancingPlayers.length 사용:', totalTeams);
+            }
             
             // 기존 모달이 있으면 제거
             const existingModal = document.querySelector('.next-round-modal');
