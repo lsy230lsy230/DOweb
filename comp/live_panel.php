@@ -930,87 +930,114 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             overflow: hidden;
         }
         
-        .single-event-card {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
+        .single-event-panel {
             flex: 1;
-            padding: 20px;
-        }
-        
-        .single-event-card .event-card {
+            display: flex;
+            flex-direction: column;
+            background: #0d2c96;
+            padding: 0;
             width: 100%;
-            max-width: 600px;
-            min-height: 200px;
+            min-width: 0;
         }
         
-        .single-event-card .event-card-header {
-            background: #2c3e50;
-            color: white;
-            padding: 15px 20px;
+        .event-header-panel {
+            background: #bdbdbd;
+            border: 3px solid #071d6e;
+            border-radius: 0 0 12px 12px;
+            padding: 0.6em 1em;
+            margin: 0 0 0.8em 0;
             display: flex;
-            justify-content: space-between;
+            flex-direction: row;
             align-items: center;
+            justify-content: center;
+            gap: 0.6em;
+            width: 100%;
+            box-sizing: border-box;
+            min-height: 100px;
         }
         
-        .single-event-card .event-number {
-            font-size: 18px;
-            font-weight: bold;
+        .event-header-box {
+            background: #bdbdbd;
+            border: 3px solid #071d6e;
+            border-radius: 6px;
+            padding: 0.5em 0.8em;
+            width: 100%;
+            max-width: 900px;
+            min-width: 300px;
+            font-family: Arial, sans-serif;
+            margin-right: 0;
+            box-sizing: border-box;
         }
         
-        .single-event-card .event-status {
-            background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-        
-        .single-event-card .event-card-body {
-            padding: 20px;
-            min-height: auto;
-            display: block;
-        }
-        
-        .single-event-card .event-title {
-            font-size: 16px;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 15px;
-        }
-        
-        .single-event-card .event-details {
-            margin-bottom: 20px;
-        }
-        
-        .single-event-card .detail-row {
+        .event-row1, .event-row2 {
             display: flex;
-            margin-bottom: 8px;
-            font-size: 14px;
+            align-items: center;
+            gap: 0.6em;
+            margin-bottom: 0.25em;
         }
         
-        .single-event-card .detail-label {
+        .event-row2 {
+            margin-bottom: 0;
+        }
+        
+        .event-number-display {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.2em;
+        }
+        
+        .event-number {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #071d6e;
+        }
+        
+        .event-title-display {
+            flex: 1;
+        }
+        
+        .event-title {
+            font-size: 1.1em;
             font-weight: 600;
-            color: #666;
-            min-width: 60px;
-        }
-        
-        .single-event-card .detail-value {
             color: #2c3e50;
-            margin-left: 10px;
         }
         
-        .single-event-card .event-card-footer {
-            background: #f8f9fa;
-            padding: 15px 20px;
-            border-top: 1px solid #dee2e6;
+        .ev-row2-label {
+            font-weight: 600;
+            color: #071d6e;
+            font-size: 0.9em;
         }
         
-        .single-event-card .judge-progress {
+        .ev-row2-value {
+            color: #2c3e50;
+            font-size: 0.9em;
+            margin-right: 1em;
+        }
+        
+        .event-content-panel {
+            flex: 1;
+            background: white;
+            margin: 0 0.8em 0.8em 0.8em;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .judge-status-section h3 {
+            margin: 0 0 15px 0;
+            color: #2c3e50;
+            font-size: 1.2em;
+            border-bottom: 2px solid #e9ecef;
+            padding-bottom: 8px;
+        }
+        
+        .judge-progress {
             text-align: center;
+            padding: 20px;
         }
         
-        .single-event-card .progress-text {
+        .progress-text {
             color: #666;
             font-size: 14px;
         }
@@ -2268,32 +2295,34 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     </div>
                 `;
     } else {
-                // 싱글 이벤트인 경우 단일 카드 표시
+                // 싱글 이벤트인 경우 백업 파일 스타일로 표시
                 content += `
-                    <div class="event-cards-container">
-                        <div class="single-event-card">
-                            <div class="event-card selected" data-event="${eventId}" onclick="selectEventFromCard('${eventId}', '${groupId}')">
-                                <div class="event-card-header">
-                                    <div class="event-number">${eventId}</div>
-                                    <div class="event-status status-${event.round.toLowerCase()}">${event.round}</div>
-                                </div>
-                                <div class="event-card-body">
-                                    <div class="event-title">${event.desc}</div>
-                                    <div class="event-details">
-                                        <div class="detail-row">
-                                            <span class="detail-label">패널:</span>
-                                            <span class="detail-value">${event.panel || 'N/A'}</span>
-                                        </div>
-                                        <div class="detail-row">
-                                            <span class="detail-label">댄스:</span>
-                                            <span class="detail-value">${event.dance_names ? event.dance_names.join(' → ') : (event.dances ? event.dances.join(' → ') : 'N/A')}</span>
-                                        </div>
+                    <div class="single-event-panel">
+                        <div class="event-header-panel">
+                            <div class="event-header-box">
+                                <div class="event-row1">
+                                    <div class="event-number-display">
+                                        <span class="event-number">${eventId}</span>
+                                    </div>
+                                    <div class="event-title-display">
+                                        <span class="event-title">${event.desc}</span>
                                     </div>
                                 </div>
-                                <div class="event-card-footer">
-                                    <div class="judge-progress" id="judge-progress-${eventId}">
-                                        <div class="progress-text">심사위원 상태 로딩 중...</div>
-                                    </div>
+                                <div class="event-row2">
+                                    <span class="ev-row2-label">패널:</span>
+                                    <span class="ev-row2-value">${event.panel || 'N/A'}</span>
+                                    <span class="ev-row2-label">라운드:</span>
+                                    <span class="ev-row2-value">${event.round}</span>
+                                    <span class="ev-row2-label">댄스:</span>
+                                    <span class="ev-row2-value">${event.dance_names ? event.dance_names.join(' → ') : (event.dances ? event.dances.join(' → ') : 'N/A')}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="event-content-panel">
+                            <div class="judge-status-section">
+                                <h3>심사위원 상태</h3>
+                                <div class="judge-progress" id="judge-progress-${eventId}">
+                                    <div class="progress-text">심사위원 상태 로딩 중...</div>
                                 </div>
                             </div>
                         </div>
