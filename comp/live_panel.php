@@ -1055,23 +1055,24 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             font-size: 14px;
         }
         
-        .main-content-row {
+        .main-content-column {
             display: flex;
-            flex-direction: row;
-            gap: 1.2em;
+            flex-direction: column;
+            gap: 1em;
             height: 93%;
         }
         
         .adjudicator-list-panel {
-            flex: 0 0 40%;
+            flex: 0 0 auto;
             background: #eaf0ff;
             border-radius: 8px;
             margin-top: 0.2em;
-            padding: 1em 1em 1em 1em;
+            padding: 1em;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: stretch;
+            max-height: 200px;
         }
         
         .adjudicator-list-panel h3 {
@@ -1171,18 +1172,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             text-align: center;
         }
         
-        .player-dance-row {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 1em;
-        }
-        
         .player-list-panel {
             background: #eaf0ff;
             border-radius: 8px;
             padding: 1em;
-            flex: 1;
+            flex: 0 0 auto;
         }
         
         .player-list-panel h3 {
@@ -1213,12 +1207,16 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: #218838;
         }
         
-        .player-list-scrollbox {
-            max-height: 200px;
-            overflow-y: auto;
+        .player-list-compact {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.3em;
+            padding: 0.5em;
+            background: white;
             border: 1px solid #ddd;
             border-radius: 4px;
-            background: white;
+            max-height: 120px;
+            overflow-y: auto;
         }
         
         .player-list {
@@ -1227,19 +1225,43 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             margin: 0;
         }
         
-        .player-list li {
-            padding: 0.5em;
-            border-bottom: 1px solid #eee;
+        .player-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
             display: flex;
-            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.3em;
+        }
+        
+        .player-list li {
+            padding: 0.3em 0.6em;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            display: flex;
             align-items: center;
+            gap: 0.3em;
+            font-size: 0.85em;
+            white-space: nowrap;
+        }
+        
+        .player-x-btn {
+            background: #dc3232;
+            color: #fff;
+            border: none;
+            border-radius: 3px;
+            padding: 1px 4px;
+            font-size: 0.7em;
+            cursor: pointer;
+            margin-left: 0.3em;
         }
         
         .dance-block {
             background: #eaf0ff;
             border-radius: 8px;
             padding: 1em;
-            flex: 1;
+            flex: 0 0 auto;
         }
         
         .dance-title {
@@ -1271,7 +1293,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         .dance-list {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
             gap: 0.5em;
         }
         
@@ -1359,11 +1381,12 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: rgba(255,255,255,0.8);
             border: 1px solid #fdcb6e;
             border-radius: 0.3em;
-            padding: 0.5em;
+            padding: 0.3em 0.6em;
             text-align: center;
-            font-size: 0.9em;
+            font-size: 0.8em;
             color: #885e00;
-            margin-bottom: 0.5em;
+            white-space: nowrap;
+            min-width: 80px;
         }
         
         .dance-item.current {
@@ -2792,7 +2815,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 </div>
                             </div>
                         </div>
-                        <div class="main-content-row">
+                        <div class="main-content-column">
                             <div class="adjudicator-list-panel" id="adjudicator-list-panel">
                                 <h3>심사위원</h3>
                                 <table style="width:100%;">
@@ -2810,28 +2833,26 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 </table>
                                 <div class="empty" id="judge-empty" style="display:none;">심사위원이 없습니다</div>
                             </div>
-                            <div class="player-dance-row">
-                                <div class="player-list-panel" id="player-list-panel">
-                                    <h3>선수</h3>
-                                    <div class="player-controls-row">
-                                        <button class="add-player-btn" onclick="openPlayerModal()">선수 추가</button>
-                                        <button class="show-entry-list-btn" onclick="showEntryPlayers()">출전선수</button>
-                                        <button class="split-hit-btn" onclick="openSplitHitModal()">히트 나누기</button>
-                                        <button class="show-hit-btn" id="showHitBtn" onclick="openHitModal()">히트 확인</button>
-                                    </div>
-                                    <div class="player-list-scrollbox" id="player-list-scrollbox">
-                                        <ul class="player-list" id="player-list"></ul>
-                                    </div>
-                                    <div class="hit-block" id="hit-block" style="display:none;"></div>
+                            <div class="player-list-panel" id="player-list-panel">
+                                <h3>선수</h3>
+                                <div class="player-controls-row">
+                                    <button class="add-player-btn" onclick="openPlayerModal()">선수 추가</button>
+                                    <button class="show-entry-list-btn" onclick="showEntryPlayers()">출전선수</button>
+                                    <button class="split-hit-btn" onclick="openSplitHitModal()">히트 나누기</button>
+                                    <button class="show-hit-btn" id="showHitBtn" onclick="openHitModal()">히트 확인</button>
                                 </div>
-                                <div class="dance-block" id="dance-block">
-                                    <div class="dance-title">진행종목</div>
-                                    <div class="dance-progress-container">
-                                        <div class="dance-progress-bar">
-                                            <div class="dance-progress-fill" id="dance-progress-fill"></div>
-                                        </div>
-                                        <div class="dance-list" id="dance-list"></div>
+                                <div class="player-list-compact" id="player-list-compact">
+                                    <ul class="player-list" id="player-list"></ul>
+                                </div>
+                                <div class="hit-block" id="hit-block" style="display:none;"></div>
+                            </div>
+                            <div class="dance-block" id="dance-block">
+                                <div class="dance-title">진행종목</div>
+                                <div class="dance-progress-container">
+                                    <div class="dance-progress-bar">
+                                        <div class="dance-progress-fill" id="dance-progress-fill"></div>
                                     </div>
+                                    <div class="dance-list" id="dance-list"></div>
                                 </div>
                             </div>
                         </div>
