@@ -1838,6 +1838,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             };
             groupData.push(missingGroup52);
             console.log('52번 그룹을 강제로 추가했습니다.');
+            
+            // 52번 그룹을 DOM에 추가
+            addMissingGroupToDOM(missingGroup52);
         }
         
         // 50번 이상 그룹들 확인
@@ -2993,6 +2996,75 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             // 실시간 업데이트 시작
             startJudgeStatusMonitoring();
         });
+        
+        // 누락된 그룹을 DOM에 추가하는 함수
+        function addMissingGroupToDOM(group) {
+            const leftPanel = document.querySelector('.left-panel');
+            if (!leftPanel) {
+                console.error('왼쪽 패널을 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 기존 이벤트 그룹들 다음에 추가
+            const existingGroups = leftPanel.querySelectorAll('.event-group');
+            const lastGroup = existingGroups[existingGroups.length - 1];
+            
+            // 52번 그룹 HTML 생성
+            const groupHtml = `
+                <div class="event-group" data-group="${group.group_no}">
+                    <div class="group-header" onclick="toggleGroup('${group.group_no}')">
+                        <div class="group-info">
+                            <div class="group-title">
+                                통합이벤트 ${group.group_no}
+                            </div>
+                            <div class="group-subtitle">${group.group_name}</div>
+                        </div>
+                        <div class="group-actions">
+                            <button class="group-complete-btn" onclick="event.stopPropagation(); toggleGroupComplete('${group.group_no}')" 
+                                    data-group="${group.group_no}">
+                                완료
+                            </button>
+                            <span class="group-toggle">▶</span>
+                        </div>
+                    </div>
+                
+                    <div class="event-list" id="group-${group.group_no}">
+                        ${group.events.map(event => `
+                            <div class="event-item" 
+                                 data-event="${event.detail_no || event.no}"
+                                 data-group="${group.group_no}"
+                                 onclick="selectEvent('${event.detail_no || event.no}', '${group.group_no}', this)">
+                                <div class="event-info">
+                                    <div class="event-number">
+                                        ${event.detail_no || event.no}
+                                    </div>
+                                    <div class="event-desc">
+                                        ${event.desc}
+                                    </div>
+                                    ${event.dances ? `
+                                    <div class="event-dances">
+                                        댄스: ${event.dances.join(', ')}
+                                    </div>
+                                    ` : ''}
+                                </div>
+                                <div class="event-status status-${event.round.toLowerCase()}">
+                                    ${event.round}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            // HTML을 DOM에 추가
+            if (lastGroup) {
+                lastGroup.insertAdjacentHTML('afterend', groupHtml);
+            } else {
+                leftPanel.insertAdjacentHTML('beforeend', groupHtml);
+            }
+            
+            console.log('52번 그룹이 DOM에 추가되었습니다.');
+        }
         
         // 중복 그룹 제거 함수
         function removeDuplicateGroups() {
