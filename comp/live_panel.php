@@ -2389,18 +2389,18 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         }
         
         .event-card-players {
-            margin-bottom: 15px;
+                    margin-bottom: 15px;
             background: #e8f5e8;
             border-radius: 8px;
             padding: 15px;
             margin-top: 0;
             border: 1px solid #28a745;
             box-shadow: 0 2px 4px rgba(40, 167, 69, 0.1);
-        }
+                }
         
         .players-header {
             font-size: 14px;
-            font-weight: bold;
+                    font-weight: bold;
             color: #28a745;
             margin-bottom: 12px;
             display: flex;
@@ -2717,6 +2717,51 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             transform: scale(1.2);
         }
         
+        .couple-count-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .couple-count-section h4 {
+            margin: 0 0 15px 0;
+            color: #333;
+        }
+        
+        .couple-count-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .couple-count-input label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        .couple-count-field {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        .couple-count-field:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+        }
+        
+        .couple-count-info {
+            color: #666;
+            font-size: 14px;
+        }
+        
         .next-round-actions {
             display: flex;
             gap: 10px;
@@ -2989,10 +3034,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         <div class="event-info">
                             <div class="event-number">
                                 <?=h($event['detail_no'] ?: $event['no'])?>
-                            </div>
+                    </div>
                             <div class="event-desc">
                                 <?=h($event['desc'])?>
-                            </div>
+        </div>
                             <?php if (!empty($event['dance_names'])): ?>
                             <div class="event-dances">
                                 댄스: <?=h(implode(', ', $event['dance_names']))?>
@@ -3002,11 +3047,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 댄스: <?=h(implode(', ', $event['dances']))?>
                             </div>
                             <?php endif; ?>
-                        </div>
+    </div>
                         <div class="event-status status-<?=strtolower($event['round'])?>">
                             <?=h($event['round'])?>
-                        </div>
-                    </div>
+                </div>
+            </div>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -3135,7 +3180,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         if (group51) {
             console.log('51번 그룹:', group51);
             console.log('51번 그룹 이벤트 수:', group51.events.length);
-        } else {
+            } else {
             console.log('51번 그룹을 찾을 수 없습니다.');
         }
         
@@ -3150,7 +3195,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         const group52 = groupData.find(g => g.group_no == '52');
         if (group52) {
             console.log('52번 그룹:', group52);
-        } else {
+            } else {
             console.log('52번 그룹을 찾을 수 없습니다.');
             console.log('사용 가능한 그룹들:', groupData.map(g => g.group_no));
             
@@ -3292,8 +3337,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             if (!event) {
                 console.error('Event not found for eventId:', eventId);
                 console.log('Available events:', group.events.map(e => ({ no: e.no, detail_no: e.detail_no, desc: e.desc })));
-                return;
-            }
+            return;
+        }
         
             const isMultiEvent = group.events.length > 1;
             console.log('isMultiEvent:', isMultiEvent);
@@ -3479,43 +3524,43 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                         <div class="event-number">${eventId}</div>
                                         <div class="event-name">${event.desc}</div>
                                         <div class="event-round">${event.round}</div>
-                                    </div>
-                                </div>
+</div>
+</div>
                                 <div class="event-card-body">
                                     <div class="event-card-left">
                                         <div class="event-card-judges">
                                             <div class="judges-header">
                                                 <span class="event-title">심사위원</span>
                                                 <span class="judges-count" id="judges-count-${eventId}">-</span>
-                                            </div>
+</div>
                                             <div class="judges-list" id="judges-list-${eventId}">
                                                 <div class="loading">심사위원 정보를 로딩 중입니다...</div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                </div>
+                            </div>
+                                </div>
                                     <div class="event-card-right">
                                         <div class="event-card-players">
                                             <div class="players-header">
                                                 <span>선수</span>
                                                 <span class="players-count" id="players-count-${eventId}">-</span>
-                                            </div>
+                            </div>
                                             <div class="players-list" id="players-list-${eventId}">
                                                 <div class="loading">선수 정보를 로딩 중입니다...</div>
-                                            </div>
+                        </div>
                                         </div>
                                         <div class="event-card-actions">
                                             <button class="event-card-btn event-card-btn-scores" onclick="openJudgeScoring('${eventId}')">
                                                 📊 점수
-                                            </button>
+                            </button>
                                             <button class="event-card-btn event-card-btn-aggregation" onclick="openAggregation('${eventId}')" data-event-id="${eventId}">
                                                 ${event.round && event.round.toLowerCase().includes('final') && !event.round.toLowerCase().includes('semi') ? '🏆 결승집계' : '📈 집계'}
-                                            </button>
+                            </button>
                                             <button class="event-card-btn event-card-btn-awards" onclick="openAwardModal()">
                                                 🏆 상장
                                             </button>
                                             <button class="event-card-btn event-card-btn-players" onclick="openHitModal()">
                                                 👥 히트
-                                            </button>
+                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -3526,8 +3571,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                </div>
+            `;
             }
             
             rightContent.innerHTML = content;
@@ -4668,24 +4713,24 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             console.log('결승 결과 창이 열렸습니다.');
                         }
                         
-                        // 성공 메시지 표시
-                        setTimeout(() => {
-                            const successMsg = document.createElement('div');
-                            successMsg.innerHTML = `
-                                <div style="position: fixed; top: 20px; right: 20px; background: #27ae60; color: white; 
-                                     padding: 15px 20px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-                                     z-index: 10000; font-family: 'Noto Sans KR';">
+                            // 성공 메시지 표시
+                            setTimeout(() => {
+                                const successMsg = document.createElement('div');
+                                successMsg.innerHTML = `
+                                    <div style="position: fixed; top: 20px; right: 20px; background: #27ae60; color: white; 
+                                         padding: 15px 20px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                                         z-index: 10000; font-family: 'Noto Sans KR';">
                                     ✅ 결승 결과가 성공적으로 생성되었습니다!<br>
                                     <small>파일: combined_report_${eventId}.html</small>
-                                </div>
-                            `;
-                            document.body.appendChild(successMsg);
-                            setTimeout(() => {
-                                if (successMsg.parentNode) {
-                                    document.body.removeChild(successMsg);
-                                }
+                                    </div>
+                                `;
+                                document.body.appendChild(successMsg);
+                                setTimeout(() => {
+                                    if (successMsg.parentNode) {
+                                        document.body.removeChild(successMsg);
+                                    }
                             }, 4000);
-                        }, 500);
+                            }, 500);
                     } else {
                         console.error('집계 실패:', data.error || '데이터 형식 오류');
                         alert(`집계 실패: ${data.error || '결과 데이터를 생성할 수 없습니다.'}`);
@@ -5763,7 +5808,17 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     </div>
                     <div class="next-round-modal-body">
                         <p><strong>이벤트명:</strong> ${nextEventName}</p>
-                        <p><strong>진출자 수:</strong> ${advancingPlayers.length}명</p>
+                        <p><strong>리콜 수:</strong> ${advancingPlayers.length}명</p>
+                        <div class="couple-count-section">
+                            <h4>진출할 커플 수 설정</h4>
+                            <div class="couple-count-input">
+                                <label for="coupleCount">진출할 커플 수:</label>
+                                <input type="number" id="coupleCount" value="${advancingPlayers.length}" 
+                                       min="1" max="${advancingPlayers.length}" 
+                                       onchange="updateCoupleCount()" class="couple-count-field">
+                                <span class="couple-count-info">(최대 ${advancingPlayers.length}명까지 가능)</span>
+                            </div>
+                        </div>
                         <div class="advancing-players-list">
                             <h4>진출자 등번호 조정</h4>
                             <div class="players-table">
@@ -5828,6 +5883,36 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }
         }
         
+        // 진출할 커플 수 업데이트
+        function updateCoupleCount() {
+            const coupleCount = parseInt(document.getElementById('coupleCount').value);
+            const maxCount = window.advancingPlayersData ? window.advancingPlayersData.length : 0;
+            
+            if (coupleCount > maxCount) {
+                document.getElementById('coupleCount').value = maxCount;
+                return;
+            }
+            
+            // 테이블 행 표시/숨김 처리
+            const tbody = document.getElementById('advancing-players-tbody');
+            if (tbody) {
+                const rows = tbody.querySelectorAll('tr');
+                rows.forEach((row, index) => {
+                    if (index < coupleCount) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+            
+            // 진출자 수 업데이트
+            const infoElement = document.querySelector('.couple-count-info');
+            if (infoElement) {
+                infoElement.textContent = `(최대 ${maxCount}명까지 가능)`;
+            }
+        }
+        
         // 동점자 토글
         function toggleTie(index) {
             const checkbox = event.target;
@@ -5865,8 +5950,15 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            // 진출자 등번호 정보 수집
-            const players = window.advancingPlayersData.map((player, index) => ({
+            // 선택된 커플 수 가져오기
+            const coupleCount = parseInt(document.getElementById('coupleCount').value);
+            if (!coupleCount || coupleCount < 1) {
+                alert('진출할 커플 수를 입력해주세요.');
+                return;
+            }
+            
+            // 선택된 커플 수만큼만 진출자 정보 수집
+            const players = window.advancingPlayersData.slice(0, coupleCount).map((player, index) => ({
                 oldNumber: player.number,
                 name: player.name,
                 newNumber: player.newNumber,
