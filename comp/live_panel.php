@@ -4490,6 +4490,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         function displayRecallResults(data, currentEvent, content) {
             console.log('Displaying recall results:', data);
             
+            // 전체 참가자 수를 전역 변수로 저장
+            window.totalParticipants = data.total_participants || 0;
+            console.log('전체 참가자 수:', window.totalParticipants);
+            
             // DanceSportLive 스타일 HTML 생성
             let html = `
                 <div class="dancesport-container aggregation-results">
@@ -5845,36 +5849,19 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            // 전체 참여 팀 수 계산 (집계 결과 테이블에서)
-            let totalTeams = 0;
-            const summaryTable = aggregationResult.querySelector('table');
-            if (summaryTable) {
-                const rows = summaryTable.querySelectorAll('tr');
-                // 헤더를 제외한 데이터 행 수 계산
-                totalTeams = rows.length - 1;
-                console.log('집계 테이블에서 계산된 팀 수:', totalTeams);
-            }
+            // 전체 참여 팀 수 계산 (API에서 가져온 total_participants 사용)
+            let totalTeams = window.totalParticipants || 0;
+            console.log('API에서 가져온 전체 참가자 수:', totalTeams);
             
-            // 만약 테이블에서 계산이 안되면 다른 방법으로 시도
+            // 만약 API에서 가져온 값이 없으면 테이블에서 계산
             if (totalTeams === 0) {
-                // 집계 결과에서 모든 선수 정보 찾기
-                const allPlayerRows = aggregationResult.querySelectorAll('tr');
-                let playerCount = 0;
-                allPlayerRows.forEach(row => {
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length >= 3) {
-                        const rank = cells[0]?.textContent?.trim();
-                        const number = cells[1]?.textContent?.trim();
-                        const name = cells[2]?.textContent?.trim();
-                        
-                        // 순위, 번호, 이름이 모두 있는 행만 카운트
-                        if (rank && number && name && !isNaN(parseInt(rank))) {
-                            playerCount++;
-                        }
-                    }
-                });
-                totalTeams = playerCount;
-                console.log('행별 계산으로 찾은 팀 수:', totalTeams);
+                const summaryTable = aggregationResult.querySelector('table');
+                if (summaryTable) {
+                    const rows = summaryTable.querySelectorAll('tr');
+                    // 헤더를 제외한 데이터 행 수 계산
+                    totalTeams = rows.length - 1;
+                    console.log('집계 테이블에서 계산된 팀 수:', totalTeams);
+                }
             }
             
             // 여전히 0이면 진출자 수를 기본값으로 사용

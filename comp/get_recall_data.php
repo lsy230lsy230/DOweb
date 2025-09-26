@@ -250,12 +250,21 @@ try {
         $judge_names[] = $adjudicator_names[$judge] ?? "Judge $judge";
     }
     
+    // 전체 참가자 수 계산 (모든 선수 파일에서)
+    $total_participants = 0;
+    $players_file = "$data_dir/players_{$event_id}.txt";
+    if (file_exists($players_file)) {
+        $lines = file($players_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        $total_participants = count($lines);
+    }
+    
     // 결과 반환
     $result = [
         'success' => true,
         'competition_info' => $competition_info,
         'event_info' => $current_event,
         'total_judges' => $total_judges,
+        'total_participants' => $total_participants,
         'recall_count_from_file' => $recall_count,
         'recall_threshold' => $recall_threshold,
         'player_recalls' => $player_recalls,
