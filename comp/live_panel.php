@@ -2546,6 +2546,15 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: #138496;
         }
         
+        .event-card-btn-edit {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .event-card-btn-edit:hover {
+            background: #5a6268;
+        }
+        
         .single-event-view {
             padding: 20px;
             min-height: 400px;
@@ -3563,6 +3572,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         </div>
                                         </div>
                                         <div class="event-card-actions">
+                                            <button class="event-card-btn event-card-btn-edit" onclick="editEvent('${eventId}')">
+                                                ✏️ 수정
+                                            </button>
                                             <button class="event-card-btn event-card-btn-scores" onclick="openJudgeScoring('${eventId}')">
                                                 📊 점수
                             </button>
@@ -4029,6 +4041,12 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             `);
             printWindow.document.close();
             printWindow.print();
+        }
+        
+        // 이벤트 수정 함수
+        function editEvent(eventId) {
+            // 이벤트 수정 페이지로 이동
+            window.open(`manage_events.php?comp_id=${comp_id}&edit_event=${eventId}`, '_blank');
         }
         
         // 이벤트 카드 내용 렌더링 함수 (싱글 이벤트용)
