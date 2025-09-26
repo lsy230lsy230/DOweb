@@ -933,14 +933,86 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         .single-event-card {
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
             flex: 1;
             padding: 20px;
         }
         
         .single-event-card .event-card {
             width: 100%;
-            max-width: 500px;
+            max-width: 600px;
+            min-height: 200px;
+        }
+        
+        .single-event-card .event-card-header {
+            background: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .single-event-card .event-number {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .single-event-card .event-status {
+            background: rgba(255,255,255,0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .single-event-card .event-card-body {
+            padding: 20px;
+            min-height: auto;
+            display: block;
+        }
+        
+        .single-event-card .event-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .single-event-card .event-details {
+            margin-bottom: 20px;
+        }
+        
+        .single-event-card .detail-row {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .single-event-card .detail-label {
+            font-weight: 600;
+            color: #666;
+            min-width: 60px;
+        }
+        
+        .single-event-card .detail-value {
+            color: #2c3e50;
+            margin-left: 10px;
+        }
+        
+        .single-event-card .event-card-footer {
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-top: 1px solid #dee2e6;
+        }
+        
+        .single-event-card .judge-progress {
+            text-align: center;
+        }
+        
+        .single-event-card .progress-text {
+            color: #666;
+            font-size: 14px;
         }
         
         .event-card {
