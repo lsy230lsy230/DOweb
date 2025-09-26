@@ -1780,6 +1780,23 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         // 전역 그룹 데이터
         const groupData = <?=json_encode($event_groups)?>;
+        
+        // 디버깅: 51번 그룹 확인
+        console.log('GroupData loaded:', groupData.length, 'groups');
+        const group51 = groupData.find(g => g.group_no == '51');
+        if (group51) {
+            console.log('51번 그룹:', group51);
+            console.log('51번 그룹 이벤트 수:', group51.events.length);
+        } else {
+            console.log('51번 그룹을 찾을 수 없습니다.');
+        }
+        
+        // 모든 그룹 번호 확인
+        const allGroupNos = groupData.map(g => g.group_no);
+        const duplicateGroups = allGroupNos.filter((item, index) => allGroupNos.indexOf(item) !== index);
+        if (duplicateGroups.length > 0) {
+            console.log('중복된 그룹 번호:', duplicateGroups);
+        }
         let expandedGroups = new Set();
         let completedGroups = new Set();
         let hideCompleted = false;
@@ -2910,6 +2927,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
 
         // 페이지 로드 시 첫 번째 그룹 확장 및 실시간 업데이트 시작
         document.addEventListener('DOMContentLoaded', function() {
+            // 중복 그룹 제거 (임시 해결책)
+            removeDuplicateGroups();
+            
             const firstGroup = document.querySelector('.event-group');
             if (firstGroup) {
                 const groupNo = firstGroup.dataset.group;
@@ -2927,6 +2947,28 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             // 실시간 업데이트 시작
             startJudgeStatusMonitoring();
         });
+        
+        // 중복 그룹 제거 함수
+        function removeDuplicateGroups() {
+            const groups = document.querySelectorAll('.event-group');
+            const seenGroups = new Set();
+            let removedCount = 0;
+            
+            groups.forEach(group => {
+                const groupNo = group.dataset.group;
+                if (seenGroups.has(groupNo)) {
+                    console.log('중복 그룹 제거:', groupNo);
+                    group.remove();
+                    removedCount++;
+                } else {
+                    seenGroups.add(groupNo);
+                }
+            });
+            
+            if (removedCount > 0) {
+                console.log('총 ' + removedCount + '개의 중복 그룹이 제거되었습니다.');
+            }
+        }
 </script>
 </body>
 </html>
