@@ -2036,8 +2036,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             display: flex;
             flex-direction: column;
             gap: 4px;
-            max-height: 200px;
-            overflow-y: auto;
+            max-height: none;
+            overflow-y: visible;
         }
         
         .player-item {
