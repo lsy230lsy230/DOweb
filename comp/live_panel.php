@@ -1613,6 +1613,112 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
+        /* 집계 모달 스타일 */
+        .aggregation-modal {
+            width: 95%;
+            max-width: 1400px;
+            max-height: 90vh;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .aggregation-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .aggregation-table th {
+            background: #0d2c96;
+            color: white;
+            padding: 12px 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .aggregation-table td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 11px;
+        }
+        
+        .aggregation-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .aggregation-table tr:hover {
+            background: #e3f2fd;
+        }
+        
+        .rank-1 { background: #ffd700 !important; color: #000; font-weight: bold; }
+        .rank-2 { background: #c0c0c0 !important; color: #000; font-weight: bold; }
+        .rank-3 { background: #cd7f32 !important; color: #fff; font-weight: bold; }
+        
+        .next-round-section {
+            background: #e8f5e8;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .next-round-title {
+            color: #28a745;
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .next-round-players {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .next-round-player {
+            background: white;
+            border: 1px solid #28a745;
+            border-radius: 6px;
+            padding: 10px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
         /* 싱글 이벤트 카드용 추가 스타일 */
         .event-card .judge-item {
             display: flex;
@@ -3753,6 +3859,17 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
+            // 집계 모달 열기
+            openAggregationModal(eventId);
+        }
+        
+        // 기존 집계 함수 (참고용)
+        function openAggregationOld(eventId) {
+            if (!eventId) {
+                alert('이벤트를 선택해주세요.');
+                return;
+            }
+            
             const compId = '<?=$comp_id?>';
             
             console.log('집계 시작:', {eventId, compId});
@@ -4551,6 +4668,187 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 console.log('52번 그룹이 DOM에 없습니다.');
             }
         }
+        
+        // 집계 모달 열기
+        function openAggregationModal(eventId) {
+            document.getElementById('aggregationModalBg').style.display = 'flex';
+            document.getElementById('aggregationLoading').style.display = 'block';
+            document.getElementById('aggregationContent').style.display = 'none';
+            document.getElementById('printAggregationBtn').style.display = 'none';
+            document.getElementById('nextRoundBtn').style.display = 'none';
+            
+            // 집계 실행
+            executeAggregation(eventId);
+        }
+        
+        // 집계 모달 닫기
+        function closeAggregationModal() {
+            document.getElementById('aggregationModalBg').style.display = 'none';
+        }
+        
+        // 집계 실행
+        function executeAggregation(eventId) {
+            const compId = '<?=$comp_id?>';
+            const currentProtocol = window.location.protocol;
+            const currentHost = window.location.host;
+            const baseUrl = `${currentProtocol}//${currentHost}`;
+            const apiUrl = `${baseUrl}/comp/final_aggregation_api.php?comp_id=${compId}&event_no=${eventId}`;
+            
+            console.log('집계 API 호출:', apiUrl);
+            
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('aggregationLoading').style.display = 'none';
+                    document.getElementById('aggregationContent').style.display = 'block';
+                    
+                    if (data.success) {
+                        displayAggregationResult(data, eventId);
+                        document.getElementById('printAggregationBtn').style.display = 'inline-block';
+                        document.getElementById('nextRoundBtn').style.display = 'inline-block';
+                    } else {
+                        displayAggregationError(data.error || '집계 처리 중 오류가 발생했습니다.');
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('aggregationLoading').style.display = 'none';
+                    document.getElementById('aggregationContent').style.display = 'block';
+                    displayAggregationError('집계 API 호출 실패: ' + error.message);
+                });
+        }
+        
+        // 집계 결과 표시
+        function displayAggregationResult(data, eventId) {
+            const content = document.getElementById('aggregationContent');
+            
+            let html = `
+                <div class="aggregation-header">
+                    <h2>🏆 ${data.event_info?.desc || '집계 결과'}</h2>
+                    <div class="event-details">
+                        <span class="event-number">이벤트 ${eventId}</span>
+                        <span class="event-round">${data.event_info?.round || ''}</span>
+                    </div>
+                </div>
+            `;
+            
+            // 최종 순위 테이블
+            if (data.final_rankings && data.final_rankings.length > 0) {
+                html += `
+                    <div class="results-section">
+                        <h3>📊 최종 순위</h3>
+                        <table class="aggregation-table">
+                            <thead>
+                                <tr>
+                                    <th>순위</th>
+                                    <th>번호</th>
+                                    <th>선수명</th>
+                                    <th>SUM of Places</th>
+                                    <th>Place Skating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                data.final_rankings.forEach((player, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                    html += `
+                        <tr class="${rankClass}">
+                            <td>${rank}</td>
+                            <td>${player.number || ''}</td>
+                            <td>${player.name || ''}</td>
+                            <td>${player.sum_of_places || ''}</td>
+                            <td>${player.place_skating || ''}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            // 다음 라운드 진출자 섹션
+            if (data.final_rankings && data.final_rankings.length > 0) {
+                const nextRoundCount = Math.min(6, Math.ceil(data.final_rankings.length / 2));
+                const nextRoundPlayers = data.final_rankings.slice(0, nextRoundCount);
+                
+                html += `
+                    <div class="next-round-section">
+                        <div class="next-round-title">🎯 다음 라운드 진출자 (상위 ${nextRoundCount}명)</div>
+                        <div class="next-round-players">
+                `;
+                
+                nextRoundPlayers.forEach((player, index) => {
+                    html += `
+                        <div class="next-round-player">
+                            <div class="player-rank">${index + 1}위</div>
+                            <div class="player-number">${player.number || ''}</div>
+                            <div class="player-name">${player.name || ''}</div>
+                        </div>
+                    `;
+                });
+                
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+            
+            content.innerHTML = html;
+        }
+        
+        // 집계 오류 표시
+        function displayAggregationError(errorMessage) {
+            const content = document.getElementById('aggregationContent');
+            content.innerHTML = `
+                <div class="error-message">
+                    <h3>❌ 집계 오류</h3>
+                    <p>${errorMessage}</p>
+                </div>
+            `;
+        }
+        
+        // 집계 결과 인쇄
+        function printAggregation() {
+            const content = document.getElementById('aggregationContent').innerHTML;
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>집계 결과</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .aggregation-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        .aggregation-table th, .aggregation-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+                        .aggregation-table th { background: #f5f5f5; }
+                        .rank-1 { background: #ffd700 !important; }
+                        .rank-2 { background: #c0c0c0 !important; }
+                        .rank-3 { background: #cd7f32 !important; color: white; }
+                    </style>
+                </head>
+                <body>
+                    ${content}
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        // 다음 라운드 생성
+        function generateNextRound() {
+            const currentEvent = events.find(ev => (ev.detail_no || ev.no) === selectedEvent);
+            if (!currentEvent) {
+                alert('현재 이벤트 정보를 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 다음 라운드 이벤트 생성 로직
+            alert('다음 라운드 생성 기능을 구현 중입니다.');
+        }
 </script>
 
 <!-- 히트 확인 모달 -->
@@ -4596,6 +4894,30 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         <div class="modal-footer">
             <button class="btn-secondary" onclick="closeAwardModal()">닫기</button>
             <button class="btn-primary" onclick="printAward()" id="printAwardBtn" style="display: none;">인쇄</button>
+        </div>
+    </div>
+</div>
+
+<!-- 집계 결과 모달 -->
+<div id="aggregationModalBg" class="modal-bg" style="display: none;">
+    <div class="modal-content aggregation-modal">
+        <div class="modal-header">
+            <h3>🏆 집계 결과</h3>
+            <button class="modal-close" onclick="closeAggregationModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="aggregationModalBody">
+            <div class="loading" id="aggregationLoading">
+                <div class="loading-spinner"></div>
+                <div>집계 결과를 계산 중입니다...</div>
+            </div>
+            <div id="aggregationContent" style="display: none;">
+                <!-- 집계 결과가 여기에 표시됩니다 -->
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeAggregationModal()">닫기</button>
+            <button class="btn-primary" onclick="printAggregation()" id="printAggregationBtn" style="display: none;">인쇄</button>
+            <button class="btn-success" onclick="generateNextRound()" id="nextRoundBtn" style="display: none;">다음 라운드 생성</button>
         </div>
     </div>
 </div>
