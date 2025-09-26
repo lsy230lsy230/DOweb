@@ -2183,54 +2183,37 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     </div>
                 `;
     } else {
-                // 싱글 이벤트인 경우 기존 상세 정보 표시
+                // 싱글 이벤트인 경우 간단한 정보 표시 (멀티 이벤트와 동일한 스타일)
                 content += `
-                    <div class="group-info-header">
-                        <div>
-                            <div class="group-title">싱글 이벤트 상세 정보</div>
-                            <div class="group-subtitle">
-                                <strong>패널:</strong> ${event.panel || 'N/A'} | 
-                                <strong>댄스:</strong> 
-                                <span class="dance-sequence">
-                                    ${event.dance_names ? event.dance_names.join(' → ') : (event.dances ? event.dances.join(' → ') : 'N/A')}
-                                </span>
-</div>
-</div>
-</div>
-                    <div class="single-event-view">
-                        <div class="event-details">
-                            <div class="detail-card">
-                                <div class="detail-title">이벤트 정보</div>
-                                <div class="detail-content">
-                                    <strong>이벤트 번호:</strong> ${eventId}<br>
-                                    <strong>라운드:</strong> ${event.round}<br>
-                                    <strong>카테고리:</strong> ${group.group_name}
+                    <div class="event-cards-container">
+                        <div class="event-cards-grid">
+                            <div class="event-card selected" data-event="${eventId}" onclick="selectEventFromCard('${eventId}', '${groupId}')">
+                                <div class="event-card-header">
+                                    <div class="event-number">${eventId}</div>
+                                    <div class="event-status status-${event.round.toLowerCase()}">${event.round}</div>
                                 </div>
-                            </div>
-                            
-                            <div class="detail-card">
-                                <div class="detail-title">그룹 정보</div>
-                                <div class="detail-content">
-                                    <strong>그룹 번호:</strong> ${groupId}<br>
-                                    <strong>총 이벤트:</strong> ${group.events.length}개<br>
-                                    <strong>타입:</strong> 싱글 이벤트
+                                <div class="event-card-body">
+                                    <div class="event-title">${event.desc}</div>
+                                    <div class="event-details">
+                                        <div class="detail-row">
+                                            <span class="detail-label">패널:</span>
+                                            <span class="detail-value">${event.panel || 'N/A'}</span>
+                                        </div>
+                                        <div class="detail-row">
+                                            <span class="detail-label">댄스:</span>
+                                            <span class="detail-value">${event.dance_names ? event.dance_names.join(' → ') : (event.dances ? event.dances.join(' → ') : 'N/A')}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="event-card-footer">
+                                    <div class="judge-progress" id="judge-progress-${eventId}">
+                                        <div class="progress-text">심사위원 상태 로딩 중...</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="action-buttons">
-                            <button class="btn btn-info" onclick="viewScores('${eventId}')">
-                                📊 점수 보기
-                            </button>
-                            <button class="btn btn-success" onclick="openAggregation('${eventId}')">
-                                📈 결과 집계
-                            </button>
-                            <button class="btn btn-warning" onclick="openAwards('${eventId}')">
-                                🏆 상장 발급
-                            </button>
-                        </div>
-                </div>
-            `;
+                    </div>
+                `;
             }
             
             rightContent.innerHTML = content;
