@@ -2007,6 +2007,30 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             cursor: not-allowed;
         }
         
+        .event-card .judge-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            padding: 2px 6px;
+            font-size: 10px;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+        
+        .event-card .judge-btn:hover {
+            transform: scale(1.1);
+        }
+        
+        .event-card .judge-btn-edit {
+            background: #2196f3;
+            color: white;
+        }
+        
+        .event-card .judge-btn-edit:hover {
+            background: #1976d2;
+        }
+        
         .event-card .player-item {
             display: flex;
             align-items: center;
@@ -2544,15 +2568,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         .event-card-btn-players:hover {
             background: #138496;
-        }
-        
-        .event-card-btn-edit {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .event-card-btn-edit:hover {
-            background: #5a6268;
         }
         
         .single-event-view {
@@ -3572,9 +3587,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         </div>
                                         </div>
                                         <div class="event-card-actions">
-                                            <button class="event-card-btn event-card-btn-edit" onclick="editEvent('${eventId}')">
-                                                ✏️ 수정
-                                            </button>
                                             <button class="event-card-btn event-card-btn-scores" onclick="openJudgeScoring('${eventId}')">
                                                 📊 점수
                             </button>
@@ -4043,12 +4055,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             printWindow.print();
         }
         
-        // 이벤트 수정 함수
-        function editEvent(eventId) {
-            // 이벤트 수정 페이지로 이동
-            window.open(`manage_events.php?comp_id=${comp_id}&edit_event=${eventId}`, '_blank');
-        }
-        
         // 이벤트 카드 내용 렌더링 함수 (싱글 이벤트용)
         function renderEventCardContent(eventId, event) {
             // 심사위원 정보 렌더링
@@ -4085,6 +4091,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         <span class="judge-name">${j.name || 'Unknown'}</span>
                         <span class="judge-nation">${j.nation || '-'}</span>
                         <span class="judge-status waiting" id="judge-status-${j.code}" data-judge-code="${j.code}">대기</span>
+                        <button class="judge-btn judge-btn-edit" onclick="openJudgeScoring('${eventId}', '${j.code}')" title="채점하기">✏️</button>
                         <button class="judge-btn-exclude" onclick="toggleAdjudicator('${eventId}','${j.code}')" ${isDisabled ? 'disabled' : ''}>X</button>
                     </div>
                 `;
