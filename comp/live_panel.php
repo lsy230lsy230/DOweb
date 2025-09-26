@@ -202,32 +202,31 @@ $event_groups = [];
 $grouped_events = [];
 
 // 이벤트를 그룹화 (detail_no가 있는 경우 멀티 이벤트로 처리)
+$processed_events = []; // 이미 처리된 이벤트 추적
+
 foreach ($events as $event) {
     $group_key = $event['detail_no'] ? $event['no'] : $event['no'];
     
-    // 이미 같은 이벤트가 있는지 확인 (중복 방지)
-    $exists = false;
-    if (isset($grouped_events[$group_key])) {
-        foreach ($grouped_events[$group_key]['events'] as $existing_event) {
-            if ($existing_event['no'] === $event['no'] && $existing_event['desc'] === $event['desc']) {
-                $exists = true;
-                break;
-            }
-        }
+    // 이벤트 고유 식별자 생성 (중복 방지)
+    $event_id = $event['no'] . '_' . $event['desc'] . '_' . ($event['detail_no'] ?: '');
+    
+    // 이미 처리된 이벤트인지 확인
+    if (in_array($event_id, $processed_events)) {
+        continue; // 중복 이벤트는 건너뛰기
     }
     
-    if (!$exists) {
-        if (!isset($grouped_events[$group_key])) {
-            $grouped_events[$group_key] = [
-                'group_no' => $group_key,
-                'group_name' => $event['desc'],
-                'events' => [],
-                'is_multi' => false
-            ];
-        }
-        
-        $grouped_events[$group_key]['events'][] = $event;
+    $processed_events[] = $event_id;
+    
+    if (!isset($grouped_events[$group_key])) {
+        $grouped_events[$group_key] = [
+            'group_no' => $group_key,
+            'group_name' => $event['desc'],
+            'events' => [],
+            'is_multi' => false
+        ];
     }
+    
+    $grouped_events[$group_key]['events'][] = $event;
 }
 
 // 멀티 이벤트 확인
@@ -1616,7 +1615,21 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 </div>
             
                 <div class="event-list" id="group-<?=h($group['group_no'])?>">
-                    <?php foreach ($group['events'] as $event): ?>
+                    <?php 
+                    // 중복 제거를 위한 배열
+                    $unique_events = [];
+                    $seen_events = [];
+                    
+                    foreach ($group['events'] as $event): 
+                        $event_key = $event['no'] . '_' . $event['desc'] . '_' . ($event['detail_no'] ?: '');
+                        if (!in_array($event_key, $seen_events)) {
+                            $unique_events[] = $event;
+                            $seen_events[] = $event_key;
+                        }
+                    endforeach;
+                    
+                    foreach ($unique_events as $event): 
+                    ?>
                     <div class="event-item" 
                          data-event="<?=h($event['detail_no'] ?: $event['no'])?>"
                          data-group="<?=h($group['group_no'])?>"
@@ -1628,10 +1641,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         <div class="event-info">
                             <div class="event-number">
                                 <?=h($event['detail_no'] ?: $event['no'])?>
-                    </div>
+                            </div>
                             <div class="event-desc">
                                 <?=h($event['desc'])?>
-        </div>
+                            </div>
                             <?php if (!empty($event['dance_names'])): ?>
                             <div class="event-dances">
                                 댄스: <?=h(implode(', ', $event['dance_names']))?>
@@ -1641,11 +1654,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 댄스: <?=h(implode(', ', $event['dances']))?>
                             </div>
                             <?php endif; ?>
-    </div>
+                        </div>
                         <div class="event-status status-<?=strtolower($event['round'])?>">
                             <?=h($event['round'])?>
-                </div>
-            </div>
+                        </div>
+                    </div>
                     <?php endforeach; ?>
                 </div>
             </div>
