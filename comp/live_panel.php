@@ -6074,7 +6074,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     </div>
                     <div class="next-round-modal-body">
                         <p><strong>이벤트명:</strong> ${nextEventName}</p>
-                        <p><strong>리콜 수:</strong> ${advancingPlayers.length}명</p>
+                        ${nextEventName.toLowerCase().includes('final') ? '' : `<p><strong>리콜 수:</strong> ${advancingPlayers.length}명</p>`}
                         <div class="couple-count-section">
                             <h4>진출할 커플 수 설정</h4>
                             <div class="couple-count-input">
