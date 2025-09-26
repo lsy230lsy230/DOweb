@@ -3339,7 +3339,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                             📊 점수
                                         </button>
                                         <button class="event-card-btn event-card-btn-aggregation" onclick="event.stopPropagation(); openAggregation('${evt.detail_no || evt.no}')">
-                                            📈 집계
+                                            ${evt.round && evt.round.toLowerCase().includes('final') && !evt.round.toLowerCase().includes('semi') ? '🏆 결승집계' : '📈 집계'}
                                         </button>
                                         <button class="event-card-btn event-card-btn-awards" onclick="event.stopPropagation(); openAwards('${evt.detail_no || evt.no}')">
                                             🏆 상장
@@ -3395,7 +3395,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                                 📊 점수
                                             </button>
                                             <button class="event-card-btn event-card-btn-aggregation" onclick="openAggregation('${eventId}')" data-event-id="${eventId}">
-                                                📈 집계
+                                                ${event.round && event.round.toLowerCase().includes('final') && !event.round.toLowerCase().includes('semi') ? '🏆 결승집계' : '📈 집계'}
                                             </button>
                                             <button class="event-card-btn event-card-btn-awards" onclick="openAwardModal()">
                                                 🏆 상장
@@ -4103,8 +4103,112 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 }
             }
             
-            // 집계 모달 열기
-            openAggregationModal(eventId);
+            // 현재 이벤트 정보 찾기
+            let currentEvent = null;
+            for (let group of groupData) {
+                currentEvent = group.events.find(e => (e.detail_no || e.no) === eventId);
+                if (currentEvent) break;
+            }
+            
+            if (!currentEvent) {
+                alert('이벤트 정보를 찾을 수 없습니다.');
+                return;
+            }
+            
+            // 이벤트가 결승전인지 확인
+            const isFinalRound = currentEvent.round && 
+                                currentEvent.round.toLowerCase().includes('final') && 
+                                !currentEvent.round.toLowerCase().includes('semi');
+            
+            if (isFinalRound) {
+                // 결승전: 스케이팅 시스템으로 최종 순위 계산
+                openFinalAggregation(eventId);
+            } else {
+                // 예선/준결승: 리콜 시스템으로 다음 라운드 진출자 선정
+                openAggregationModal(eventId);
+            }
+        }
+        
+        // 결승전 집계 함수 (스케이팅 시스템)
+        function openFinalAggregation(eventId) {
+            if (!eventId) {
+                alert('이벤트를 선택해주세요.');
+                return;
+            }
+            
+            const compId = '<?=$comp_id?>';
+            
+            console.log('결승 집계 시작:', {eventId, compId});
+            
+            // 올바른 서버 주소를 사용하여 집계 API 호출
+            const currentProtocol = window.location.protocol;
+            const currentHost = window.location.host;
+            const baseUrl = `${currentProtocol}//${currentHost}`;
+            
+            // Final Aggregation API를 호출하여 결승 결과 생성
+            const apiUrl = `${baseUrl}/comp/final_aggregation_api.php?comp_id=${compId}&event_no=${eventId}`;
+            
+            console.log('결승 집계 API 호출:', apiUrl);
+            
+            // 로딩 인디케이터 표시
+            const loadingMsg = document.createElement('div');
+            loadingMsg.innerHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                     background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                     z-index: 10000; font-family: 'Noto Sans KR'; text-align: center;">
+                    <div style="font-size: 1.2em; margin-bottom: 15px; color: #333;">🏆 결승 결과 집계 중...</div>
+                    <div style="font-size: 0.9em; color: #666;">스케이팅 시스템으로 최종 순위를 계산하고 있습니다.</div>
+                    <div style="margin-top: 15px;">
+                        <div style="width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #3498db; 
+                             border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+                    </div>
+                </div>
+                <style>
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+            `;
+            document.body.appendChild(loadingMsg);
+            
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 로딩 인디케이터 제거
+                    if (loadingMsg.parentNode) {
+                        document.body.removeChild(loadingMsg);
+                    }
+                    
+                    if (data.event_info && data.final_rankings) {
+                        // 성공시 생성된 결과 HTML 파일 열기
+                        const resultUrl = `${baseUrl}/comp/results_reports/${compId}/Event_${eventId}/combined_report_${eventId}.html`;
+                        console.log('결승 집계 성공, 결과 파일로 이동:', resultUrl);
+                        
+                        // 새 창에서 결과 표시
+                        const newWindow = window.open(resultUrl, '_blank', 'width=1200,height=900,scrollbars=yes,resizable=yes');
+                        
+                        if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                            // 팝업이 차단된 경우 현재 페이지에 결과 표시
+                            showAggregationResult(data, eventId);
+                        } else {
+                            console.log('결승 결과 창이 열렸습니다.');
+                        }
+                    } else {
+                        console.error('결승 집계 실패:', data);
+                        alert(`결승 집계 처리 중 오류가 발생했습니다: ${data.error || '알 수 없는 오류'}`);
+                    }
+                })
+                .catch(error => {
+                    // 로딩 인디케이터 제거
+                    if (loadingMsg.parentNode) {
+                        document.body.removeChild(loadingMsg);
+                    }
+                    console.error('결승 집계 API 호출 실패:', error);
+                    alert(`결승 집계 처리 중 오류가 발생했습니다: ${error.message}`);
+                });
         }
         
         // 간단한 집계 결과 표시 함수 (메인 화면용)
