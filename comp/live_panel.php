@@ -5915,9 +5915,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             <div class="couple-count-input">
                                 <label for="coupleCount">진출할 커플 수:</label>
                                 <input type="number" id="coupleCount" value="${advancingPlayers.length}" 
-                                       min="1" max="${totalTeams}" 
+                                       min="1" 
                                        onchange="updateCoupleCount()" class="couple-count-field">
-                                <span class="couple-count-info">(최대 ${totalTeams}명까지 가능)</span>
+                                <span class="couple-count-info">(자유 설정 가능)</span>
                             </div>
                         </div>
                         <!-- 진출자 목록은 제거 - 커플 수만 조정하면 됨 -->
@@ -5949,10 +5949,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         // 진출할 커플 수 업데이트
         function updateCoupleCount() {
             const coupleCount = parseInt(document.getElementById('coupleCount').value);
-            const maxCount = window.advancingPlayersData ? window.advancingPlayersData.length : 0;
             
-            if (coupleCount > maxCount) {
-                document.getElementById('coupleCount').value = maxCount;
+            // 최소값만 체크 (1 이상)
+            if (coupleCount < 1) {
+                document.getElementById('coupleCount').value = 1;
                 return;
             }
             
