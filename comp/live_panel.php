@@ -5923,12 +5923,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }
             
             // 진출자 목록 테이블이 제거되었으므로 추가 처리 불필요
-            
-            // 진출자 수 업데이트
-            const infoElement = document.querySelector('.couple-count-info');
-            if (infoElement) {
-                infoElement.textContent = `(최대 ${maxCount}명까지 가능)`;
-            }
         }
         
         // 다음 라운드 생성 실행
