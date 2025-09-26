@@ -2632,46 +2632,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         let currentPlayers = [];
         let disabledJudgesByEvent = {};
         
-        // 그룹 토글 함수들
-        function toggleGroup(groupNo) {
-            const group = document.querySelector(`[data-group="${groupNo}"]`);
-            const eventList = document.getElementById(`group-${groupNo}`);
-            const toggle = group.querySelector('.group-toggle');
-            
-            if (expandedGroups.has(groupNo)) {
-                eventList.classList.remove('expanded');
-                toggle.classList.remove('expanded');
-                expandedGroups.delete(groupNo);
-            } else {
-                eventList.classList.add('expanded');
-                toggle.classList.add('expanded');
-                expandedGroups.add(groupNo);
-            }
-        }
-        
-        function toggleGroupComplete(groupNo) {
-            const group = document.querySelector(`[data-group="${groupNo}"]`);
-            const completeBtn = group.querySelector('.group-complete-btn');
-            
-            if (completedGroups.has(groupNo)) {
-                // 완료 해제
-                group.classList.remove('completed');
-                completeBtn.classList.remove('completed');
-                completeBtn.textContent = '완료';
-                completedGroups.delete(groupNo);
-            } else {
-                // 완료 처리
-                group.classList.add('completed');
-                completeBtn.classList.add('completed');
-                completeBtn.textContent = '완료됨';
-                completedGroups.add(groupNo);
-            }
-            
-            // 숨김 모드가 활성화되어 있으면 업데이트
-            if (hideCompleted) {
-                updateGroupVisibility();
-            }
-        }
         
         function toggleCompletedGroups() {
             const toggleBtn = document.getElementById('toggleCompletedBtn');
@@ -3033,6 +2993,42 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         let playersByEvent = {};
         let allPlayers = <?= json_encode($player_dict) ?>;
         let hitsByEvent = {};
+        
+        // 그룹 토글 함수들 (HTML에서 호출되므로 먼저 정의)
+        function toggleGroup(groupNo) {
+            const group = document.querySelector(`[data-group="${groupNo}"]`);
+            const eventList = document.getElementById(`group-${groupNo}`);
+            const toggle = group.querySelector('.group-toggle');
+            
+            if (expandedGroups.has(groupNo)) {
+                eventList.classList.remove('expanded');
+                toggle.classList.remove('expanded');
+                expandedGroups.delete(groupNo);
+            } else {
+                eventList.classList.add('expanded');
+                toggle.classList.add('expanded');
+                expandedGroups.add(groupNo);
+            }
+        }
+        
+        function toggleGroupComplete(groupNo) {
+            const group = document.querySelector(`[data-group="${groupNo}"]`);
+            const completeBtn = group.querySelector('.group-complete-btn');
+            
+            if (completedGroups.has(groupNo)) {
+                // 완료 해제
+                group.classList.remove('completed');
+                completeBtn.classList.remove('completed');
+                completeBtn.textContent = '완료';
+                completedGroups.delete(groupNo);
+            } else {
+                // 완료 처리
+                group.classList.add('completed');
+                completeBtn.classList.add('completed');
+                completeBtn.textContent = '완료됨';
+                completedGroups.add(groupNo);
+            }
+        }
         
         // 심사위원 토글 함수
         function toggleAdjudicator(eventNo, judgeCode) {
@@ -4122,13 +4118,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         }
                         
                         // 싱글 이벤트 카드의 심사위원 상태 업데이트
-                        const eventCard = document.querySelector(`.event-card[data-event="${eventNo}"]`);
-                        if (eventCard) {
+                        const singleEventCard = document.querySelector(`.event-card[data-event="${eventNo}"]`);
+                        if (singleEventCard) {
                             let completedCount = 0;
                             let totalCount = 0;
                             
                             Object.keys(data.status).forEach(judgeCode => {
-                                let statusElement = eventCard.querySelector(`#judge-status-${judgeCode}`);
+                                let statusElement = singleEventCard.querySelector(`#judge-status-${judgeCode}`);
                                 if (statusElement) {
                                     let status = data.status[judgeCode];
                                     statusElement.className = `judge-status ${status.class}`;
@@ -4142,7 +4138,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             });
                             
                             // 진행률 업데이트
-                            const progressElement = eventCard.querySelector('.judge-progress .progress-text');
+                            const progressElement = singleEventCard.querySelector('.judge-progress .progress-text');
                             if (progressElement) {
                                 progressElement.textContent = `${completedCount}/${totalCount} 완료`;
                             }
