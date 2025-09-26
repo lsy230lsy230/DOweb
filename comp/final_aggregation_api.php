@@ -739,24 +739,17 @@ body {
     <div class="section-title">최종 결과</div>
     <table class="results-table">';
 
-    // 결과 테이블 헤더
+    // 결과 테이블 헤더 (최종결과는 간단하게)
     $html .= '<thead><tr>
-<th>순위</th>
-<th>번호</th>
-<th>선수명</th>';
+        <th>순위</th>
+        <th>번호</th>
+        <th>선수명</th>
+    </tr></thead><tbody>';
 
-    // 심사위원 컬럼 헤더
-    foreach ($adjudicators as $index => $judge) {
-        $html .= '<th>' . $judge['code'] . '</th>';
-    }
-
-    $html .= '<th>총점</th></tr></thead><tbody>';
-
-    // 결과 행들
+    // 최종 순위 결과 (간단한 형태)
     foreach ($final_rankings as $index => $ranking) {
         $player_no = $ranking['player_no'];
         $place = $ranking['final_rank'];
-        $points = $ranking['sum_of_places'];
         
         // 선수 정보 찾기
         $player_info = null;
@@ -778,27 +771,10 @@ body {
         elseif ($place == 3) $rank_class = 'rank-3';
         
         $html .= '<tr class="' . $rank_class . '">
-<td><strong>' . $place . '</strong></td>
-<td><strong>' . $player_no . '</strong></td>
-<td class="player-name">' . htmlspecialchars($player_name) . '</td>';
-
-        // 각 심사위원의 채점 결과
-        foreach ($adjudicators as $judge) {
-            $judge_code = $judge['code'];
-            $score = '';
-            
-            // 해당 심사위원의 채점 찾기
-            foreach ($dance_results as $dance_code => $dance_data) {
-                if (isset($dance_data['judge_scores'][$judge_code][$player_no])) {
-                    $score = $dance_data['judge_scores'][$judge_code][$player_no];
-                    break;
-                }
-            }
-            
-            $html .= '<td class="judge-score">' . $score . '</td>';
-        }
-
-        $html .= '<td class="total-points">' . $points . '</td></tr>';
+            <td><strong>' . $place . '</strong></td>
+            <td><strong>' . $player_no . '</strong></td>
+            <td class="player-name">' . htmlspecialchars($player_name) . '</td>
+        </tr>';
     }
 
     $html .= '</tbody></table></div>';
