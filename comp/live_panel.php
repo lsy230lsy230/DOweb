@@ -4610,16 +4610,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         `;
                     });
                     
-                    html += `
-                        </table>
-                        <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:1em;'>
-                            <tr>
-                                <td style='font-size:0.9em; color:#666; padding-top:0.5em;' align='left'>
-                                    <strong>심사위원:</strong> ${data.judge_names.join(', ')} (${data.judges.join(', ')})
-                                </td>
-                            </tr>
-                        </table>
-                    `;
+                    html += `</table>`;
                 });
             }
             
@@ -5704,10 +5695,24 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     `;
                 });
                 
+            // 심사위원 정보를 맨 마지막에 한 번만 표시
+            if (data.judge_names && data.judge_names.length > 0) {
+                const judgeInfo = data.judges.map((judgeCode, index) => {
+                    const judgeName = data.judge_names[index] || judgeCode;
+                    return `${judgeCode}. ${judgeName}`;
+                }).join(', ');
+                
                 html += `
-                        </div>
+                    <div style='margin-top:1em; font-size:12px; color:#666; text-align:center;'>
+                        <strong>심사위원:</strong> ${judgeInfo}
                     </div>
                 `;
+            }
+            
+            html += `
+                    </div>
+                </div>
+            `;
             }
             
             content.innerHTML = html;
