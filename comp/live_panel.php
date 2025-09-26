@@ -1342,6 +1342,23 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             color: white;
         }
         
+        .dance-item {
+            background: rgba(255,255,255,0.8);
+            border: 1px solid #fdcb6e;
+            border-radius: 0.3em;
+            padding: 0.5em;
+            text-align: center;
+            font-size: 0.9em;
+            color: #885e00;
+            margin-bottom: 0.5em;
+        }
+        
+        .dance-item.current {
+            background: #e9b200;
+            color: white;
+            font-weight: bold;
+        }
+        
         .event-card {
             background: white;
             border: 1px solid #dee2e6;
@@ -2693,6 +2710,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             // 싱글 이벤트인 경우 심사위원 리스트 렌더링
             if (!isMultiEvent) {
                 renderAdjudicatorList(event.panel, eventId);
+                // 선수 데이터 로드 및 렌더링
+                loadPlayersForCurrentEvent(eventId);
+                // 댄스 블록 렌더링
+                renderDanceBlock(eventId);
                 // 심사위원 상태 업데이트
                 updateJudgeStatus(eventId);
             }
@@ -2704,6 +2725,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         let panelMap = <?= json_encode($panel_map) ?>;
         let allAdjudicators = <?= json_encode($adjudicator_dict) ?>;
         let events = <?= json_encode($events) ?>;
+        let playersByEvent = {};
+        let allPlayers = <?= json_encode($player_dict) ?>;
         
         // 심사위원 토글 함수
         function toggleAdjudicator(eventNo, judgeCode) {
@@ -2726,6 +2749,115 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         function openJudgeScoring(eventNo, judgeCode) {
             // 임시로 알림 표시 (실제 구현은 필요에 따라)
             alert(`심사위원 ${judgeCode}의 채점 패널을 열겠습니다. (이벤트: ${eventNo})`);
+        }
+        
+        // 선수 리스트 렌더링 함수
+        function renderPlayerList(eventNo) {
+            const ul = document.getElementById("player-list");
+            if (!ul) return;
+            
+            let arr = playersByEvent[eventNo] || [];
+            let sorted = arr.slice().sort((a, b) => Number(a) - Number(b));
+            ul.innerHTML = "";
+            
+            if (!sorted.length) {
+                ul.innerHTML = "<li style='color:#aaa;'>선수 등번호 없음</li>";
+                return;
+            }
+            
+            sorted.forEach((bib, idx) => {
+                let li = document.createElement("li");
+                const playerName = allPlayers[bib] || `선수 ${bib}`;
+                li.innerHTML = `${bib} - ${playerName} <button class="player-x-btn" onclick="removePlayer('${bib}')">X</button>`;
+                ul.appendChild(li);
+            });
+        }
+        
+        // 선수 제거 함수
+        function removePlayer(bib) {
+            const currentEvent = events.find(ev => (ev.detail_no || ev.no) === selectedEvent);
+            if (!currentEvent) return;
+            
+            const eventNo = currentEvent.detail_no || currentEvent.no;
+            if (!playersByEvent[eventNo]) return;
+            
+            const idx = playersByEvent[eventNo].indexOf(bib);
+            if (idx !== -1) {
+                playersByEvent[eventNo].splice(idx, 1);
+                renderPlayerList(eventNo);
+            }
+        }
+        
+        // 현재 이벤트의 선수 데이터 로드
+        function loadPlayersForCurrentEvent(eventNo) {
+            if (!eventNo) return;
+            
+            console.log(`Loading players for event ${eventNo}...`);
+            
+            // 출전선수 목록 로드
+            fetch(`get_players.php?comp_id=<?=addslashes($comp_id)?>&event_no=${eventNo}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        playersByEvent[eventNo] = data.players || [];
+                        renderPlayerList(eventNo);
+                        console.log(`Players loaded for event ${eventNo}:`, data.players);
+                    } else {
+                        console.error('Failed to load players:', data.message);
+                        playersByEvent[eventNo] = [];
+                        renderPlayerList(eventNo);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error loading players:', err);
+                    playersByEvent[eventNo] = [];
+                    renderPlayerList(eventNo);
+                });
+        }
+        
+        // 댄스 블록 렌더링 함수
+        function renderDanceBlock(eventNo) {
+            const danceListDiv = document.getElementById('dance-list');
+            const progressFill = document.getElementById('dance-progress-fill');
+            
+            if (!danceListDiv) return;
+            
+            // 현재 이벤트 찾기
+            const event = events.find(ev => (ev.detail_no || ev.no) === eventNo);
+            if (!event) return;
+            
+            let danceNames = [];
+            if (event.dances && event.dances.length > 0) {
+                // 댄스 코드를 이름으로 변환
+                const danceMap = {
+                    '6': 'Cha Cha',
+                    '7': 'Samba', 
+                    '8': 'Rumba',
+                    '9': 'Paso Doble',
+                    '10': 'Jive',
+                    '1': 'Waltz',
+                    '2': 'Tango',
+                    '3': 'Viennese Waltz',
+                    '4': 'Foxtrot',
+                    '5': 'Quickstep'
+                };
+                danceNames = event.dances.map(code => danceMap[code] || code);
+            }
+            
+            if (danceNames.length) {
+                danceListDiv.innerHTML = danceNames.map((name, i) => {
+                    let className = 'dance-item';
+                    if (i === 0) className += ' current';
+                    return `<div class="${className}">${i + 1}. ${name}</div>`;
+                }).join('');
+                
+                // 진행률 업데이트 (임시로 0%)
+                if (progressFill) {
+                    progressFill.style.width = '0%';
+                }
+            } else {
+                danceListDiv.innerHTML = '<div class="dance-item">댄스 정보 없음</div>';
+            }
         }
         
         // 심사위원 리스트 렌더링 함수
