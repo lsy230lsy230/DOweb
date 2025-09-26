@@ -3863,11 +3863,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 }
             }
             
-            // 간단한 집계 결과 표시
-            showSimpleAggregation(eventId);
+            // 집계 모달 열기
+            openAggregationModal(eventId);
         }
         
-        // 간단한 집계 결과 표시 함수
+        // 간단한 집계 결과 표시 함수 (메인 화면용)
         function showSimpleAggregation(eventId) {
             const rightContent = document.getElementById('right-content');
             
@@ -3930,6 +3930,85 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             `;
             
             rightContent.innerHTML = resultHtml;
+        }
+        
+        // 모달 내에서 간단한 집계 결과 표시 함수
+        function showSimpleAggregationInModal(eventId) {
+            console.log('Showing aggregation in modal for eventId:', eventId);
+            
+            // 로딩 숨기고 콘텐츠 표시
+            document.getElementById('aggregationLoading').style.display = 'none';
+            document.getElementById('aggregationContent').style.display = 'block';
+            document.getElementById('printAggregationBtn').style.display = 'inline-block';
+            document.getElementById('nextRoundBtn').style.display = 'inline-block';
+            
+            const content = document.getElementById('aggregationContent');
+            
+            // 현재 이벤트 정보 찾기
+            let currentEvent = null;
+            if (events && events.length > 0) {
+                currentEvent = events.find(e => (e.detail_no || e.no) == eventId);
+            }
+            
+            if (!currentEvent) {
+                content.innerHTML = `
+                    <div class="error-message" style="padding: 20px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; color: #721c24;">
+                        <h3>❌ 이벤트를 찾을 수 없습니다</h3>
+                        <p>이벤트 ID: ${eventId}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // 모달용 집계 결과 HTML 생성
+            let html = `
+                <div class="aggregation-header">
+                    <h2>🏆 ${currentEvent.desc || '집계 결과'}</h2>
+                    <div class="event-details">
+                        <span class="event-number">이벤트 ${eventId}</span>
+                        <span class="event-round">${currentEvent.round || 'Final'}</span>
+                    </div>
+                </div>
+            `;
+            
+            // 최종 순위 테이블
+            html += `
+                <div class="results-section">
+                    <h3>📊 최종 순위</h3>
+                    <table class="aggregation-table">
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>번호</th>
+                                <th>선수명</th>
+                                <th>SUM of Places</th>
+                                <th>Place Skating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px; color: #666;">
+                                    집계 데이터를 로딩 중입니다...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            // 다음 라운드 진출자 섹션
+            html += `
+                <div class="next-round-section">
+                    <div class="next-round-title">🎯 다음 라운드 진출자</div>
+                    <div class="next-round-players">
+                        <div class="next-round-player">
+                            <div class="player-rank">집계 완료 후 진출자가 표시됩니다</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            content.innerHTML = html;
         }
         
         // 기존 집계 함수 (참고용)
@@ -4740,14 +4819,19 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         // 집계 모달 열기
         function openAggregationModal(eventId) {
+            console.log('Opening aggregation modal for eventId:', eventId);
+            
+            // 모달 표시
             document.getElementById('aggregationModalBg').style.display = 'flex';
             document.getElementById('aggregationLoading').style.display = 'block';
             document.getElementById('aggregationContent').style.display = 'none';
             document.getElementById('printAggregationBtn').style.display = 'none';
             document.getElementById('nextRoundBtn').style.display = 'none';
             
-            // 집계 실행
-            executeAggregation(eventId);
+            // 간단한 집계 결과 표시
+            setTimeout(() => {
+                showSimpleAggregationInModal(eventId);
+            }, 500);
         }
         
         // 집계 모달 닫기
