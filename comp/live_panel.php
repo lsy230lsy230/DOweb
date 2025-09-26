@@ -1706,6 +1706,49 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             overflow: hidden;
         }
         
+        .event-card-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .event-info-section {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            text-align: center;
+        }
+        
+        .event-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0d2c96;
+            background: #e3f2fd;
+            padding: 8px 16px;
+            border-radius: 8px;
+            border: 2px solid #0d2c96;
+        }
+        
+        .event-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            flex: 1;
+        }
+        
+        .event-round {
+            font-size: 16px;
+            font-weight: 500;
+            color: #28a745;
+            background: #e8f5e8;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #28a745;
+        }
+        
         /* 싱글 이벤트 카드 넓게 */
         .event-cards-grid.single-event .event-card {
             max-width: 1000px;
@@ -2968,12 +3011,14 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         <div class="event-cards-grid single-event">
                             <div class="event-card selected" data-event="${eventId}" onclick="selectEventFromCard('${eventId}', '${groupId}')">
                                 <div class="event-card-header">
-                                    <div class="event-number">${eventId}</div>
-                                    <div class="event-status status-${event.round.toLowerCase()}">${event.round}</div>
+                                    <div class="event-info-section">
+                                        <div class="event-number">${eventId}</div>
+                                        <div class="event-name">${event.desc}</div>
+                                        <div class="event-round">${event.round}</div>
+                                    </div>
                                 </div>
                                 <div class="event-card-body">
                                     <div class="event-card-left">
-                                        <div class="event-card-title">${event.desc}</div>
                                         <div class="event-card-judges">
                                             <div class="judges-header">
                                                 <span class="event-title">심사위원</span>
