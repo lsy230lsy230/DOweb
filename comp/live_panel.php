@@ -5971,17 +5971,26 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 },
                 body: `group_id=${eventId}&recall_count=${recallCount}`
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    console.log('Recall 수 업데이트 성공:', recallCount);
-                    // UI에서도 recall 수 업데이트
-                    const recallElement = document.querySelector(`[data-group-id="${eventId}"] .recall-count-value`);
-                    if (recallElement) {
-                        recallElement.textContent = `${recallCount}명`;
+            .then(response => {
+                console.log('updateRecallCount 응답 상태:', response.status);
+                return response.text(); // JSON 대신 텍스트로 먼저 받기
+            })
+            .then(text => {
+                console.log('updateRecallCount 응답 텍스트:', text);
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        console.log('Recall 수 업데이트 성공:', recallCount);
+                        // UI에서도 recall 수 업데이트
+                        const recallElement = document.querySelector(`[data-group-id="${eventId}"] .recall-count-value`);
+                        if (recallElement) {
+                            recallElement.textContent = `${recallCount}명`;
+                        }
+                    } else {
+                        console.error('Recall 수 업데이트 실패:', data.message || data.error);
                     }
-                } else {
-                    console.error('Recall 수 업데이트 실패:', data.message);
+                } catch (e) {
+                    console.error('JSON 파싱 오류:', e, '응답 텍스트:', text);
                 }
             })
             .catch(error => {
