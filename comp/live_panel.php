@@ -1719,6 +1719,102 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: #218838;
         }
         
+        /* 리콜 결과 스타일 */
+        .recall-stats-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .stat-item {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #0d2c96;
+        }
+        
+        .recall-results-section {
+            margin: 20px 0;
+        }
+        
+        .recall-results-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+        }
+        
+        .next-round-player {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(40, 167, 69, 0.1);
+        }
+        
+        .player-rank {
+            background: #28a745;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-right: 15px;
+        }
+        
+        .player-info {
+            flex: 1;
+        }
+        
+        .player-number {
+            font-size: 16px;
+            font-weight: bold;
+            color: #0d2c96;
+        }
+        
+        .player-name {
+            font-size: 14px;
+            color: #333;
+            margin: 4px 0;
+        }
+        
+        .recall-count {
+            font-size: 12px;
+            color: #666;
+            background: #e8f5e8;
+            padding: 2px 8px;
+            border-radius: 12px;
+            display: inline-block;
+        }
+        
         /* 싱글 이벤트 카드용 추가 스타일 */
         .event-card .judge-item {
             display: flex;
@@ -3960,55 +4056,154 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            // 모달용 집계 결과 HTML 생성
+            // 리콜 계산 실행
+            calculateRecallResults(eventId, currentEvent, content);
+        }
+        
+        // 리콜 결과 계산 함수
+        function calculateRecallResults(eventId, currentEvent, content) {
+            console.log('Calculating recall results for eventId:', eventId);
+            
+            // 리콜 데이터 로드
+            fetch(`get_recall_data.php?comp_id=<?=$comp_id?>&event_no=${eventId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        displayRecallResults(data, currentEvent, content);
+                    } else {
+                        displayRecallError(data.error, content);
+                    }
+                })
+                .catch(error => {
+                    console.error('리콜 데이터 로드 실패:', error);
+                    displayRecallError('리콜 데이터를 로드할 수 없습니다: ' + error.message, content);
+                });
+        }
+        
+        // 리콜 결과 표시 함수
+        function displayRecallResults(data, currentEvent, content) {
+            console.log('Displaying recall results:', data);
+            
             let html = `
                 <div class="aggregation-header">
                     <h2>🏆 ${currentEvent.desc || '집계 결과'}</h2>
                     <div class="event-details">
-                        <span class="event-number">이벤트 ${eventId}</span>
+                        <span class="event-number">이벤트 ${currentEvent.detail_no || currentEvent.no}</span>
                         <span class="event-round">${currentEvent.round || 'Final'}</span>
                     </div>
                 </div>
             `;
             
-            // 최종 순위 테이블
+            // 리콜 통계 섹션
             html += `
-                <div class="results-section">
-                    <h3>📊 최종 순위</h3>
+                <div class="recall-stats-section">
+                    <h3>📊 리콜 통계</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-label">총 심사위원 수</div>
+                            <div class="stat-value">${data.total_judges}</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">리콜 기준</div>
+                            <div class="stat-value">${data.recall_threshold}명 이상</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">진출 선수 수</div>
+                            <div class="stat-value">${data.advancing_players.length}명</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 리콜 상세 결과 테이블
+            html += `
+                <div class="recall-results-section">
+                    <h3>🎯 리콜 상세 결과</h3>
                     <table class="aggregation-table">
                         <thead>
                             <tr>
-                                <th>순위</th>
-                                <th>번호</th>
+                                <th>선수 번호</th>
                                 <th>선수명</th>
-                                <th>SUM of Places</th>
-                                <th>Place Skating</th>
+                                <th>리콜 횟수</th>
+                                <th>진출 여부</th>
+                                <th>심사위원 목록</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td colspan="5" style="text-align: center; padding: 20px; color: #666;">
-                                    집계 데이터를 로딩 중입니다...
-                                </td>
-                            </tr>
+            `;
+            
+            // 선수별 리콜 결과 표시
+            data.player_recalls.forEach(player => {
+                const isAdvancing = player.recall_count >= data.recall_threshold;
+                const statusClass = isAdvancing ? 'rank-1' : 'rank-3';
+                const statusText = isAdvancing ? '✅ 진출' : '❌ 탈락';
+                
+                html += `
+                    <tr class="${statusClass}">
+                        <td>${player.player_number}</td>
+                        <td>${player.player_name}</td>
+                        <td><strong>${player.recall_count}</strong></td>
+                        <td>${statusText}</td>
+                        <td>${player.judges.join(', ')}</td>
+                    </tr>
+                `;
+            });
+            
+            html += `
                         </tbody>
                     </table>
                 </div>
             `;
             
             // 다음 라운드 진출자 섹션
-            html += `
-                <div class="next-round-section">
-                    <div class="next-round-title">🎯 다음 라운드 진출자</div>
-                    <div class="next-round-players">
+            if (data.advancing_players.length > 0) {
+                html += `
+                    <div class="next-round-section">
+                        <div class="next-round-title">🎯 다음 라운드 진출자 (${data.advancing_players.length}명)</div>
+                        <div class="next-round-players">
+                `;
+                
+                data.advancing_players.forEach((player, index) => {
+                    html += `
                         <div class="next-round-player">
-                            <div class="player-rank">집계 완료 후 진출자가 표시됩니다</div>
+                            <div class="player-rank">${index + 1}</div>
+                            <div class="player-info">
+                                <div class="player-number">${player.player_number}번</div>
+                                <div class="player-name">${player.player_name}</div>
+                                <div class="recall-count">리콜 ${player.recall_count}회</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `
                         </div>
                     </div>
-                </div>
-            `;
+                `;
+            } else {
+                html += `
+                    <div class="next-round-section">
+                        <div class="next-round-title">🎯 다음 라운드 진출자</div>
+                        <div class="next-round-players">
+                            <div class="next-round-player">
+                                <div class="player-rank">진출자 없음</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
             
             content.innerHTML = html;
+        }
+        
+        // 리콜 오류 표시 함수
+        function displayRecallError(errorMessage, content) {
+            content.innerHTML = `
+                <div class="error-message" style="padding: 20px; background: #f8d7da; border: 1px solid #f5c6cb; border-radius: 8px; color: #721c24;">
+                    <h3>❌ 리콜 계산 오류</h3>
+                    <p>${errorMessage}</p>
+                </div>
+            `;
         }
         
         // 기존 집계 함수 (참고용)
