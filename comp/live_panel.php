@@ -1318,6 +1318,30 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             font-style: italic;
         }
         
+        .judge-status {
+            font-size: 0.8em;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 40px;
+        }
+        
+        .judge-status.waiting {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .judge-status.scoring {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .judge-status.completed {
+            background: #28a745;
+            color: white;
+        }
+        
         .event-card {
             background: white;
             border: 1px solid #dee2e6;
@@ -2669,6 +2693,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             // 싱글 이벤트인 경우 심사위원 리스트 렌더링
             if (!isMultiEvent) {
                 renderAdjudicatorList(event.panel, eventId);
+                // 심사위원 상태 업데이트
+                updateJudgeStatus(eventId);
             }
             
             // 실시간 업데이트는 startJudgeStatusMonitoring에서 처리
@@ -3292,6 +3318,39 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             if (progressElement) {
                                 progressElement.textContent = `${completedCount}/${totalCount} 완료`;
                                 console.log('Updated progress:', `${completedCount}/${totalCount} 완료`);
+                            }
+                        }
+                        
+                        // 싱글 이벤트 심사위원 테이블에서 상태 업데이트
+                        const tbody = document.getElementById('adjudicator-list');
+                        if (tbody) {
+                            let completedCount = 0;
+                            let totalCount = 0;
+                            
+                            Object.keys(data.status).forEach(judgeCode => {
+                                let statusElement = tbody.querySelector(`#judge-status-${judgeCode}`);
+                                if (statusElement) {
+                                    let status = data.status[judgeCode];
+                                    statusElement.className = `judge-status ${status.class}`;
+                                    statusElement.textContent = status.text;
+                                    
+                                    if (status.class === 'completed') {
+                                        completedCount++;
+                                    }
+                                    totalCount++;
+                                }
+                            });
+                            
+                            // 집계 섹션의 심사위원 상태 업데이트
+                            const totalJudgesElement = document.getElementById('total-judges');
+                            const completedJudgesElement = document.getElementById('completed-judges');
+                            const progressRateElement = document.getElementById('progress-rate');
+                            
+                            if (totalJudgesElement) totalJudgesElement.textContent = totalCount;
+                            if (completedJudgesElement) completedJudgesElement.textContent = completedCount;
+                            if (progressRateElement) {
+                                const rate = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+                                progressRateElement.textContent = rate + '%';
                             }
                         }
                     }
