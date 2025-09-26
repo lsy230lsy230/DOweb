@@ -6012,17 +6012,22 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             updateRecallCount(selectedEvent, coupleCount);
             
             // 서버에 다음 라운드 생성 요청
+            const requestData = {
+                eventNumber: eventNumber,
+                eventName: eventName,
+                players: players,
+                comp_id: '20250913-001'
+            };
+            
+            console.log('createNextRound 요청 데이터:', requestData);
+            console.log('전달할 players 수:', players.length);
+            
             fetch('create_next_round.php', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    eventNumber: eventNumber,
-                    eventName: eventName,
-                    players: players,
-                    comp_id: '20250913-001'
-                })
+                body: JSON.stringify(requestData)
             })
             .then(response => response.json())
             .then(data => {

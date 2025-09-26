@@ -12,6 +12,12 @@ $eventName = $input['eventName'] ?? '';
 $players = $input['players'] ?? [];
 $comp_id = $input['comp_id'] ?? '20250913-001';
 
+error_log("=== create_next_round.php 시작 ===");
+error_log("eventNumber: $eventNumber");
+error_log("eventName: $eventName");
+error_log("players 수: " . count($players));
+error_log("comp_id: $comp_id");
+
 if (!$eventNumber || !$eventName || empty($players)) {
     echo json_encode(['success' => false, 'error' => '필수 정보가 누락되었습니다.']);
     exit;
