@@ -3154,7 +3154,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                             <button class="event-card-btn event-card-btn-scores" onclick="openJudgeScoring('${eventId}')">
                                                 📊 점수
                                             </button>
-                                            <button class="event-card-btn event-card-btn-aggregation" onclick="openAggregation()">
+                                            <button class="event-card-btn event-card-btn-aggregation" onclick="openAggregation('${eventId}')">
                                                 📈 집계
                                             </button>
                                             <button class="event-card-btn event-card-btn-awards" onclick="openAwardModal()">
@@ -3854,9 +3854,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         }
         
         function openAggregation(eventId) {
+            // eventId가 없으면 현재 선택된 이벤트 사용
             if (!eventId) {
-                alert('이벤트를 선택해주세요.');
-                return;
+                eventId = selectedEvent;
+                if (!eventId) {
+                    alert('이벤트를 선택해주세요.');
+                    return;
+                }
             }
             
             // 집계 모달 열기
