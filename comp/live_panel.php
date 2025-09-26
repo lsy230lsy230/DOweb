@@ -3854,41 +3854,82 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         }
         
         function openAggregation(eventId) {
-            console.log('openAggregation called with eventId:', eventId);
-            console.log('selectedEvent:', selectedEvent);
-            console.log('events array:', events);
-            
-            // eventId가 없거나 undefined이면 현재 선택된 이벤트 사용
-            if (!eventId || eventId === 'undefined' || eventId === 'null') {
+            // eventId가 없으면 현재 선택된 이벤트 사용
+            if (!eventId || eventId === 'undefined') {
                 eventId = selectedEvent;
-                console.log('Using selectedEvent as eventId:', eventId);
-                
                 if (!eventId) {
-                    // events 배열에서 첫 번째 이벤트 사용
-                    if (events && events.length > 0) {
-                        eventId = events[0].detail_no || events[0].no;
-                        console.log('Using first event as eventId:', eventId);
-                    } else {
-                        alert('이벤트를 선택해주세요.');
-                        return;
-                    }
+                    alert('이벤트를 선택해주세요.');
+                    return;
                 }
             }
             
-            // eventId가 문자열인지 확인
-            if (typeof eventId !== 'string' && typeof eventId !== 'number') {
-                console.error('Invalid eventId type:', typeof eventId, eventId);
-                alert('잘못된 이벤트 ID입니다.');
+            // 간단한 집계 결과 표시
+            showSimpleAggregation(eventId);
+        }
+        
+        // 간단한 집계 결과 표시 함수
+        function showSimpleAggregation(eventId) {
+            const rightContent = document.getElementById('right-content');
+            
+            // 현재 이벤트 정보 찾기
+            let currentEvent = null;
+            if (events && events.length > 0) {
+                currentEvent = events.find(e => (e.detail_no || e.no) == eventId);
+            }
+            
+            if (!currentEvent) {
+                rightContent.innerHTML = `
+                    <div class="aggregation-error">
+                        <h2>❌ 이벤트를 찾을 수 없습니다</h2>
+                        <p>이벤트 ID: ${eventId}</p>
+                    </div>
+                `;
                 return;
             }
             
-            // eventId를 문자열로 변환
-            eventId = String(eventId);
+            // 간단한 집계 결과 HTML 생성
+            const resultHtml = `
+                <div class="aggregation-result">
+                    <h2>🏆 집계 결과 - ${currentEvent.desc || '알 수 없는 이벤트'}</h2>
+                    
+                    <div class="event-info">
+                        <h3>이벤트 정보</h3>
+                        <p><strong>이벤트 번호:</strong> ${eventId}</p>
+                        <p><strong>라운드:</strong> ${currentEvent.round || 'Final'}</p>
+                        <p><strong>패널:</strong> ${currentEvent.panel || 'A'}</p>
+                        <p><strong>댄스:</strong> ${(currentEvent.dances || []).join(', ')}</p>
+                    </div>
+                    
+                    <div class="final-rankings">
+                        <h3>📊 최종 순위</h3>
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>순위</th>
+                                    <th>번호</th>
+                                    <th>선수명</th>
+                                    <th>SUM of Places</th>
+                                    <th>Place Skating</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td colspan="5" style="text-align: center; padding: 20px; color: #666;">
+                                        집계 데이터를 로딩 중입니다...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="next-round-section">
+                        <h3>🎯 다음 라운드 진출자</h3>
+                        <p>집계 완료 후 진출자가 표시됩니다.</p>
+                    </div>
+                </div>
+            `;
             
-            console.log('Final eventId:', eventId, 'type:', typeof eventId);
-            
-            // 집계 모달 열기
-            openAggregationModal(eventId);
+            rightContent.innerHTML = resultHtml;
         }
         
         // 기존 집계 함수 (참고용)
