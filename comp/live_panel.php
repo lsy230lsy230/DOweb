@@ -226,6 +226,7 @@ foreach ($grouped_events as $group_key => $group) {
 
 $event_groups = array_values($grouped_events);
 
+
 // 이벤트별 선수 데이터 로드 함수
 function getPlayersForEvent($data_dir, $event_key, $all_players) {
     $players = [];
@@ -1826,6 +1827,25 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 }
             });
         }
+        
+        // 페이지 로드 시 완료된 이벤트 상태 확인
+        function checkCompletedGroups() {
+            const groups = document.querySelectorAll('.event-group');
+            groups.forEach(group => {
+                const groupNo = group.dataset.group;
+                const completeBtn = group.querySelector('.group-complete-btn');
+                if (completeBtn && completeBtn.textContent === '완료됨') {
+                    completedGroups.add(groupNo);
+                    group.classList.add('completed');
+                    completeBtn.classList.add('completed');
+                }
+            });
+        }
+        
+        // 페이지 로드 시 실행
+        document.addEventListener('DOMContentLoaded', function() {
+            checkCompletedGroups();
+        });
         
         function selectEvent(eventId, groupId, element) {
             console.log('selectEvent called:', {eventId, groupId});
