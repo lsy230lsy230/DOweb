@@ -5855,10 +5855,32 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 console.log('집계 테이블에서 계산된 팀 수:', totalTeams);
             }
             
-            // 만약 테이블에서 계산이 안되면 진출자 수를 기본값으로 사용
+            // 만약 테이블에서 계산이 안되면 다른 방법으로 시도
+            if (totalTeams === 0) {
+                // 집계 결과에서 모든 선수 정보 찾기
+                const allPlayerRows = aggregationResult.querySelectorAll('tr');
+                let playerCount = 0;
+                allPlayerRows.forEach(row => {
+                    const cells = row.querySelectorAll('td');
+                    if (cells.length >= 3) {
+                        const rank = cells[0]?.textContent?.trim();
+                        const number = cells[1]?.textContent?.trim();
+                        const name = cells[2]?.textContent?.trim();
+                        
+                        // 순위, 번호, 이름이 모두 있는 행만 카운트
+                        if (rank && number && name && !isNaN(parseInt(rank))) {
+                            playerCount++;
+                        }
+                    }
+                });
+                totalTeams = playerCount;
+                console.log('행별 계산으로 찾은 팀 수:', totalTeams);
+            }
+            
+            // 여전히 0이면 진출자 수를 기본값으로 사용
             if (totalTeams === 0) {
                 totalTeams = advancingPlayers.length;
-                console.log('테이블 계산 실패, 진출자 수를 기본값으로 사용:', totalTeams);
+                console.log('모든 계산 실패, 진출자 수를 기본값으로 사용:', totalTeams);
             }
             
             // 다음 라운드 이벤트 번호 계산 (현재 이벤트 + 1)
