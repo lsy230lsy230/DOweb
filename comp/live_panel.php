@@ -1705,7 +1705,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     <p>집계 API에서 데이터를 가져올 수 없습니다.</p>
                     <div style="background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 5px;">
                         <strong>디버깅 정보:</strong><br>
-                        URL: <?=h($aggregation_url ?? '')?><br>
+                        URL: <?=h($aggregation_url ?? 'N/A')?><br>
                         데이터 길이: <?=strlen($aggregation_data ?? '')?><br>
                         오류: <?=error_get_last()['message'] ?? '없음'?>
                     </div>
@@ -2224,20 +2224,93 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             console.log('집계 시작:', {eventId, compId});
             
-            // 집계 결과 페이지로 직접 이동 (API 호출 없이)
-            const url = `https://www.danceoffice.net/comp/live_panel.php?comp_id=${compId}&view=aggregation&event_no=${eventId}`;
-            console.log('집계 결과 페이지로 이동:', url);
+            // 올바른 서버 주소를 사용하여 집계 API 호출
+            const currentProtocol = window.location.protocol;
+            const currentHost = window.location.host;
+            const baseUrl = `${currentProtocol}//${currentHost}`;
             
-            // 새 창에서 집계 결과 표시
-            const newWindow = window.open(url, '_blank', 'width=1200,height=800,scrollbars=yes,resizable=yes');
+            // Final Aggregation API를 호출하여 결승 결과 생성
+            const apiUrl = `${baseUrl}/comp/final_aggregation_api.php?comp_id=${compId}&event_no=${eventId}`;
             
-            // 새 창이 제대로 열렸는지 확인
-            if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-                console.error('팝업이 차단되었습니다. 팝업 차단을 해제해주세요.');
-                alert('팝업이 차단되었습니다. 브라우저 설정에서 팝업을 허용해주세요.');
-            } else {
-                console.log('집계 결과 창이 열렸습니다.');
-            }
+            console.log('결승 집계 API 호출:', apiUrl);
+            
+            // 로딩 인디케이터 표시
+            const loadingMsg = document.createElement('div');
+            loadingMsg.innerHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                     background: white; padding: 30px; border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+                     z-index: 10000; font-family: 'Noto Sans KR'; text-align: center;">
+                    <div style="font-size: 1.2em; margin-bottom: 15px; color: #333;">🏆 결승 결과 집계 중...</div>
+                    <div style="font-size: 0.9em; color: #666;">스케이팅 시스템으로 최종 순위를 계산하고 있습니다.</div>
+                    <div style="margin-top: 15px;">
+                        <div style="width: 30px; height: 30px; border: 3px solid #f3f3f3; border-top: 3px solid #3498db; 
+                             border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+                    </div>
+                </div>
+                <style>
+                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+                </style>
+            `;
+            document.body.appendChild(loadingMsg);
+            
+            // API 호출 후 결과 페이지 열기
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // 로딩 인디케이터 제거
+                    document.body.removeChild(loadingMsg);
+                    
+                    if (data.event_info && data.final_rankings) {
+                        // 성공시 생성된 결과 HTML 파일 열기
+                        const resultUrl = `${baseUrl}/comp/results_reports/${compId}/Event_${eventId}/combined_report_${eventId}.html`;
+                        console.log('결승 집계 성공, 결과 파일로 이동:', resultUrl);
+                        
+                        // 새 창에서 결과 표시
+                        const newWindow = window.open(resultUrl, '_blank', 'width=1200,height=900,scrollbars=yes,resizable=yes');
+                        
+                        if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+                            // 팝업이 차단된 경우 현재 페이지에 결과 표시
+                            showAggregationResult(data, eventId);
+                        } else {
+                            console.log('결승 결과 창이 열렸습니다.');
+                        }
+                        
+                        // 성공 메시지 표시
+                        setTimeout(() => {
+                            const successMsg = document.createElement('div');
+                            successMsg.innerHTML = `
+                                <div style="position: fixed; top: 20px; right: 20px; background: #27ae60; color: white; 
+                                     padding: 15px 20px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+                                     z-index: 10000; font-family: 'Noto Sans KR';">
+                                    ✅ 결승 결과가 성공적으로 생성되었습니다!<br>
+                                    <small>파일: combined_report_${eventId}.html</small>
+                                </div>
+                            `;
+                            document.body.appendChild(successMsg);
+                            setTimeout(() => {
+                                if (successMsg.parentNode) {
+                                    document.body.removeChild(successMsg);
+                                }
+                            }, 4000);
+                        }, 500);
+                    } else {
+                        console.error('집계 실패:', data.error || '데이터 형식 오류');
+                        alert(`집계 실패: ${data.error || '결과 데이터를 생성할 수 없습니다.'}`);
+                    }
+                })
+                .catch(error => {
+                    // 로딩 인디케이터 제거
+                    if (loadingMsg.parentNode) {
+                        document.body.removeChild(loadingMsg);
+                    }
+                    console.error('결승 집계 API 호출 실패:', error);
+                    alert(`결승 집계 처리 중 오류가 발생했습니다: ${error.message}`);
+                });
         }
         
         function openAwards(eventId) {
@@ -2253,6 +2326,67 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             // 새 창에서 상장 발급
             window.open(url, '_blank', 'width=1000,height=700,scrollbars=yes,resizable=yes');
+        }
+        
+        // 집계 결과를 현재 페이지에 표시하는 함수
+        function showAggregationResult(data, eventId) {
+            const rightContent = document.getElementById('right-content');
+            
+            const resultHtml = `
+                <div class="aggregation-result">
+                    <h2>🏆 집계 결과 - ${data.event_info.desc || '알 수 없는 이벤트'}</h2>
+                    
+                    <div class="event-info">
+                        <h3>이벤트 정보</h3>
+                        <p><strong>이벤트 번호:</strong> ${data.event_info.event_no || ''}</p>
+                        <p><strong>라운드:</strong> ${data.event_info.round || ''}</p>
+                        <p><strong>패널:</strong> ${data.event_info.panel || ''}</p>
+                        <p><strong>댄스:</strong> ${(data.event_info.dances || []).join(', ')}</p>
+                    </div>
+                    
+                    <div class="final-rankings">
+                        <h3>🏆 최종 순위</h3>
+                        <table class="rankings-table">
+                            <thead>
+                                <tr>
+                                    <th>순위</th>
+                                    <th>선수 번호</th>
+                                    <th>합계</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${(data.final_rankings || []).map(ranking => `
+                                    <tr>
+                                        <td>${ranking.final_rank}</td>
+                                        <td>${ranking.player_no}</td>
+                                        <td>${ranking.sum_of_places}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="players-info">
+                        <h3>👥 참가 선수</h3>
+                        <ul>
+                            ${(data.players || []).map(player => `
+                                <li>선수 번호: ${player.number}</li>
+                            `).join('')}
+                        </ul>
+                    </div>
+                    
+                    <div style="margin-top: 20px; text-align: center;">
+                        <button class="btn btn-primary" onclick="window.open('${window.location.origin}/comp/results_reports/<?=$comp_id?>/Event_${eventId}/combined_report_${eventId}.html', '_blank')">
+                            📄 전체 결과 보기
+                        </button>
+                        <button class="btn btn-secondary" onclick="updateRightPanel('${selectedEvent}', '${selectedGroup}')">
+                            ← 돌아가기
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            rightContent.innerHTML = resultHtml;
         }
         
         function getDanceSequenceDisplay(danceSequence) {
@@ -2477,7 +2611,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             console.log('updateJudgeStatus called for:', eventNo);
             
-            fetch(`https://www.danceoffice.net/comp/get_judge_status.php?comp_id=<?=urlencode($comp_id)?>&event_no=${eventNo}&${Date.now()}`)
+            fetch(`get_judge_status.php?comp_id=<?=urlencode($comp_id)?>&event_no=${eventNo}&${Date.now()}`)
                 .then(r => r.ok ? r.json() : {success: false, status: {}})
                 .then(data => {
                     console.log('Judge status response for', eventNo, ':', data);
