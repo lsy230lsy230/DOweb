@@ -121,7 +121,8 @@ if (file_exists($runorder_file)) {
             'heats' => $heats,
             'dances' => $dance_codes,
             'dance_names' => $dance_names,
-            'detail_no' => $cols[13] ?? '' // 14번째 컬럼에서 detail_no 읽기
+            'detail_no' => $cols[13] ?? '', // 14번째 컬럼에서 detail_no 읽기
+            'next_event' => $cols[5] ?? '' // 6번째 컬럼에서 next_event 읽기
         ];
     }
 }
@@ -4881,6 +4882,19 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         function getNextRoundInfo(event) {
             if (!event || !event.desc) return '';
             
+            // 먼저 next_event 정보가 있으면 사용
+            if (event.next_event && event.next_event !== '') {
+                // next_event 번호로 해당 이벤트 찾기
+                for (const group of groupData) {
+                    for (const groupEvent of group.events) {
+                        if (groupEvent.no === event.next_event) {
+                            return `${groupEvent.no}번 ${groupEvent.round}`;
+                        }
+                    }
+                }
+            }
+            
+            // next_event가 없으면 기존 로직 사용
             const currentEventDesc = event.desc;
             const currentRound = event.round;
             
@@ -5941,31 +5955,46 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 console.log('모든 계산 실패, 진출자 수를 기본값으로 사용:', totalTeams);
             }
             
-            // 다음 라운드 이벤트 번호 계산 (RunOrder_Tablet.txt에서 실제 다음 라운드 찾기)
+            // 다음 라운드 이벤트 번호 계산 (next_event 정보 우선 사용)
             let nextEventNumber = parseInt(currentEvent.no) + 1; // 기본값
             let nextEventName = currentEvent.desc.replace(/Round \d+/, 'Semi-Final').replace(/Final/, 'Semi-Final');
             
-            // 실제 다음 라운드 이벤트 찾기
-            const currentEventDesc = currentEvent.desc;
-            const currentRound = currentEvent.round;
-            
-            // 라운드 순서 정의
-            const roundOrder = {
-                'Round 1': 'Semi-Final',
-                'Semi-Final': 'Final',
-                'Final': 'Final'
-            };
-            
-            const nextRound = roundOrder[currentRound] || 'Final';
-            
-            // 같은 종목의 다음 라운드 이벤트 찾기
-            for (const group of groupData) {
-                for (const event of group.events) {
-                    if (event.desc === currentEventDesc && event.round === nextRound) {
-                        nextEventNumber = parseInt(event.no);
-                        nextEventName = event.desc;
-                        console.log('실제 다음 라운드 이벤트 발견:', nextEventNumber, nextEventName);
-                        break;
+            // 먼저 next_event 정보가 있으면 사용
+            if (currentEvent.next_event && currentEvent.next_event !== '') {
+                nextEventNumber = parseInt(currentEvent.next_event);
+                // next_event 번호로 해당 이벤트 찾기
+                for (const group of groupData) {
+                    for (const event of group.events) {
+                        if (event.no === currentEvent.next_event) {
+                            nextEventName = `${event.desc} ${event.round}`;
+                            console.log('next_event 정보로 다음 라운드 발견:', nextEventNumber, nextEventName);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                // next_event가 없으면 기존 로직 사용
+                const currentEventDesc = currentEvent.desc;
+                const currentRound = currentEvent.round;
+                
+                // 라운드 순서 정의
+                const roundOrder = {
+                    'Round 1': 'Semi-Final',
+                    'Semi-Final': 'Final',
+                    'Final': 'Final'
+                };
+                
+                const nextRound = roundOrder[currentRound] || 'Final';
+                
+                // 같은 종목의 다음 라운드 이벤트 찾기
+                for (const group of groupData) {
+                    for (const event of group.events) {
+                        if (event.desc === currentEventDesc && event.round === nextRound) {
+                            nextEventNumber = parseInt(event.no);
+                            nextEventName = event.desc;
+                            console.log('실제 다음 라운드 이벤트 발견:', nextEventNumber, nextEventName);
+                            break;
+                        }
                     }
                 }
             }
