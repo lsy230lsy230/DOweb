@@ -6054,8 +6054,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             console.log(`  셀 ${j}: "${cellText}"`);
                         }
                         
-                        if (cells.length >= 2) {
-                            const number = cells[1]?.textContent?.trim(); // 등번호는 2번째 컬럼
+                        if (cells.length >= 3) {
+                            const number = cells[2]?.textContent?.trim(); // 등번호는 3번째 컬럼
                             
                             if (number && !isNaN(parseInt(number))) {
                                 playerNumbers.push(number);
