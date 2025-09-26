@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1-1. 솔로 일반부 스탠다드 1종목 (T) - Final | DanceOffice</title>
+<meta name="description" content="DanceOffice - 1-1. 솔로 일반부 스탠다드 1종목 (T) - Final">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+}
+.header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+}
+.header h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+.header .subtitle {
+    font-size: 1.2em;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+.event-info {
+    background: #f8f9fa;
+    padding: 25px;
+    border-bottom: 3px solid #e9ecef;
+}
+.event-title {
+    font-size: 1.8em;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.event-badge {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.event-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+.detail-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #3498db;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.detail-label {
+    font-size: 0.9em;
+    color: #7f8c8d;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+.detail-value {
+    font-size: 1.1em;
+    color: #2c3e50;
+    font-weight: 600;
+}
+.results-section {
+    padding: 30px;
+}
+.section-title {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.section-title::before {
+    content: "🏆";
+    font-size: 1.2em;
+}
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.results-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 15px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.results-table td {
+    padding: 20px 15px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+    font-weight: 500;
+}
+.results-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.results-table tr:hover {
+    background: #e3f2fd;
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+.rank-1 { background: linear-gradient(45deg, #ffd700, #ffed4e) !important; color: #333 !important; }
+.rank-2 { background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important; color: #333 !important; }
+.rank-3 { background: linear-gradient(45deg, #cd7f32, #daa520) !important; color: white !important; }
+.player-name {
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: left;
+}
+.judge-score {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+.total-points {
+    font-weight: 700;
+    font-size: 1.2em;
+    color: #e74c3c;
+}
+.skating-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-top: 3px solid #e9ecef;
+}
+.skating-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.skating-table th {
+    background: linear-gradient(45deg, #2c3e50, #34495e);
+    color: white;
+    padding: 15px 10px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid #2c3e50;
+}
+.skating-table td {
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+}
+.skating-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.skating-table tr:hover {
+    background: #e8f4f8;
+}
+.skating-table .rank-1 {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #333 !important;
+}
+.skating-table .rank-2 {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
+    color: #333 !important;
+}
+.skating-table .rank-3 {
+    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
+    color: white !important;
+}
+.sum-places {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #e74c3c;
+    background: #fff5f5 !important;
+}
+.place-skating {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #2c3e50;
+    background: #f0f8ff !important;
+}
+.dance-results-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-top: 3px solid #e9ecef;
+}
+.dance-result-card {
+    background: white;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.dance-title {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    padding: 20px 30px;
+    font-size: 1.3em;
+    font-weight: 700;
+    text-align: center;
+}
+.dance-results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+.dance-results-table th {
+    background: #34495e;
+    color: white;
+    padding: 15px 10px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid #2c3e50;
+}
+.dance-results-table td {
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+}
+.dance-results-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.dance-results-table tr:hover {
+    background: #e8f4f8;
+}
+.dance-results-table .rank-1 {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #333 !important;
+}
+.dance-results-table .rank-2 {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
+    color: #333 !important;
+}
+.dance-results-table .rank-3 {
+    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
+    color: white !important;
+}
+.skating-dance-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.skating-dance-table th {
+    background: linear-gradient(45deg, #2c3e50, #34495e);
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid #2c3e50;
+    font-size: 0.85em;
+}
+.skating-dance-table td {
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+    font-size: 0.85em;
+}
+.skating-dance-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.skating-dance-table tr:hover {
+    background: #e8f4f8;
+}
+.skating-dance-table .rank-1 {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #333 !important;
+}
+.skating-dance-table .rank-2 {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
+    color: #333 !important;
+}
+.skating-dance-table .rank-3 {
+    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
+    color: white !important;
+}
+.calc-cell {
+    font-weight: 600;
+    color: #2c3e50;
+    background: #f0f8ff !important;
+}
+.place-dance {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #e74c3c;
+    background: #fff5f5 !important;
+}
+/* 과반수 규칙에 따른 색상 강조 */
+.calc-majority-1 {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5) !important;
+}
+.calc-majority-1-2 {
+    background: linear-gradient(45deg, #4ecdc4, #7dd3fc) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(78, 205, 196, 0.5) !important;
+}
+.calc-majority-1to3 {
+    background: linear-gradient(45deg, #45b7d1, #74c0fc) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(69, 183, 209, 0.5) !important;
+}
+.calc-majority-1to4 {
+    background: linear-gradient(45deg, #96ceb4, #a8e6cf) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(150, 206, 180, 0.5) !important;
+}
+.calc-majority-1to5 {
+    background: linear-gradient(45deg, #feca57, #ffd93d) !important;
+    color: #333 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(254, 202, 87, 0.5) !important;
+}
+.calc-majority-1to6 {
+    background: linear-gradient(45deg, #ff9ff3, #f368e0) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(255, 159, 243, 0.5) !important;
+}
+.adjudicators-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-top: 3px solid #e9ecef;
+}
+.adjudicators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 15px;
+}
+.adjudicator-card {
+    background: white;
+    padding: 8px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.adjudicator-code {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.8em;
+}
+.adjudicator-name {
+    font-weight: 400;
+    font-size: 0.8em;
+    color: #2c3e50;
+}
+.footer {
+    background: #2c3e50;
+    color: white;
+    padding: 25px;
+    text-align: center;
+    font-size: 0.9em;
+}
+.footer a {
+    color: #3498db;
+    text-decoration: none;
+}
+.footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 768px) {
+    .container { margin: 10px; border-radius: 15px; }
+    .header h1 { font-size: 2em; }
+    .event-details { grid-template-columns: 1fr; }
+    .results-table { font-size: 0.9em; }
+    .results-table th, .results-table td { padding: 15px 10px; }
+    .adjudicators-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+    <h1>2025 서초구청장배 댄스스포츠 대회</h1>
+    <div class="subtitle">DanceOffice Competition Management System</div>
+</div>
+<div class="event-info">
+    <div class="event-title">
+        <span class="event-badge">Final</span>
+        1-1. 솔로 일반부 스탠다드 1종목 (T)
+    </div>
+</div>
+<div class="results-section">
+    <div class="section-title">최종 결과</div>
+    <table class="results-table"><thead><tr>
+        <th>순위</th>
+        <th>번호</th>
+        <th>선수명</th>
+    </tr></thead><tbody><tr class="rank-1">
+            <td><strong>1</strong></td>
+            <td><strong>54</strong></td>
+            <td class="player-name">박주하</td>
+        </tr><tr class="rank-2">
+            <td><strong>2</strong></td>
+            <td><strong>53</strong></td>
+            <td class="player-name">김소혜</td>
+        </tr></tbody></table></div><div class="skating-section">
+    <div class="section-title">Rules 1 - 9 (스케이팅 집계표)</div>
+    <table class="skating-table">
+        <thead>
+            <tr>
+                <th>Cpl.NO</th><th>Tango</th><th>SUM of Places</th>
+                <th>Place Skating</th>
+            </tr>
+        </thead>
+        <tbody><tr class="rank-1">
+            <td><strong>54</strong></td><td>1</td><td class="sum-places"><strong>1</strong></td>
+            <td class="place-skating"><strong>1</strong></td>
+        </tr><tr class="rank-2">
+            <td><strong>53</strong></td><td>2</td><td class="sum-places"><strong>2</strong></td>
+            <td class="place-skating"><strong>2</strong></td>
+        </tr></tbody>
+    </table>
+</div><div class="dance-results-section">
+    <div class="section-title">종목별 댄스 집계 결과 (스케이팅 시스템)</div><div class="dance-result-card">
+            <div class="dance-title">Tango</div>
+            <table class="skating-dance-table">
+                <thead>
+                    <tr>
+                        <th>Cpl. No.</th><th>1</th><th>2</th><th>3</th><th>5</th><th>6</th><th>10</th><th>11</th><th>25</th><th>27</th><th>1</th>
+                        <th>1&2</th>
+                        <th>1to3</th>
+                        <th>1to4</th>
+                        <th>1to5</th>
+                        <th>1to6</th>
+                        <th>Place Dance</th>
+                    </tr>
+                </thead>
+                <tbody><tr class="rank-1">
+                <td><strong>54</strong></td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>2</td><td>1</td><td>1</td><td>2</td><td class="calc-cell calc-majority-1">7</td>
+                <td class="calc-cell ">9</td>
+                <td class="calc-cell ">9 (11)</td>
+                <td class="calc-cell ">9</td>
+                <td class="calc-cell ">9</td>
+                <td class="calc-cell ">9</td>
+                <td class="place-dance"><strong>1</strong></td>
+            </tr><tr class="rank-2">
+                <td><strong>53</strong></td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>1</td><td>2</td><td>2</td><td>1</td><td class="calc-cell ">2</td>
+                <td class="calc-cell calc-majority-1-2">9</td>
+                <td class="calc-cell ">9 (16)</td>
+                <td class="calc-cell ">9</td>
+                <td class="calc-cell ">9</td>
+                <td class="calc-cell ">9</td>
+                <td class="place-dance"><strong>2</strong></td>
+            </tr></tbody>
+            </table>
+        </div></div><div class="adjudicators-section">
+    <div class="section-title">심사위원</div>
+    <div class="adjudicators-grid"><div class="adjudicator-card">
+            <div class="adjudicator-code">1</div>
+            <div class="adjudicator-name">E</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">2</div>
+            <div class="adjudicator-name">I</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">3</div>
+            <div class="adjudicator-name">C</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">5</div>
+            <div class="adjudicator-name">B</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">6</div>
+            <div class="adjudicator-name">A</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">10</div>
+            <div class="adjudicator-name">K</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">11</div>
+            <div class="adjudicator-name">F</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">25</div>
+            <div class="adjudicator-name">M</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">27</div>
+            <div class="adjudicator-name">P</div>
+        </div></div>
+</div>
+</div>
+<div class="footer">
+    <p>&copy; 2025 <a href="http://www.danceoffice.net">DanceOffice</a> - Competition Management System</p>
+    <p>Generated on 2025-09-26 10:42:54 | <a href="http://www.danceoffice.net">DanceOffice.net</a></p>
+</div>
+</body>
+</html>

@@ -25,14 +25,23 @@ try {
     $content = file_get_contents($players_file);
     $player_numbers = array_filter(explode("\n", $content));
     
-    // 선수 이름 정보 (임시로 기본값 사용)
-    $competitors = [];
-    
-    // 기본 선수 이름 생성
-    foreach ($player_numbers as $number) {
-        $number = trim($number);
-        if (!empty($number)) {
-            $competitors[$number] = "선수 $number";
+    // 전체 선수 정보 로드
+    $all_players_file = "$data_dir/players.txt";
+    $all_players = [];
+    if (file_exists($all_players_file)) {
+        $lines = file($all_players_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($lines as $line) {
+            $cols = array_map('trim', explode(',', $line));
+            if (count($cols) >= 3) {
+                $number = (string)$cols[0];
+                $male_name = $cols[1];
+                $female_name = $cols[2];
+                $all_players[$number] = [
+                    'male' => $male_name,
+                    'female' => $female_name,
+                    'couple' => $male_name . ' & ' . $female_name
+                ];
+            }
         }
     }
     
@@ -41,9 +50,12 @@ try {
     foreach ($player_numbers as $number) {
         $number = trim($number);
         if (!empty($number)) {
+            $player_info = $all_players[$number] ?? null;
             $players[] = [
                 'number' => $number,
-                'name' => $competitors[$number] ?? "선수 $number"
+                'name' => $player_info ? $player_info['couple'] : "선수 $number",
+                'male' => $player_info ? $player_info['male'] : '',
+                'female' => $player_info ? $player_info['female'] : ''
             ];
         }
     }

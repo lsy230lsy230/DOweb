@@ -1530,6 +1530,82 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             font-size: 0.9em;
         }
         
+        /* 진행종목 블록 컨트롤 */
+        .dance-controls {
+            margin-top: 1em;
+            display: flex;
+            gap: 0.5em;
+            justify-content: center;
+        }
+        
+        .aggregation-btn, .award-btn {
+            background: #0d2c96;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.5em 1em;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .aggregation-btn:hover, .award-btn:hover {
+            background: #1a3bb8;
+        }
+        
+        .award-btn {
+            background: #28a745;
+        }
+        
+        .award-btn:hover {
+            background: #218838;
+        }
+        
+        /* 상장 모달 스타일 */
+        .award-options h4 {
+            margin: 0 0 1em 0;
+            color: #0d2c96;
+        }
+        
+        .award-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 0.5em;
+            margin-bottom: 2em;
+        }
+        
+        .award-type-btn {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            padding: 1em;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        
+        .award-type-btn:hover {
+            background: #e9ecef;
+            border-color: #0d2c96;
+        }
+        
+        .award-preview {
+            margin-top: 2em;
+            padding: 1em;
+            background: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .award-preview h4 {
+            margin: 0 0 1em 0;
+            color: #0d2c96;
+        }
+        
+        .award-certificate {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
         .event-card {
             background: white;
             border: 1px solid #dee2e6;
@@ -2827,6 +2903,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                         </div>
                                         <div class="dance-list" id="dance-list"></div>
                                     </div>
+                                    <div class="dance-controls">
+                                        <button class="aggregation-btn" onclick="openAggregation()">집계 결과</button>
+                                        <button class="award-btn" onclick="openAwardModal()">상장 발급</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -2911,7 +2991,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             if (!ul) return;
             
             let arr = playersByEvent[eventNo] || [];
-            let sorted = arr.slice().sort((a, b) => Number(a) - Number(b));
+            let sorted = arr.slice().sort((a, b) => Number(a.number) - Number(b.number));
             ul.innerHTML = "";
             
             if (!sorted.length) {
@@ -2919,10 +2999,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            sorted.forEach((bib, idx) => {
+            sorted.forEach((player, idx) => {
                 let li = document.createElement("li");
-                const playerName = (allPlayers && allPlayers[bib]) || `선수 ${bib}`;
-                li.innerHTML = `${bib} - ${playerName} <button class="player-x-btn" onclick="removePlayer('${bib}')">X</button>`;
+                const playerName = player.name || `선수 ${player.number}`;
+                li.innerHTML = `${player.number} - ${playerName} <button class="player-x-btn" onclick="removePlayer('${player.number}')">X</button>`;
                 ul.appendChild(li);
             });
         }
@@ -2953,11 +3033,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 .then(res => res.json())
                 .then(data => {
                     if (data.success) {
-                        // 선수 번호 배열로 변환
-                        const playerNumbers = data.players ? data.players.map(p => p.number) : [];
-                        playersByEvent[eventNo] = playerNumbers;
+                        // 선수 데이터 저장 (번호와 이름 모두)
+                        playersByEvent[eventNo] = data.players || [];
                         renderPlayerList(eventNo);
-                        console.log(`Players loaded for event ${eventNo}:`, playerNumbers);
+                        console.log(`Players loaded for event ${eventNo}:`, data.players);
                     } else {
                         console.error('Failed to load players:', data.message);
                         playersByEvent[eventNo] = [];
@@ -3146,6 +3225,120 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             printContent += `</body></html>`;
             printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.print();
+        }
+        
+        // 상장 모달 열기 함수
+        function openAwardModal() {
+            document.getElementById('awardModalBg').style.display = 'flex';
+        }
+        
+        // 상장 모달 닫기 함수
+        function closeAwardModal() {
+            document.getElementById('awardModalBg').style.display = 'none';
+            document.getElementById('awardPreview').style.display = 'none';
+            document.getElementById('printAwardBtn').style.display = 'none';
+        }
+        
+        // 상장 생성 함수
+        function generateAward(type) {
+            const currentEvent = events.find(ev => (ev.detail_no || ev.no) === selectedEvent);
+            if (!currentEvent) return;
+            
+            const eventNo = currentEvent.detail_no || currentEvent.no;
+            const eventName = currentEvent.desc || `이벤트 ${eventNo}`;
+            const eventDate = new Date().toLocaleDateString('ko-KR');
+            
+            let awardTitle = '';
+            let awardColor = '';
+            
+            switch(type) {
+                case '1st':
+                    awardTitle = '1위';
+                    awardColor = '#FFD700';
+                    break;
+                case '2nd':
+                    awardTitle = '2위';
+                    awardColor = '#C0C0C0';
+                    break;
+                case '3rd':
+                    awardTitle = '3위';
+                    awardColor = '#CD7F32';
+                    break;
+                case 'finalist':
+                    awardTitle = '결승 진출';
+                    awardColor = '#4CAF50';
+                    break;
+                case 'participation':
+                    awardTitle = '참가상';
+                    awardColor = '#2196F3';
+                    break;
+            }
+            
+            const awardHtml = `
+                <div class="award-certificate" style="
+                    border: 3px solid ${awardColor};
+                    padding: 30px;
+                    text-align: center;
+                    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+                    font-family: 'Times New Roman', serif;
+                    max-width: 600px;
+                    margin: 0 auto;
+                ">
+                    <h1 style="color: ${awardColor}; font-size: 2.5em; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                        상장
+                    </h1>
+                    <div style="font-size: 1.2em; margin: 20px 0; color: #333;">
+                        위 선수는
+                    </div>
+                    <div style="font-size: 1.5em; font-weight: bold; margin: 20px 0; color: #2c3e50;">
+                        ${eventName}
+                    </div>
+                    <div style="font-size: 1.2em; margin: 20px 0; color: #333;">
+                        에서
+                    </div>
+                    <div style="font-size: 2em; font-weight: bold; margin: 20px 0; color: ${awardColor}; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);">
+                        ${awardTitle}
+                    </div>
+                    <div style="font-size: 1.2em; margin: 20px 0; color: #333;">
+                        를 수상하므로 이에 상장을 수여합니다.
+                    </div>
+                    <div style="margin-top: 40px; font-size: 1.1em; color: #666;">
+                        ${eventDate}
+                    </div>
+                    <div style="margin-top: 20px; font-size: 1.1em; color: #666;">
+                        대회 주최측
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('awardContent').innerHTML = awardHtml;
+            document.getElementById('awardPreview').style.display = 'block';
+            document.getElementById('printAwardBtn').style.display = 'inline-block';
+        }
+        
+        // 상장 인쇄 함수
+        function printAward() {
+            const printWindow = window.open('', '_blank');
+            const awardContent = document.getElementById('awardContent').innerHTML;
+            
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>상장</title>
+                    <style>
+                        body { margin: 0; padding: 20px; }
+                        @media print {
+                            body { margin: 0; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    ${awardContent}
+                </body>
+                </html>
+            `);
             printWindow.document.close();
             printWindow.print();
         }
@@ -4101,6 +4294,36 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         <div class="modal-footer">
             <button class="btn-secondary" onclick="closeHitModal()">닫기</button>
             <button class="btn-primary" onclick="printHits()">인쇄</button>
+        </div>
+    </div>
+</div>
+
+<!-- 상장 발급 모달 -->
+<div id="awardModalBg" class="modal-bg" style="display: none;">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>상장 발급</h3>
+            <button class="modal-close" onclick="closeAwardModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="awardModalBody">
+            <div class="award-options">
+                <h4>상장 종류 선택</h4>
+                <div class="award-type-grid">
+                    <button class="award-type-btn" onclick="generateAward('1st')">1위 상장</button>
+                    <button class="award-type-btn" onclick="generateAward('2nd')">2위 상장</button>
+                    <button class="award-type-btn" onclick="generateAward('3rd')">3위 상장</button>
+                    <button class="award-type-btn" onclick="generateAward('finalist')">결승 진출</button>
+                    <button class="award-type-btn" onclick="generateAward('participation')">참가상</button>
+                </div>
+                <div class="award-preview" id="awardPreview" style="display: none;">
+                    <h4>상장 미리보기</h4>
+                    <div id="awardContent"></div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeAwardModal()">닫기</button>
+            <button class="btn-primary" onclick="printAward()" id="printAwardBtn" style="display: none;">인쇄</button>
         </div>
     </div>
 </div>
