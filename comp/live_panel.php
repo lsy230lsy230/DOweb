@@ -6020,10 +6020,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 rank: index + 1
             }));
             
-            // 1. 먼저 recall 수를 조정
-            const currentEventId = events.find(ev => (ev.detail_no || ev.no) === selectedEvent)?.no || selectedEvent;
-            console.log('현재 이벤트 ID:', currentEventId, '선택된 이벤트:', selectedEvent);
-            updateRecallCount(currentEventId, coupleCount);
+            // 1. 등위 기반으로 진출자 추출 (리콜 수 업데이트 없이)
+            console.log('등위 기반 진출자 추출:', {coupleCount, totalPlayers: players.length});
             
             // 서버에 다음 라운드 생성 요청
             const requestData = {

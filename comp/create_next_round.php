@@ -47,7 +47,9 @@ try {
     
     // 이벤트가 존재하지 않는 경우에만 새로 추가
     if (!$eventExists) {
-        $newEventLine = "$eventNumber,$eventName,Semi-Final,,,,6,7,8,9,10,LC,1.5,,0";
+        // 진출자 수를 players 배열 길이로 설정
+        $recallCount = count($players);
+        $newEventLine = "$eventNumber,$eventName,Semi-Final,,,,$recallCount,7,8,9,10,LC,1.5,,0";
         $lines[] = $newEventLine;
         
         $content = implode("\n", $lines) . "\n";
