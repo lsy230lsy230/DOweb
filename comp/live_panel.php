@@ -930,6 +930,19 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             overflow: hidden;
         }
         
+        .single-event-card {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex: 1;
+            padding: 20px;
+        }
+        
+        .single-event-card .event-card {
+            width: 100%;
+            max-width: 500px;
+        }
+        
         .event-card {
             background: white;
             border: 1px solid #dee2e6;
@@ -2183,10 +2196,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     </div>
                 `;
     } else {
-                // 싱글 이벤트인 경우 간단한 정보 표시 (멀티 이벤트와 동일한 스타일)
+                // 싱글 이벤트인 경우 단일 카드 표시
                 content += `
                     <div class="event-cards-container">
-                        <div class="event-cards-grid">
+                        <div class="single-event-card">
                             <div class="event-card selected" data-event="${eventId}" onclick="selectEventFromCard('${eventId}', '${groupId}')">
                                 <div class="event-card-header">
                                     <div class="event-number">${eventId}</div>
