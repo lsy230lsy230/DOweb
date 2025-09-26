@@ -4243,7 +4243,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial;'>
                             <tr>
                                 <td style='font-weight:bold; padding-top:1em;' align='left'>${currentEvent.desc || '집계 결과'} - ${currentEvent.round || 'Semi'}</td>
-                                <td style='font-weight:bold; padding-top:1em;' align='right'>${data.advancing_players.length}커플이 다음라운에 진출합니다</td>
+                                <td style='font-weight:bold; padding-top:1em;' align='right'>${data.recall_count_from_file || data.advancing_players.length}커플이 다음라운에 진출합니다</td>
                             </tr>
                         </table>
                         <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:0.5em;'>
@@ -4275,9 +4275,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     </tr>
             `;
             
-            // 모든 선수를 등위 순서로 표시 (리콜 여부에 따라 구분)
+            // 모든 선수를 등위 순서로 표시 (상위 N커플 진출 기준으로 구분)
+            const topNSet = new Set((data.advancing_players || []).map(p => String(p.player_number)));
             data.player_recalls.forEach((player, index) => {
-                const isAdvancing = player.recall_count >= data.recall_threshold;
+                const isAdvancing = topNSet.has(String(player.player_number));
                 const bgColor = isAdvancing ? '#e8f5e8' : '#f5f5f5'; // 진출자는 연한 초록, 탈락자는 연한 회색
                 const borderStyle = isAdvancing ? 'border-left: 4px solid #28a745;' : 'border-left: 4px solid #dc3545;';
                 const statusText = isAdvancing ? '✅ 진출' : '❌ 탈락';

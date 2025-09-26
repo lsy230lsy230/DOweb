@@ -206,14 +206,16 @@ try {
         }
     }
     
-    // 리콜 기준 계산 (RunOrder_Tablet.txt의 리콜 수 또는 심사위원 수의 절반 이상)
+    // 리콜 기준 계산: 표시용 임계치(심사위원 수의 절반)와 파일 지정 리콜 수를 분리
+    // - recall_threshold: 표기/참고용 (절반 이상)
+    // - advancing_players: 파일에 지정된 리콜 수 상위 N 커플로 산정
     $total_judges = count($judges);
     $recall_threshold = $recall_count > 0 ? $recall_count : ceil($total_judges / 2);
-    
-    // 진출 선수 필터링
-    $advancing_players = array_filter($player_recalls, function($player) use ($recall_threshold) {
-        return $player['recall_count'] >= $recall_threshold;
-    });
+
+    // 상위 N 커플 산정 (파일 리콜 수 우선, 없으면 절반 이상 기준으로 대체)
+    $advancing_count = $recall_count > 0 ? $recall_count : $recall_threshold;
+    // player_recalls는 이미 리콜 횟수 내림차순 정렬 완료
+    $advancing_players = array_slice($player_recalls, 0, max(0, (int)$advancing_count));
     
     // 심사위원 이름 매핑 로드
     $adjudicators_file = "$data_dir/adjudicators.txt";
