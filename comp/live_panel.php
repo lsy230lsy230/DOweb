@@ -6026,11 +6026,27 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 
                 if (aggregationResult) {
                     console.log('집계 결과 요소 찾음:', aggregationResult);
-                    const summaryTable = aggregationResult.querySelector('table');
+                    
+                    // 모든 테이블을 찾아서 데이터가 있는 테이블 선택
+                    const allTables = aggregationResult.querySelectorAll('table');
+                    console.log('찾은 테이블 수:', allTables.length);
+                    
+                    let summaryTable = null;
+                    for (let i = 0; i < allTables.length; i++) {
+                        const table = allTables[i];
+                        const rows = table.querySelectorAll('tr');
+                        console.log(`테이블 ${i} 행 수:`, rows.length);
+                        if (rows.length > 1) { // 헤더 + 데이터 행이 있는 테이블
+                            summaryTable = table;
+                            console.log(`데이터가 있는 테이블 선택: 테이블 ${i}`);
+                            break;
+                        }
+                    }
+                    
                     if (summaryTable) {
-                        console.log('집계 테이블 찾음:', summaryTable);
+                        console.log('선택된 집계 테이블:', summaryTable);
                         const rows = summaryTable.querySelectorAll('tr');
-                        console.log('테이블 행 수:', rows.length);
+                        console.log('선택된 테이블 행 수:', rows.length);
                         
                         for (let i = 1; i < rows.length && allPlayers.length < coupleCount; i++) {
                             const row = rows[i];
