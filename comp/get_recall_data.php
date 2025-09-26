@@ -12,6 +12,13 @@ if (!$event_no) {
 $data_dir = __DIR__ . "/data/$comp_id";
 
 try {
+    // 대회 정보 로드
+    $info_file = "$data_dir/info.json";
+    $competition_info = [];
+    if (file_exists($info_file)) {
+        $competition_info = json_decode(file_get_contents($info_file), true);
+    }
+    
     // 이벤트 정보 로드
     $runorder_file = "$data_dir/RunOrder_Tablet.txt";
     if (!file_exists($runorder_file)) {
@@ -239,6 +246,7 @@ try {
     // 결과 반환
     $result = [
         'success' => true,
+        'competition_info' => $competition_info,
         'event_info' => $current_event,
         'total_judges' => $total_judges,
         'recall_count_from_file' => $recall_count,

@@ -4232,13 +4232,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             let html = `
                 <div class="dancesport-container">
                     <div class="dancesport-header">
-                        <h1><center>2025 제9회 용인특례시 시민일보배</center></h1>
+                        <h1><center>${data.competition_info?.title || '2025 제9회 용인특례시 시민일보배'}</center></h1>
                     </div>
                     <div class="dancesport-content">
                         <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial;'>
                             <tr>
-                                <td width='50%' valign='top' style='font-weight:bold;'>2025년 9월 13일</td>
-                                <td width='40%' align='right'>Results Copyright of</td>
+                                <td width='50%' valign='top' style='font-weight:bold;'>${data.competition_info?.date || '2025년 9월 13일'}</td>
+                                <td width='40%' align='right'></td>
                             </tr>
                         </table>
                         <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial;'>
@@ -4254,11 +4254,6 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                     파일 리콜 수: ${data.recall_count_from_file || 0}명 | 
                                     심사위원 수: ${data.total_judges}명 | 
                                     리콜 기준: ${data.recall_threshold}명 이상
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style='font-size:0.9em; color:#666; padding-top:0.5em;' align='left'>
-                                    <strong>심사위원:</strong> ${data.judge_names.join(', ')}
                                 </td>
                             </tr>
                         </table>
@@ -4334,7 +4329,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         
                         html += `
                             <tr style='${rowStyle}'>
-                                <td align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${index + 1}</td>
+                                <td align='center' style='margin-top:2em; padding-left:1em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${player.player_number}</td>
                                 <td align='left' style='margin-top:2em; padding-left:2em; padding-top:5px; padding-bottom:5px; color:#000; background-color:${bgColor}'>${player.player_name}</td>
                         `;
                         
@@ -4355,6 +4350,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     
                     html += `
                         </table>
+                        <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial; margin-top:1em;'>
+                            <tr>
+                                <td style='font-size:0.9em; color:#666; padding-top:0.5em;' align='left'>
+                                    <strong>심사위원:</strong> ${data.judge_names.join(', ')} (${data.judges.join(', ')})
+                                </td>
+                            </tr>
+                        </table>
                     `;
                 });
             }
@@ -4362,7 +4364,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             html += `
                     </div>
                     <div class="dancesport-footer">
-                        <p style="padding:10px 0; background:#575757; color:#fff; position:relative; clear:both; text-align:center;">
+                        <p style="padding:10px 0; background:#575757; color:#fff; position:relative; clear:both; text-align:center;">Results Copyright of
                             DanceScore Scrutineering Software
                         </p>
                     </div>
