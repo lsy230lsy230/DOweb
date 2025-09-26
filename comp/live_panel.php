@@ -943,6 +943,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             overflow: hidden;
         }
         
+        /* 싱글 이벤트용 넓은 그리드 */
+        .event-cards-grid.single-event {
+            grid-template-columns: 1fr;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
         .single-event-panel {
             flex: 1;
             display: flex;
@@ -1695,6 +1702,12 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             overflow: hidden;
         }
         
+        /* 싱글 이벤트 카드 넓게 */
+        .event-cards-grid.single-event .event-card {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
         .event-card:hover {
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
             transform: translateY(-2px);
@@ -1713,6 +1726,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             padding-top: 15px;
         }
         
+        /* 싱글 이벤트 카드 바디 더 넓게 */
+        .event-cards-grid.single-event .event-card-body {
+            min-height: 500px;
+        }
+        
         .event-card-left {
             flex: 1;
             padding: 15px;
@@ -1726,12 +1744,35 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: white;
         }
         
+        /* 싱글 이벤트 좌우 분할 더 넓게 */
+        .event-cards-grid.single-event .event-card-left,
+        .event-cards-grid.single-event .event-card-right {
+            padding: 20px;
+        }
+        
         .event-card-title {
             font-size: 14px;
             font-weight: 500;
             color: #2c3e50;
             margin-bottom: 12px;
             line-height: 1.4;
+        }
+        
+        /* 싱글 이벤트 텍스트 크기 증가 */
+        .event-cards-grid.single-event .event-card-title {
+            font-size: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .event-cards-grid.single-event .event-card-detail-row {
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+        
+        .event-cards-grid.single-event .event-card-dances {
+            font-size: 12px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
         }
         
         .event-card-details {
@@ -2050,6 +2091,14 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             align-items: center;
             justify-content: center;
             gap: 4px;
+        }
+        
+        /* 싱글 이벤트 액션 버튼 더 크게 */
+        .event-cards-grid.single-event .event-card-btn {
+            padding: 12px 16px;
+            font-size: 13px;
+            min-width: 100px;
+            gap: 6px;
         }
         
         .event-card-btn:hover {
@@ -2901,7 +2950,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 // 싱글 이벤트인 경우 멀티 이벤트와 동일한 스타일로 표시
                 content += `
                     <div class="event-cards-container">
-                        <div class="event-cards-grid">
+                        <div class="event-cards-grid single-event">
                             <div class="event-card selected" data-event="${eventId}" onclick="selectEventFromCard('${eventId}', '${groupId}')">
                                 <div class="event-card-header">
                                     <div class="event-number">${eventId}</div>
