@@ -5886,29 +5886,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                                 <span class="couple-count-info">(최대 ${advancingPlayers.length}명까지 가능)</span>
                             </div>
                         </div>
-                        <div class="advancing-players-list">
-                            <h4>진출자 목록 (등위순)</h4>
-                            <div class="players-table">
-                                <table>
-                                    <thead>
-                                        <tr>
-                                            <th>순위</th>
-                                            <th>등번호</th>
-                                            <th>선수명</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="advancing-players-tbody">
-                                        ${advancingPlayers.map((player, index) => `
-                                            <tr>
-                                                <td>${index + 1}</td>
-                                                <td>${player.number}</td>
-                                                <td>${player.name}</td>
-                                            </tr>
-                                        `).join('')}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <!-- 진출자 목록은 제거 - 커플 수만 조정하면 됨 -->
                         <div class="next-round-actions">
                             <button onclick="createNextRound(${nextEventNumber}, '${nextEventName}')" 
                                     class="btn btn-primary">다음 라운드 생성</button>
@@ -5944,18 +5922,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            // 테이블 행 표시/숨김 처리
-            const tbody = document.getElementById('advancing-players-tbody');
-            if (tbody) {
-                const rows = tbody.querySelectorAll('tr');
-                rows.forEach((row, index) => {
-                    if (index < coupleCount) {
-                        row.style.display = '';
-                    } else {
-                        row.style.display = 'none';
-                    }
-                });
-            }
+            // 진출자 목록 테이블이 제거되었으므로 추가 처리 불필요
             
             // 진출자 수 업데이트
             const infoElement = document.querySelector('.couple-count-info');
