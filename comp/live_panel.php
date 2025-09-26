@@ -817,6 +817,12 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             opacity: 0.7;
         }
         
+        .next-round-info {
+            color: #28a745;
+            font-weight: 600;
+            font-size: 11px;
+        }
+        
         .recall-edit-modal {
             position: fixed;
             top: 0;
@@ -3380,6 +3386,14 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             </div>
                         </div>
                         ` : ''}
+                        ${getNextRoundInfo(group.events[0]) ? `
+                        <div class="info-item">
+                            <div class="info-label">다음 라운드</div>
+                            <div class="info-value next-round-info">
+                                ${getNextRoundInfo(group.events[0])}
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                 </div>
             `;
@@ -4836,6 +4850,35 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             const round = event.round.toLowerCase();
             // 예선전(Round 1, Round 2 등)과 준결승(Semi-Final)에서만 Recall 수 표시
             return round.includes('round') || round.includes('semi');
+        }
+        
+        // 다음 라운드 정보 가져오기
+        function getNextRoundInfo(event) {
+            if (!event || !event.desc) return '';
+            
+            const currentEventDesc = event.desc;
+            const currentRound = event.round;
+            
+            // 라운드 순서 정의
+            const roundOrder = {
+                'Round 1': 'Semi-Final',
+                'Semi-Final': 'Final',
+                'Final': ''
+            };
+            
+            const nextRound = roundOrder[currentRound] || '';
+            if (!nextRound) return '';
+            
+            // 같은 종목의 다음 라운드 이벤트 찾기
+            for (const group of groupData) {
+                for (const groupEvent of group.events) {
+                    if (groupEvent.desc === currentEventDesc && groupEvent.round === nextRound) {
+                        return `${groupEvent.no}번 ${nextRound}`;
+                    }
+                }
+            }
+            
+            return '';
         }
         
         function openDanceEditModal(groupId) {
