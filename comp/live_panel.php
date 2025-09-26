@@ -1797,6 +1797,18 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         if (duplicateGroups.length > 0) {
             console.log('중복된 그룹 번호:', duplicateGroups);
         }
+        
+        // 52번 그룹 확인
+        const group52 = groupData.find(g => g.group_no == '52');
+        if (group52) {
+            console.log('52번 그룹:', group52);
+        } else {
+            console.log('52번 그룹을 찾을 수 없습니다.');
+        }
+        
+        // 50번 이상 그룹들 확인
+        const highNumberGroups = groupData.filter(g => parseInt(g.group_no) >= 50);
+        console.log('50번 이상 그룹들:', highNumberGroups.map(g => g.group_no));
         let expandedGroups = new Set();
         let completedGroups = new Set();
         let hideCompleted = false;
@@ -2954,6 +2966,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             const seenGroups = new Set();
             let removedCount = 0;
             
+            console.log('총 그룹 수 (DOM):', groups.length);
+            
             groups.forEach(group => {
                 const groupNo = group.dataset.group;
                 if (seenGroups.has(groupNo)) {
@@ -2967,6 +2981,14 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             if (removedCount > 0) {
                 console.log('총 ' + removedCount + '개의 중복 그룹이 제거되었습니다.');
+            }
+            
+            // 52번 그룹이 DOM에 있는지 확인
+            const group52 = document.querySelector('[data-group="52"]');
+            if (group52) {
+                console.log('52번 그룹이 DOM에 존재합니다.');
+            } else {
+                console.log('52번 그룹이 DOM에 없습니다.');
             }
         }
 </script>
