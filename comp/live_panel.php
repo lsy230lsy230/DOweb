@@ -96,7 +96,7 @@ if (file_exists($runorder_file)) {
         $desc = $cols[1] ?? '';
         $roundtype = $cols[2] ?? '';
         $panel = isset($cols[11]) ? strtoupper($cols[11]) : '';
-        $recall = $cols[4] ?? '';
+        $recall = $cols[5] ?? ''; // 5번째 컬럼이 리콜 수
         $heats = $cols[14] ?? ''; // 히트는 15번째 컬럼 (인덱스 14)
         $dance_codes = [];
         // 6-10번째 컬럼의 숫자를 댄스 코드로 사용 (정확한 데이터)
