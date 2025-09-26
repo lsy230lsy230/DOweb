@@ -6082,6 +6082,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             console.log('createNextRound 요청 데이터:', requestData);
             console.log('전달할 players 수:', players.length);
+            console.log('eventNumber 타입:', typeof eventNumber, '값:', eventNumber);
+            console.log('eventName 타입:', typeof eventName, '값:', eventName);
+            console.log('players 배열:', players);
             
             fetch('create_next_round.php', {
                 method: 'POST',
