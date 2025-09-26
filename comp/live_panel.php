@@ -3610,7 +3610,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         let hitsByEvent = {};
         
         // 그룹 토글 함수들 (HTML에서 호출되므로 먼저 정의)
-        function toggleGroup(groupNo) {
+        window.toggleGroup = function(groupNo) {
             const group = document.querySelector(`[data-group="${groupNo}"]`);
             const eventList = document.getElementById(`group-${groupNo}`);
             const toggle = group.querySelector('.group-toggle');
@@ -3626,7 +3626,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }
         }
         
-        function toggleGroupComplete(groupNo) {
+        window.toggleGroupComplete = function(groupNo) {
             const group = document.querySelector(`[data-group="${groupNo}"]`);
             const completeBtn = group.querySelector('.group-complete-btn');
             
@@ -5948,14 +5948,14 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             console.log('다음 이벤트:', nextEventNumber, nextEventName);
             
             // 현재 이벤트 정보로 다음 라운드 자동 찾기
-            const currentEvent = events.find(e => e.no == selectedEvent);
-            if (currentEvent) {
-                const nextRoundInfo = getNextRoundInfo(currentEvent);
+            const currentEventForModal = events.find(e => e.no == selectedEvent);
+            if (currentEventForModal) {
+                const nextRoundInfo = getNextRoundInfo(currentEventForModal);
                 if (nextRoundInfo) {
                     const match = nextRoundInfo.match(/(\d+)번\s+(.+)/);
                     if (match) {
                         nextEventNumber = parseInt(match[1]);
-                        nextEventName = `${currentEvent.desc} ${match[2]}`;
+                        nextEventName = `${currentEventForModal.desc} ${match[2]}`;
                         console.log('모달용 자동 찾은 다음 라운드:', nextEventNumber, nextEventName);
                     }
                 }
