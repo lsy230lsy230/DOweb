@@ -807,43 +807,39 @@ body {
 }
 .adjudicators-section {
     background: #f8f9fa;
-    padding: 30px;
+    padding: 20px;
     border-top: 3px solid #e9ecef;
 }
 .adjudicators-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 15px;
 }
 .adjudicator-card {
     background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    padding: 8px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
-    gap: 15px;
-    transition: transform 0.2s ease;
-}
-.adjudicator-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    gap: 8px;
 }
 .adjudicator-code {
     background: linear-gradient(45deg, #3498db, #2980b9);
     color: white;
-    width: 40px;
-    height: 40px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 1.1em;
+    font-weight: 600;
+    font-size: 0.8em;
 }
 .adjudicator-name {
-    font-weight: 600;
+    font-weight: 400;
+    font-size: 0.8em;
     color: #2c3e50;
 }
 .footer {
@@ -1055,28 +1051,20 @@ body {
             
             // 과반수 규칙에 따른 색상 결정 (9명 심사위원, 과반수 5명)
             $majority = 5;
-            $highlight_class = '';
             
-            if ($calc_1 >= $majority) {
-                $highlight_class = 'calc-majority-1';
-            } elseif ($calc_1_2 >= $majority) {
-                $highlight_class = 'calc-majority-1-2';
-            } elseif ($calc_1to3 >= $majority) {
-                $highlight_class = 'calc-majority-1to3';
-            } elseif ($calc_1to4 >= $majority) {
-                $highlight_class = 'calc-majority-1to4';
-            } elseif ($calc_1to5 >= $majority) {
-                $highlight_class = 'calc-majority-1to5';
-            } elseif ($calc_1to6 >= $majority) {
-                $highlight_class = 'calc-majority-1to6';
-            }
+            $calc_1_class = ($calc_1 >= $majority) ? 'calc-majority-1' : '';
+            $calc_1_2_class = ($calc_1 < $majority && $calc_1_2 >= $majority) ? 'calc-majority-1-2' : '';
+            $calc_1to3_class = ($calc_1 < $majority && $calc_1_2 < $majority && $calc_1to3 >= $majority) ? 'calc-majority-1to3' : '';
+            $calc_1to4_class = ($calc_1 < $majority && $calc_1_2 < $majority && $calc_1to3 < $majority && $calc_1to4 >= $majority) ? 'calc-majority-1to4' : '';
+            $calc_1to5_class = ($calc_1 < $majority && $calc_1_2 < $majority && $calc_1to3 < $majority && $calc_1to4 < $majority && $calc_1to5 >= $majority) ? 'calc-majority-1to5' : '';
+            $calc_1to6_class = ($calc_1 < $majority && $calc_1_2 < $majority && $calc_1to3 < $majority && $calc_1to4 < $majority && $calc_1to5 < $majority && $calc_1to6 >= $majority) ? 'calc-majority-1to6' : '';
             
-            $html .= '<td class="calc-cell ' . $highlight_class . '">' . $calc_1 . '</td>
-                <td class="calc-cell ' . $highlight_class . '">' . $calc_1_2 . '</td>
-                <td class="calc-cell ' . $highlight_class . '">' . $calc_1to3 . ' (' . $sum_places . ')</td>
-                <td class="calc-cell ' . $highlight_class . '">' . $calc_1to4 . '</td>
-                <td class="calc-cell ' . $calc_1to5 . '</td>
-                <td class="calc-cell ' . $calc_1to6 . '</td>
+            $html .= '<td class="calc-cell ' . $calc_1_class . '">' . $calc_1 . '</td>
+                <td class="calc-cell ' . $calc_1_2_class . '">' . $calc_1_2 . '</td>
+                <td class="calc-cell ' . $calc_1to3_class . '">' . $calc_1to3 . ' (' . $sum_places . ')</td>
+                <td class="calc-cell ' . $calc_1to4_class . '">' . $calc_1to4 . '</td>
+                <td class="calc-cell ' . $calc_1to5_class . '">' . $calc_1to5 . '</td>
+                <td class="calc-cell ' . $calc_1to6_class . '">' . $calc_1to6 . '</td>
                 <td class="place-dance"><strong>' . $place_dance . '</strong></td>
             </tr>';
         }
