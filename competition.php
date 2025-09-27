@@ -1013,21 +1013,57 @@ $results = getCompetitionResults($comp_data_path);
                     종합결과
                 </h2>
                 
-                <!-- 실시간 결과 표시 -->
-                <div id="live-results-container" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(59, 130, 246, 0.1); border-radius: 16px; padding: 24px; margin-bottom: 24px;">
-                    <h3 style="color: #3b82f6; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                <!-- 실시간 결과 표시 - Live TV 형식 -->
+                <div id="live-results-container" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 24px; margin-bottom: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+                    <h3 style="color: white; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
                         <span class="material-symbols-rounded">live_tv</span>
                         실시간 경기 결과
                     </h3>
-                    <div id="live-results-content">
-                        <div style="text-align: center; padding: 40px; color: #94a3b8;">
-                            <div class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">refresh</div>
-                            <p>실시간 결과를 로딩 중입니다...</p>
-                        </div>
+                    
+                    <!-- 로딩 표시 -->
+                    <div id="live-loading" style="text-align: center; padding: 40px; color: white;">
+                        <div class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.8; animation: pulse 2s infinite;">refresh</div>
+                        <p>실시간 결과를 로딩 중입니다...</p>
                     </div>
-                    <div style="font-size: 12px; color: #64748b; margin-top: 16px; text-align: center;">
-                        <span class="material-symbols-rounded" style="vertical-align: middle; font-size: 16px;">refresh</span>
-                        <span>30초마다 자동 갱신됩니다. 최신 결과가 아닐 경우 새로고침(F5) 해주세요.</span>
+                    
+                    <!-- Live TV 결과 표시 영역 -->
+                    <div id="live-tv-content" style="display: none;">
+                        <div style="text-align: center; margin-bottom: 20px; color: white;">
+                            <h4 id="event-title" style="font-size: 1.8em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">이벤트 정보 로딩 중...</h4>
+                            <p id="advancement-text" style="font-size: 1.3em; font-weight: bold; margin: 10px 0; color: #ffeb3b;"></p>
+                            <p id="recall-info" style="font-size: 1.1em; margin: 10px 0; color: #e3f2fd;"></p>
+                        </div>
+                        
+                        <div style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 3px 10px rgba(0,0,0,0.2);">
+                            <table id="results-table" style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white;">
+                                        <th style="padding: 15px; text-align: center; font-weight: bold;">Marks</th>
+                                        <th style="padding: 15px; text-align: center; font-weight: bold;">Tag</th>
+                                        <th style="padding: 15px; text-align: center; font-weight: bold;">Competitor Name(s)</th>
+                                        <th style="padding: 15px; text-align: center; font-weight: bold;">From</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-tbody">
+                                    <!-- 결과 데이터가 여기에 동적으로 추가됩니다 -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div id="last-updated" style="text-align: center; margin-top: 15px; color: white; font-size: 0.9em; opacity: 0.8;"></div>
+                    </div>
+                    
+                    <!-- 에러 메시지 영역 -->
+                    <div id="error-message" style="display: none; background: #f8d7da; color: #721c24; padding: 15px; border-radius: 5px; text-align: center; border: 1px solid #f5c6cb;">
+                        <p>실시간 결과를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.</p>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button onclick="loadLiveTvResults()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 0.9em; margin-right: 10px;">새로고침</button>
+                        <span style="font-size: 12px; color: rgba(255,255,255,0.8);">
+                            <span class="material-symbols-rounded" style="vertical-align: middle; font-size: 16px;">refresh</span>
+                            30초마다 자동 갱신됩니다. 최신 결과가 아닐 경우 새로고침(F5) 해주세요.
+                        </span>
                     </div>
                 </div>
                 
@@ -1490,6 +1526,197 @@ $results = getCompetitionResults($comp_data_path);
                 loadLiveResults();
                 // 30초마다 자동 새로고침
                 setInterval(loadLiveResults, 30000);
+            }
+        });
+        
+        // Live TV 실시간 결과 JavaScript
+        let liveTvUpdateInterval;
+        let isLoading = false;
+        
+        // CSS 스타일 추가
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { opacity: 1; }
+                50% { opacity: 0.5; }
+                100% { opacity: 1; }
+            }
+            
+            .qualified {
+                background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%) !important;
+                color: white !important;
+                font-weight: bold;
+            }
+            
+            .qualified td {
+                border-bottom: 1px solid rgba(255,255,255,0.3) !important;
+            }
+            
+            #results-table tr:nth-child(even) {
+                background: #f8f9fa;
+            }
+            
+            #results-table tr:hover {
+                background: #e3f2fd;
+            }
+            
+            #results-table td {
+                padding: 12px 15px;
+                text-align: center;
+                border-bottom: 1px solid #eee;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // 실시간 결과 로드 함수
+        function loadLiveTvResults() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            showLoading();
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const compId = urlParams.get('id') ? urlParams.get('id').replace('comp_', '') : '';
+            const eventNo = '30'; // 기본 이벤트 번호
+            const apiUrl = `comp/live_scoring_monitor.php?comp_id=${compId}&event_no=${eventNo}`;
+            
+            console.log('Loading live TV results from:', apiUrl);
+            
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Live TV API response:', data);
+                    
+                    if (data.success && data.live_tv) {
+                        displayLiveTvResults(data.live_tv);
+                        hideLoading();
+                        hideError();
+                    } else {
+                        throw new Error(data.error || 'API returned error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading live TV results:', error);
+                    showError();
+                    hideLoading();
+                })
+                .finally(() => {
+                    isLoading = false;
+                });
+        }
+        
+        // Live TV 결과 표시 함수
+        function displayLiveTvResults(liveTvData) {
+            console.log('Displaying live TV data:', liveTvData);
+            
+            // 헤더 정보 업데이트
+            const eventTitle = document.getElementById('event-title');
+            const advancementText = document.getElementById('advancement-text');
+            const recallInfo = document.getElementById('recall-info');
+            
+            if (eventTitle) eventTitle.textContent = liveTvData.event_title || '이벤트 정보 없음';
+            if (advancementText) advancementText.textContent = liveTvData.advancement_text || '';
+            if (recallInfo) recallInfo.textContent = liveTvData.recall_info || '';
+            
+            // 테이블 데이터 업데이트
+            const tbody = document.getElementById('results-tbody');
+            if (tbody) {
+                tbody.innerHTML = '';
+                
+                if (liveTvData.participants && liveTvData.participants.length > 0) {
+                    liveTvData.participants.forEach((participant, index) => {
+                        const row = document.createElement('tr');
+                        if (participant.qualified) {
+                            row.classList.add('qualified');
+                        }
+                        
+                        row.innerHTML = `
+                            <td>${participant.marks || 0}</td>
+                            <td>(${participant.tag || ''})</td>
+                            <td>${participant.name || ''} ${participant.qualified ? '<span style="margin-left: 10px; font-size: 1.2em;">✅ 진출</span>' : ''}</td>
+                            <td>${participant.from || ''}</td>
+                        `;
+                        
+                        tbody.appendChild(row);
+                    });
+                } else {
+                    const row = document.createElement('tr');
+                    row.innerHTML = '<td colspan="4">경기 결과가 없습니다.</td>';
+                    tbody.appendChild(row);
+                }
+            }
+            
+            // 업데이트 시간 표시
+            const lastUpdated = document.getElementById('last-updated');
+            if (lastUpdated && liveTvData.file_info && liveTvData.file_info.timestamp) {
+                lastUpdated.textContent = `마지막 업데이트: ${liveTvData.file_info.timestamp}`;
+            }
+            
+            // Live TV 컨텐츠 표시
+            const liveTvContent = document.getElementById('live-tv-content');
+            if (liveTvContent) {
+                liveTvContent.style.display = 'block';
+            }
+        }
+        
+        // 로딩 표시
+        function showLoading() {
+            const loadingEl = document.getElementById('live-loading');
+            const contentEl = document.getElementById('live-tv-content');
+            const errorEl = document.getElementById('error-message');
+            
+            if (loadingEl) loadingEl.style.display = 'block';
+            if (contentEl) contentEl.style.display = 'none';
+            if (errorEl) errorEl.style.display = 'none';
+        }
+        
+        // 로딩 숨김
+        function hideLoading() {
+            const loadingEl = document.getElementById('live-loading');
+            if (loadingEl) loadingEl.style.display = 'none';
+        }
+        
+        // 에러 표시
+        function showError() {
+            const errorEl = document.getElementById('error-message');
+            const contentEl = document.getElementById('live-tv-content');
+            
+            if (errorEl) errorEl.style.display = 'block';
+            if (contentEl) contentEl.style.display = 'none';
+        }
+        
+        // 에러 숨김
+        function hideError() {
+            const errorEl = document.getElementById('error-message');
+            if (errorEl) errorEl.style.display = 'none';
+        }
+        
+        // 자동 업데이트 시작
+        function startAutoUpdate() {
+            // 기존 인터벌 클리어
+            if (liveTvUpdateInterval) {
+                clearInterval(liveTvUpdateInterval);
+            }
+            
+            // 30초마다 업데이트
+            liveTvUpdateInterval = setInterval(() => {
+                console.log('Auto updating live TV results...');
+                loadLiveTvResults();
+            }, 30000);
+            
+            console.log('Auto update started (30 seconds interval)');
+        }
+        
+        // results 페이지에서 live TV 초기화
+        if (currentPage === 'results') {
+            loadLiveTvResults();
+            startAutoUpdate();
+        }
+        
+        // 페이지 언로드 시 인터벌 클리어
+        window.addEventListener('beforeunload', function() {
+            if (liveTvUpdateInterval) {
+                clearInterval(liveTvUpdateInterval);
             }
         });
     </script>
