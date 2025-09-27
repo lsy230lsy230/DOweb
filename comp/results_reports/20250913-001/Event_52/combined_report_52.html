@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>52. 프로페셔널 라틴 - Final | DanceOffice</title>
+<meta name="description" content="DanceOffice - 52. 프로페셔널 라틴 - Final">
+
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+    font-family: "Noto Sans KR", "Malgun Gothic", sans-serif; 
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+.header {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+    position: relative;
+}
+.header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.05"%3E%3Ccircle cx="30" cy="30" r="2"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E") repeat;
+}
+.header h1 {
+    font-size: 2.5em;
+    font-weight: 700;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 1;
+}
+.header .subtitle {
+    font-size: 1.2em;
+    opacity: 0.9;
+    position: relative;
+    z-index: 1;
+}
+.event-info {
+    background: #f8f9fa;
+    padding: 25px;
+    border-bottom: 3px solid #e9ecef;
+}
+.event-title {
+    font-size: 1.8em;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+.event-badge {
+    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 25px;
+    font-size: 0.7em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.event-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+}
+.detail-item {
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    border-left: 4px solid #3498db;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.detail-label {
+    font-size: 0.9em;
+    color: #7f8c8d;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+.detail-value {
+    font-size: 1.1em;
+    color: #2c3e50;
+    font-weight: 600;
+}
+.results-section {
+    padding: 30px;
+}
+.section-title {
+    font-size: 1.5em;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.section-title::before {
+    content: "🏆";
+    font-size: 1.2em;
+}
+.results-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.results-table th {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px 15px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 0.9em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.results-table td {
+    padding: 20px 15px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+    font-weight: 500;
+}
+.results-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.results-table tr:hover {
+    background: #e3f2fd;
+    transform: scale(1.01);
+    transition: all 0.2s ease;
+}
+.rank-1 { background: linear-gradient(45deg, #ffd700, #ffed4e) !important; color: #333 !important; }
+.rank-2 { background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important; color: #333 !important; }
+.rank-3 { background: linear-gradient(45deg, #cd7f32, #daa520) !important; color: white !important; }
+.player-name {
+    font-weight: 600;
+    color: #2c3e50;
+    text-align: left;
+}
+.judge-score {
+    font-weight: 600;
+    font-size: 1.1em;
+}
+.total-points {
+    font-weight: 700;
+    font-size: 1.2em;
+    color: #e74c3c;
+}
+.adjudicators-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-top: 3px solid #e9ecef;
+}
+.adjudicators-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+.adjudicator-card {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: transform 0.2s ease;
+}
+.adjudicator-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+.adjudicator-code {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.1em;
+}
+.adjudicator-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+.footer {
+    background: #2c3e50;
+    color: white;
+    padding: 25px;
+    text-align: center;
+    font-size: 0.9em;
+}
+.footer a {
+    color: #3498db;
+    text-decoration: none;
+}
+.footer a:hover {
+    text-decoration: underline;
+}
+@media (max-width: 768px) {
+    .container { margin: 10px; border-radius: 15px; }
+    .header h1 { font-size: 2em; }
+    .event-details { grid-template-columns: 1fr; }
+    .results-table { font-size: 0.9em; }
+    .results-table th, .results-table td { padding: 15px 10px; }
+    .adjudicators-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+    <h1>2025 서초구청장배 댄스스포츠 대회</h1>
+    <div class="subtitle">DanceOffice Competition Management System</div>
+</div>
+<div class="event-info">
+    <div class="event-title">
+        <span class="event-badge">Final</span>
+        52. 프로페셔널 라틴
+    </div>
+    <div class="event-details">
+        <div class="detail-item">
+            <div class="detail-label">이벤트 번호</div>
+            <div class="detail-value">52</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">라운드</div>
+            <div class="detail-value">Final</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">패널</div>
+            <div class="detail-value">LC</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">댄스</div>
+            <div class="detail-value">Cha Cha Cha, Samba, Rumba, Paso Doble, Jive</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">참가자 수</div>
+            <div class="detail-value">6명</div>
+        </div>
+        <div class="detail-item">
+            <div class="detail-label">심사위원 수</div>
+            <div class="detail-value">27명</div>
+        </div>
+    </div>
+</div>
+<div class="results-section">
+    <div class="section-title">최종 결과</div>
+    <table class="results-table"><thead><tr>
+<th>순위</th>
+<th>번호</th>
+<th>선수명</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th><th>19</th><th>20</th><th>21</th><th>22</th><th>23</th><th>24</th><th>25</th><th>26</th><th>27</th><th>총점</th></tr></thead><tbody><tr class="rank-1">
+<td><strong>1</strong></td>
+<td><strong>12</strong></td>
+<td class="player-name">선수 12</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score">5</td><td class="judge-score">3</td><td class="judge-score">4</td><td class="judge-score">2</td><td class="judge-score">1</td><td class="judge-score">2</td><td class="judge-score">1</td><td class="judge-score">2</td><td class="judge-score">2</td><td class="judge-score">1</td><td class="judge-score">3</td><td class="judge-score">1</td><td class="judge-score">4</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="total-points">11</td></tr><tr class="rank-2">
+<td><strong>2</strong></td>
+<td><strong>11</strong></td>
+<td class="player-name">선수 11</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score">2</td><td class="judge-score">1</td><td class="judge-score">5</td><td class="judge-score">1</td><td class="judge-score">4</td><td class="judge-score">1</td><td class="judge-score">2</td><td class="judge-score">1</td><td class="judge-score">4</td><td class="judge-score">3</td><td class="judge-score">6</td><td class="judge-score">2</td><td class="judge-score">2</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="total-points">12</td></tr><tr class="rank-3">
+<td><strong>3</strong></td>
+<td><strong>13</strong></td>
+<td class="player-name">선수 13</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score">1</td><td class="judge-score">2</td><td class="judge-score">2</td><td class="judge-score">3</td><td class="judge-score">2</td><td class="judge-score">3</td><td class="judge-score">3</td><td class="judge-score">3</td><td class="judge-score">3</td><td class="judge-score">5</td><td class="judge-score">5</td><td class="judge-score">5</td><td class="judge-score">1</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="total-points">16</td></tr><tr class="">
+<td><strong>4</strong></td>
+<td><strong>14</strong></td>
+<td class="player-name">선수 14</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score">3</td><td class="judge-score">5</td><td class="judge-score">1</td><td class="judge-score">4</td><td class="judge-score">3</td><td class="judge-score">6</td><td class="judge-score">4</td><td class="judge-score">4</td><td class="judge-score">5</td><td class="judge-score">2</td><td class="judge-score">2</td><td class="judge-score">4</td><td class="judge-score">6</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="total-points">17</td></tr><tr class="">
+<td><strong>5</strong></td>
+<td><strong>15</strong></td>
+<td class="player-name">선수 15</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score">4</td><td class="judge-score">4</td><td class="judge-score">3</td><td class="judge-score">5</td><td class="judge-score">5</td><td class="judge-score">5</td><td class="judge-score">5</td><td class="judge-score">5</td><td class="judge-score">1</td><td class="judge-score">4</td><td class="judge-score">4</td><td class="judge-score">3</td><td class="judge-score">3</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="total-points">22</td></tr><tr class="">
+<td><strong>6</strong></td>
+<td><strong>16</strong></td>
+<td class="player-name">선수 16</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score">6</td><td class="judge-score">6</td><td class="judge-score">6</td><td class="judge-score">6</td><td class="judge-score">6</td><td class="judge-score">4</td><td class="judge-score">6</td><td class="judge-score">6</td><td class="judge-score">6</td><td class="judge-score">6</td><td class="judge-score">1</td><td class="judge-score">6</td><td class="judge-score">5</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="total-points">27</td></tr></tbody></table></div><div class="adjudicators-section">
+    <div class="section-title">심사위원</div>
+    <div class="adjudicators-grid"><div class="adjudicator-card">
+            <div class="adjudicator-code">1</div>
+            <div class="adjudicator-name">E</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">2</div>
+            <div class="adjudicator-name">I</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">3</div>
+            <div class="adjudicator-name">C</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">4</div>
+            <div class="adjudicator-name">H</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">5</div>
+            <div class="adjudicator-name">B</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">6</div>
+            <div class="adjudicator-name">A</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">7</div>
+            <div class="adjudicator-name">G</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">8</div>
+            <div class="adjudicator-name">J</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">9</div>
+            <div class="adjudicator-name">D</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">10</div>
+            <div class="adjudicator-name">K</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">11</div>
+            <div class="adjudicator-name">F</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">12</div>
+            <div class="adjudicator-name">5</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">13</div>
+            <div class="adjudicator-name">9</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">14</div>
+            <div class="adjudicator-name">7</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">15</div>
+            <div class="adjudicator-name">10</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">16</div>
+            <div class="adjudicator-name">2</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">17</div>
+            <div class="adjudicator-name">4</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">18</div>
+            <div class="adjudicator-name">3</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">19</div>
+            <div class="adjudicator-name">6</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">20</div>
+            <div class="adjudicator-name">11</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">21</div>
+            <div class="adjudicator-name">8</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">22</div>
+            <div class="adjudicator-name">12</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">23</div>
+            <div class="adjudicator-name">1</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">24</div>
+            <div class="adjudicator-name">13</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">25</div>
+            <div class="adjudicator-name">M</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">26</div>
+            <div class="adjudicator-name">O</div>
+        </div><div class="adjudicator-card">
+            <div class="adjudicator-code">27</div>
+            <div class="adjudicator-name">P</div>
+        </div></div>
+</div>
+</div>
+<div class="footer">
+    <p>&copy; 2025 <a href="http://www.danceoffice.net">DanceOffice</a> - Competition Management System</p>
+    <p>Generated on 2025-09-26 16:21:37 | <a href="http://www.danceoffice.net">DanceOffice.net</a></p>
+</div>
+</body>
+</html>

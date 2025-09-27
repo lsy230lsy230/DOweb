@@ -166,45 +166,244 @@ body {
     font-size: 1.2em;
     color: #e74c3c;
 }
-.adjudicators-section {
+.skating-section {
     background: #f8f9fa;
     padding: 30px;
     border-top: 3px solid #e9ecef;
 }
+.skating-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.skating-table th {
+    background: linear-gradient(45deg, #2c3e50, #34495e);
+    color: white;
+    padding: 15px 10px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid #2c3e50;
+}
+.skating-table td {
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+}
+.skating-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.skating-table tr:hover {
+    background: #e8f4f8;
+}
+.skating-table .rank-1 {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #333 !important;
+}
+.skating-table .rank-2 {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
+    color: #333 !important;
+}
+.skating-table .rank-3 {
+    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
+    color: white !important;
+}
+.sum-places {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #e74c3c;
+    background: #fff5f5 !important;
+}
+.place-skating {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #2c3e50;
+    background: #f0f8ff !important;
+}
+.dance-results-section {
+    background: #f8f9fa;
+    padding: 30px;
+    border-top: 3px solid #e9ecef;
+}
+.dance-result-card {
+    background: white;
+    margin-bottom: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+.dance-title {
+    background: linear-gradient(45deg, #3498db, #2980b9);
+    color: white;
+    padding: 20px 30px;
+    font-size: 1.3em;
+    font-weight: 700;
+    text-align: center;
+}
+.dance-results-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95em;
+}
+.dance-results-table th {
+    background: #34495e;
+    color: white;
+    padding: 15px 10px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid #2c3e50;
+}
+.dance-results-table td {
+    padding: 12px 10px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+}
+.dance-results-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.dance-results-table tr:hover {
+    background: #e8f4f8;
+}
+.dance-results-table .rank-1 {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #333 !important;
+}
+.dance-results-table .rank-2 {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
+    color: #333 !important;
+}
+.dance-results-table .rank-3 {
+    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
+    color: white !important;
+}
+.skating-dance-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9em;
+    background: white;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+.skating-dance-table th {
+    background: linear-gradient(45deg, #2c3e50, #34495e);
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 600;
+    border-bottom: 2px solid #2c3e50;
+    font-size: 0.85em;
+}
+.skating-dance-table td {
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #ecf0f1;
+    font-size: 0.85em;
+}
+.skating-dance-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+.skating-dance-table tr:hover {
+    background: #e8f4f8;
+}
+.skating-dance-table .rank-1 {
+    background: linear-gradient(45deg, #ffd700, #ffed4e) !important;
+    color: #333 !important;
+}
+.skating-dance-table .rank-2 {
+    background: linear-gradient(45deg, #c0c0c0, #e8e8e8) !important;
+    color: #333 !important;
+}
+.skating-dance-table .rank-3 {
+    background: linear-gradient(45deg, #cd7f32, #daa520) !important;
+    color: white !important;
+}
+.calc-cell {
+    font-weight: 600;
+    color: #2c3e50;
+    background: #f0f8ff !important;
+}
+.place-dance {
+    font-weight: 700;
+    font-size: 1.1em;
+    color: #e74c3c;
+    background: #fff5f5 !important;
+}
+/* 과반수 규칙에 따른 색상 강조 */
+.calc-majority-1 {
+    background: linear-gradient(45deg, #ff6b6b, #ff8e8e) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(255, 107, 107, 0.5) !important;
+}
+.calc-majority-1-2 {
+    background: linear-gradient(45deg, #4ecdc4, #7dd3fc) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(78, 205, 196, 0.5) !important;
+}
+.calc-majority-1to3 {
+    background: linear-gradient(45deg, #45b7d1, #74c0fc) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(69, 183, 209, 0.5) !important;
+}
+.calc-majority-1to4 {
+    background: linear-gradient(45deg, #96ceb4, #a8e6cf) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(150, 206, 180, 0.5) !important;
+}
+.calc-majority-1to5 {
+    background: linear-gradient(45deg, #feca57, #ffd93d) !important;
+    color: #333 !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(254, 202, 87, 0.5) !important;
+}
+.calc-majority-1to6 {
+    background: linear-gradient(45deg, #ff9ff3, #f368e0) !important;
+    color: white !important;
+    font-weight: 700 !important;
+    box-shadow: 0 0 10px rgba(255, 159, 243, 0.5) !important;
+}
+.adjudicators-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-top: 3px solid #e9ecef;
+}
 .adjudicators-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 15px;
 }
 .adjudicator-card {
     background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    padding: 8px;
+    border-radius: 6px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     display: flex;
     align-items: center;
-    gap: 15px;
-    transition: transform 0.2s ease;
-}
-.adjudicator-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    gap: 8px;
 }
 .adjudicator-code {
     background: linear-gradient(45deg, #3498db, #2980b9);
     color: white;
-    width: 40px;
-    height: 40px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    font-size: 1.1em;
+    font-weight: 600;
+    font-size: 0.8em;
 }
 .adjudicator-name {
-    font-weight: 600;
+    font-weight: 400;
+    font-size: 0.8em;
     color: #2c3e50;
 }
 .footer {
@@ -242,45 +441,72 @@ body {
         <span class="event-badge">Final</span>
         1-1. 솔로 일반부 스탠다드 1종목 (T)
     </div>
-    <div class="event-details">
-        <div class="detail-item">
-            <div class="detail-label">이벤트 번호</div>
-            <div class="detail-value">1-1</div>
-        </div>
-        <div class="detail-item">
-            <div class="detail-label">라운드</div>
-            <div class="detail-value">Final</div>
-        </div>
-        <div class="detail-item">
-            <div class="detail-label">패널</div>
-            <div class="detail-value">SA</div>
-        </div>
-        <div class="detail-item">
-            <div class="detail-label">댄스</div>
-            <div class="detail-value">Tango</div>
-        </div>
-        <div class="detail-item">
-            <div class="detail-label">참가자 수</div>
-            <div class="detail-value">2명</div>
-        </div>
-        <div class="detail-item">
-            <div class="detail-label">심사위원 수</div>
-            <div class="detail-value">27명</div>
-        </div>
-    </div>
 </div>
 <div class="results-section">
     <div class="section-title">최종 결과</div>
     <table class="results-table"><thead><tr>
-<th>순위</th>
-<th>번호</th>
-<th>선수명</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th><th>17</th><th>18</th><th>19</th><th>20</th><th>21</th><th>22</th><th>23</th><th>24</th><th>25</th><th>26</th><th>27</th><th>총점</th></tr></thead><tbody><tr class="rank-1">
-<td><strong>1</strong></td>
-<td><strong>54</strong></td>
-<td class="player-name">선수 54</td><td class="judge-score">1</td><td class="judge-score">1</td><td class="judge-score">1</td><td class="judge-score"></td><td class="judge-score">1</td><td class="judge-score">1</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score">2</td><td class="judge-score">1</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score">1</td><td class="judge-score"></td><td class="judge-score">2</td><td class="total-points">1</td></tr><tr class="rank-2">
-<td><strong>2</strong></td>
-<td><strong>53</strong></td>
-<td class="player-name">선수 53</td><td class="judge-score">2</td><td class="judge-score">2</td><td class="judge-score">2</td><td class="judge-score"></td><td class="judge-score">2</td><td class="judge-score">2</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score">1</td><td class="judge-score">2</td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score"></td><td class="judge-score">2</td><td class="judge-score"></td><td class="judge-score">1</td><td class="total-points">2</td></tr></tbody></table></div><div class="adjudicators-section">
+        <th>순위</th>
+        <th>번호</th>
+        <th>선수명</th>
+    </tr></thead><tbody><tr class="rank-1">
+            <td><strong>1</strong></td>
+            <td><strong>54</strong></td>
+            <td class="player-name">박주하</td>
+        </tr><tr class="rank-2">
+            <td><strong>2</strong></td>
+            <td><strong>53</strong></td>
+            <td class="player-name">김소혜</td>
+        </tr></tbody></table></div><div class="skating-section">
+    <div class="section-title">Rules 1 - 9 (스케이팅 집계표)</div>
+    <table class="skating-table">
+        <thead>
+            <tr>
+                <th>Cpl.NO</th><th>Tango</th><th>SUM of Places</th>
+                <th>Place Skating</th>
+            </tr>
+        </thead>
+        <tbody><tr class="rank-1">
+            <td><strong>54</strong></td><td>1</td><td class="sum-places"><strong>1</strong></td>
+            <td class="place-skating"><strong>1</strong></td>
+        </tr><tr class="rank-2">
+            <td><strong>53</strong></td><td>2</td><td class="sum-places"><strong>2</strong></td>
+            <td class="place-skating"><strong>2</strong></td>
+        </tr></tbody>
+    </table>
+</div><div class="dance-results-section">
+    <div class="section-title">종목별 댄스 집계 결과 (스케이팅 시스템)</div><div class="dance-result-card">
+            <div class="dance-title">Tango</div>
+            <table class="skating-dance-table">
+                <thead>
+                    <tr>
+                        <th>Cpl. No.</th><th>1</th><th>2</th><th>3</th><th>5</th><th>6</th><th>10</th><th>11</th><th>25</th><th>27</th><th>1</th>
+                        <th>1&2</th>
+                        <th>1to3</th>
+                        <th>1to4</th>
+                        <th>1to5</th>
+                        <th>1to6</th>
+                        <th>Place Dance</th>
+                    </tr>
+                </thead>
+                <tbody><tr class="rank-1">
+                <td><strong>54</strong></td><td>1</td><td>1</td><td>1</td><td>1</td><td>1</td><td>2</td><td>1</td><td>1</td><td>2</td><td class="calc-cell calc-majority-1">7</td>
+                <td class="calc-cell ">9</td>
+                <td class="calc-cell ">9 (11)</td>
+                <td class="calc-cell ">9</td>
+                <td class="calc-cell ">9</td>
+                <td class="calc-cell ">9</td>
+                <td class="place-dance"><strong>1</strong></td>
+            </tr><tr class="rank-2">
+                <td><strong>53</strong></td><td>2</td><td>2</td><td>2</td><td>2</td><td>2</td><td>1</td><td>2</td><td>2</td><td>1</td><td class="calc-cell ">2</td>
+                <td class="calc-cell calc-majority-1-2">9</td>
+                <td class="calc-cell ">9 (16)</td>
+                <td class="calc-cell ">9</td>
+                <td class="calc-cell ">9</td>
+                <td class="calc-cell ">9</td>
+                <td class="place-dance"><strong>2</strong></td>
+            </tr></tbody>
+            </table>
+        </div></div><div class="adjudicators-section">
     <div class="section-title">심사위원</div>
     <div class="adjudicators-grid"><div class="adjudicator-card">
             <div class="adjudicator-code">1</div>
@@ -292,23 +518,11 @@ body {
             <div class="adjudicator-code">3</div>
             <div class="adjudicator-name">C</div>
         </div><div class="adjudicator-card">
-            <div class="adjudicator-code">4</div>
-            <div class="adjudicator-name">H</div>
-        </div><div class="adjudicator-card">
             <div class="adjudicator-code">5</div>
             <div class="adjudicator-name">B</div>
         </div><div class="adjudicator-card">
             <div class="adjudicator-code">6</div>
             <div class="adjudicator-name">A</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">7</div>
-            <div class="adjudicator-name">G</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">8</div>
-            <div class="adjudicator-name">J</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">9</div>
-            <div class="adjudicator-name">D</div>
         </div><div class="adjudicator-card">
             <div class="adjudicator-code">10</div>
             <div class="adjudicator-name">K</div>
@@ -316,50 +530,8 @@ body {
             <div class="adjudicator-code">11</div>
             <div class="adjudicator-name">F</div>
         </div><div class="adjudicator-card">
-            <div class="adjudicator-code">12</div>
-            <div class="adjudicator-name">5</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">13</div>
-            <div class="adjudicator-name">9</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">14</div>
-            <div class="adjudicator-name">7</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">15</div>
-            <div class="adjudicator-name">10</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">16</div>
-            <div class="adjudicator-name">2</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">17</div>
-            <div class="adjudicator-name">4</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">18</div>
-            <div class="adjudicator-name">3</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">19</div>
-            <div class="adjudicator-name">6</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">20</div>
-            <div class="adjudicator-name">11</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">21</div>
-            <div class="adjudicator-name">8</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">22</div>
-            <div class="adjudicator-name">12</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">23</div>
-            <div class="adjudicator-name">1</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">24</div>
-            <div class="adjudicator-name">13</div>
-        </div><div class="adjudicator-card">
             <div class="adjudicator-code">25</div>
             <div class="adjudicator-name">M</div>
-        </div><div class="adjudicator-card">
-            <div class="adjudicator-code">26</div>
-            <div class="adjudicator-name">O</div>
         </div><div class="adjudicator-card">
             <div class="adjudicator-code">27</div>
             <div class="adjudicator-name">P</div>
@@ -368,7 +540,7 @@ body {
 </div>
 <div class="footer">
     <p>&copy; 2025 <a href="http://www.danceoffice.net">DanceOffice</a> - Competition Management System</p>
-    <p>Generated on 2025-09-25 16:20:24 | <a href="http://www.danceoffice.net">DanceOffice.net</a></p>
+    <p>Generated on 2025-09-26 10:42:54 | <a href="http://www.danceoffice.net">DanceOffice.net</a></p>
 </div>
 </body>
 </html>
