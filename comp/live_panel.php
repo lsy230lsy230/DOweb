@@ -99,11 +99,17 @@ if (file_exists($runorder_file)) {
         $recall = $cols[4] ?? ''; // 4번째 컬럼이 리콜 수 (인덱스 4)
         $heats = $cols[14] ?? ''; // 히트는 15번째 컬럼 (인덱스 14)
         $dance_codes = [];
-        // 6-10번째 컬럼의 숫자를 댄스 코드로 사용 (정확한 데이터)
-        for ($i=6; $i<=10; $i++) {
+        // 7-11번째 컬럼의 숫자를 댄스 코드로 사용 (6번째 컬럼은 next_event이므로 건너뛰기)
+        for ($i=7; $i<=11; $i++) {
             if (isset($cols[$i]) && is_numeric($cols[$i]) && $cols[$i] > 0) {
                 $dance_codes[] = $cols[$i];
             }
+        }
+        
+        // 디버깅: 30번 이벤트의 댄스 코드 확인
+        if ($no === '30') {
+            error_log("30번 이벤트 댄스 코드: " . implode(',', $dance_codes));
+            error_log("30번 이벤트 컬럼 7-11: " . implode(',', array_slice($cols, 7, 5)));
         }
         // 댄스 코드를 실제 댄스명으로 변환
         $dance_names = [];
@@ -2652,6 +2658,174 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             background: #218838;
         }
         
+        .btn-info {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background: #138496;
+        }
+        
+        /* 진출자 수 설정 모달 스타일 */
+        .recall-count-modal {
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .recall-count-section {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .recall-count-info {
+            margin-bottom: 20px;
+        }
+        
+        .recall-count-info p {
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .recall-count-input {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .recall-count-field {
+            width: 80px;
+            padding: 8px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        .recall-count-unit {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .recall-count-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        /* 모달 레이아웃 */
+        .modal-layout {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+        
+        .results-section {
+            flex: 2;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .recall-count-section {
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        .results-container {
+            background: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .overall-results {
+            margin-bottom: 20px;
+        }
+        
+        .overall-results h5 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 16px;
+        }
+        
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        
+        .results-table th,
+        .results-table td {
+            border: 1px solid #dee2e6;
+            padding: 6px 8px;
+            text-align: center;
+        }
+        
+        .results-table th {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .results-table tr.advancing {
+            background: #d4edda;
+        }
+        
+        .results-table tr.eliminated {
+            background: #f8d7da;
+        }
+        
+        .results-table tr.advancing td {
+            color: #155724;
+        }
+        
+        .results-table tr.eliminated td {
+            color: #721c24;
+        }
+        
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .judges-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .judges-section h6 {
+            margin: 0 0 10px 0;
+            color: #495057;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        
+        .judges-section .judges-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .judges-section .judge-item {
+            background: #fff;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
+            color: #495057;
+            display: inline-block;
+        }
+        
         /* 다음 라운드 생성 모달 스타일 */
         .next-round-modal {
             position: fixed;
@@ -4483,13 +4657,14 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         }
         
         // 모달 내에서 간단한 집계 결과 표시 함수
-        function showSimpleAggregationInModal(eventId) {
-            console.log('Showing aggregation in modal for eventId:', eventId);
+        function showSimpleAggregationInModal(eventId, recallCount = null) {
+            console.log('Showing aggregation in modal for eventId:', eventId, 'recallCount:', recallCount);
             
             // 로딩 숨기고 콘텐츠 표시
             document.getElementById('aggregationLoading').style.display = 'none';
             document.getElementById('aggregationContent').style.display = 'block';
             document.getElementById('printAggregationBtn').style.display = 'inline-block';
+            document.getElementById('saveAggregationBtn').style.display = 'inline-block';
             document.getElementById('nextRoundBtn').style.display = 'inline-block';
             
             const content = document.getElementById('aggregationContent');
@@ -4510,19 +4685,28 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
+            // 진출자 수 설정 (파라미터로 받은 값 우선, 없으면 이벤트의 recall_count 사용)
+            const finalRecallCount = recallCount !== null ? recallCount : (currentEvent?.recall_count || 0);
+            console.log('showSimpleAggregationInModal - finalRecallCount:', finalRecallCount, 'recallCount param:', recallCount);
+            
             // 리콜 계산 실행
-            calculateRecallResults(eventId, currentEvent, content);
+            calculateRecallResults(eventId, currentEvent, content, finalRecallCount);
         }
         
         // 리콜 결과 계산 함수
-        function calculateRecallResults(eventId, currentEvent, content) {
-            console.log('Calculating recall results for eventId:', eventId);
+        function calculateRecallResults(eventId, currentEvent, content, recallCount = null) {
+            console.log('Calculating recall results for eventId:', eventId, 'recallCount:', recallCount);
             
             // 리콜 데이터 로드
             fetch(`get_recall_data.php?comp_id=<?=$comp_id?>&event_no=${eventId}`)
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // 진출자 수가 설정되어 있으면 데이터에 적용
+                        if (recallCount !== null) {
+                            data.recall_count_from_file = recallCount;
+                            console.log('Applied recallCount to data:', recallCount);
+                        }
                         displayRecallResults(data, currentEvent, content);
                     } else {
                         displayRecallError(data.error, content);
@@ -4537,6 +4721,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         // 리콜 결과 표시 함수
         function displayRecallResults(data, currentEvent, content) {
             console.log('Displaying recall results:', data);
+            console.log('recall_count_from_file:', data.recall_count_from_file);
             
             // 전체 참가자 수를 전역 변수로 저장
             window.totalParticipants = data.total_participants || 0;
@@ -4587,13 +4772,16 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     </tr>
             `;
             
+            // 사용자가 설정한 진출자 수 기준으로 진출자 결정
+            const recallCount = data.recall_count_from_file || data.advancing_players?.length || 0;
+            console.log('Using recallCount for display:', recallCount);
+            
             // 모든 선수를 등위 순서로 표시 (상위 N커플 진출 기준으로 구분)
-            const topNSet = new Set((data.advancing_players || []).map(p => String(p.player_number)));
             data.player_recalls.forEach((player, index) => {
-                const isAdvancing = topNSet.has(String(player.player_number));
+                const isAdvancing = index < recallCount; // 상위 N명이 진출
                 const bgColor = isAdvancing ? '#e8f5e8' : '#f5f5f5'; // 진출자는 연한 초록, 탈락자는 연한 회색
                 const borderStyle = isAdvancing ? 'border-left: 4px solid #28a745;' : 'border-left: 4px solid #dc3545;';
-                const statusText = isAdvancing ? '✅ 진출' : '❌ 탈락';
+                const statusText = isAdvancing ? '✅ 진출' : '';
                 
                 html += `
                     <tr style='font-weight:bold;'>
@@ -4637,10 +4825,18 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                             </tr>
                     `;
                     
-                    // 선수별 리콜 결과 표시
-                    danceData.player_recalls.forEach((player, index) => {
-                        const isAdvancing = player.recall_count >= data.recall_threshold;
-                        const bgColor = isAdvancing ? '#eee' : '#ccc';
+                    // 선수별 리콜 결과 표시 (등번호 오름차순 정렬, 배경색 통일)
+                    const recallCount = data.recall_count_from_file || data.advancing_players?.length || 0;
+                    
+                    // 등번호로 정렬 (오름차순)
+                    const sortedPlayers = danceData.player_recalls.sort((a, b) => {
+                        const numA = parseInt(a.player_number) || 0;
+                        const numB = parseInt(b.player_number) || 0;
+                        return numA - numB;
+                    });
+                    
+                    sortedPlayers.forEach((player, index) => {
+                        const bgColor = '#eee'; // 모든 행에 동일한 배경색
                         const rowStyle = `font-weight:bold; background-color:${bgColor}`;
                         
                         html += `
@@ -4668,8 +4864,54 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 });
             }
             
+            // 심사위원 명단 추가 (저작권 문구 바로 위에)
+            let judgesSection = '';
+            if (data.judges && data.judges.length > 0) {
+                // 심사위원 코드와 이름을 매핑
+                const judgeMap = data.judges.map((judgeCode, index) => ({
+                    code: judgeCode,
+                    name: data.judge_names && data.judge_names[index] ? data.judge_names[index] : String.fromCharCode(65 + index)
+                }));
+                
+                // 심사위원 코드 순서로 정렬
+                judgeMap.sort((a, b) => parseInt(a.code) - parseInt(b.code));
+                
+                // 4명씩 한 줄로 나누어 표시
+                let judgesHtml = '';
+                for (let i = 0; i < judgeMap.length; i += 4) {
+                    judgesHtml += '<tr>';
+                    for (let j = 0; j < 4; j++) {
+                        const judgeIndex = i + j;
+                        if (judgeIndex < judgeMap.length) {
+                            const judge = judgeMap[judgeIndex];
+                            const letter = String.fromCharCode(65 + judgeIndex);
+                            judgesHtml += `
+                                <td align='left' width='2%' style='padding-left:2em;'><small>${letter}.</small></td>
+                                <td align='left'><small>${judge.name}</small></td>
+                            `;
+                        } else {
+                            judgesHtml += `
+                                <td align='left' width='2%'> </td>
+                                <td align='left'> </td>
+                            `;
+                        }
+                    }
+                    judgesHtml += '</tr>';
+                }
+                
+                judgesSection = `
+                    <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial;'>
+                        <tr><td style='font-weight:bold; padding-top:1em; padding-bottom:0.5em;' align='left'>Adjudicators</td></tr>
+                    </table>
+                    <table align='center' width='95%'>
+                        ${judgesHtml}
+                    </table>
+                `;
+            }
+            
             html += `
                     </div>
+                    ${judgesSection}
                     <div class="dancesport-footer">
                         <p style="padding:10px 0; background:#575757; color:#fff; position:relative; clear:both; text-align:center;">Results Copyright of
                             DanceScore Scrutineering Software
@@ -4679,6 +4921,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             `;
             
             content.innerHTML = html;
+            
+            // 다음 라운드 생성 버튼 텍스트 업데이트
+            updateNextRoundButtonText();
         }
         
         // 리콜 오류 표시 함수
@@ -5661,12 +5906,305 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             document.getElementById('aggregationLoading').style.display = 'block';
             document.getElementById('aggregationContent').style.display = 'none';
             document.getElementById('printAggregationBtn').style.display = 'none';
+            document.getElementById('saveAggregationBtn').style.display = 'none';
             document.getElementById('nextRoundBtn').style.display = 'none';
             
-            // 간단한 집계 결과 표시
+            // 진출자 수 설정 모달 먼저 표시
             setTimeout(() => {
-                showSimpleAggregationInModal(eventId);
+                showRecallCountModal(eventId);
             }, 500);
+        }
+        
+        // 진출자 수 설정 모달 표시
+        function showRecallCountModal(eventId) {
+            console.log('Showing recall count modal for eventId:', eventId);
+            
+            // 현재 이벤트 정보 찾기
+            let currentEvent = null;
+            for (const group of groupData) {
+                for (const event of group.events) {
+                    if ((event.detail_no || event.no) === eventId) {
+                        currentEvent = event;
+                        break;
+                    }
+                }
+                if (currentEvent) break;
+            }
+            
+            if (!currentEvent) {
+                alert('이벤트 정보를 찾을 수 없습니다.');
+                return;
+            }
+            
+            const recallCount = currentEvent.recall_count || 0;
+            
+            // 로딩 숨기고 콘텐츠 표시
+            document.getElementById('aggregationLoading').style.display = 'none';
+            document.getElementById('aggregationContent').style.display = 'block';
+            
+            // 먼저 집계 결과를 가져와서 표시
+            calculateRecallResultsForModal(eventId, currentEvent, recallCount);
+        }
+        
+        // 모달용 집계 결과 계산
+        function calculateRecallResultsForModal(eventId, currentEvent, recallCount) {
+            console.log('Calculating recall results for modal, eventId:', eventId, 'recallCount:', recallCount);
+            
+            // 리콜 데이터 로드
+            const apiUrl = `get_recall_data.php?comp_id=<?=$comp_id?>&event_no=${eventId}`;
+            console.log('API URL:', apiUrl);
+            
+            fetch(apiUrl)
+                .then(response => {
+                    console.log('Response status:', response.status);
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API Response:', data);
+                    if (data.success) {
+                        // 진출자 수가 설정되어 있으면 데이터에 적용
+                        if (recallCount !== null) {
+                            data.recall_count_from_file = recallCount;
+                        }
+                        displayRecallCountModal(eventId, currentEvent, data, recallCount);
+                    } else {
+                        console.error('API Error:', data.error);
+                        displayRecallError(data.error, document.getElementById('aggregationContent'));
+                    }
+                })
+                .catch(error => {
+                    console.error('리콜 데이터 로드 실패:', error);
+                    displayRecallError('리콜 데이터를 로드할 수 없습니다: ' + error.message, document.getElementById('aggregationContent'));
+                });
+        }
+        
+        // 진출자 수 설정 모달에 집계 결과 표시
+        function displayRecallCountModal(eventId, currentEvent, data, recallCount) {
+            console.log('displayRecallCountModal called with:', {eventId, currentEvent, data, recallCount});
+            const content = document.getElementById('aggregationContent');
+            
+            // 집계 결과 테이블 생성 (종합 결과)
+            let resultsTable = '';
+            console.log('player_recalls data:', data.player_recalls);
+            console.log('Full data object:', data);
+            if (data.player_recalls && data.player_recalls.length > 0) {
+                resultsTable = generateResultsTable(data, currentEvent, recallCount);
+                console.log('Generated results table:', resultsTable);
+            } else {
+                console.log('No player_recalls data found');
+                resultsTable = '<div class="no-results">집계 결과 데이터를 찾을 수 없습니다.</div>';
+            }
+            
+            content.innerHTML = `
+                <div class="recall-count-modal">
+                    <h3>🏆 집계 결과 - ${currentEvent.desc}</h3>
+                    
+                    <div class="modal-layout">
+                        <div class="results-section">
+                            <h4>집계 결과</h4>
+                            <div class="results-container">
+                                ${resultsTable}
+                            </div>
+                        </div>
+                        
+                        <div class="recall-count-section">
+                            <h4>진출자 수 설정</h4>
+                            <div class="recall-count-info">
+                                <p><strong>현재 리콜 수:</strong> ${recallCount}명</p>
+                                <p><strong>설명:</strong> 다음 라운드로 진출할 수 있는 최대 인원 수입니다.</p>
+                            </div>
+                            <div class="recall-count-input">
+                                <label for="recallCountInput">진출자 수:</label>
+                                <input type="number" id="recallCountInput" value="${recallCount}" min="1" max="50" class="recall-count-field" oninput="updateResultsPreview()" onchange="updateResultsPreview()">
+                                <span class="recall-count-unit">명</span>
+                            </div>
+                            <div class="recall-count-actions">
+                                <button class="btn btn-primary" onclick="confirmRecallCount('${eventId}')">확인</button>
+                                <button class="btn btn-secondary" onclick="closeAggregationModal()">취소</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            console.log('Modal content set, resultsTable length:', resultsTable.length);
+            
+            // 초기 로드 후 미리보기 업데이트 실행
+            setTimeout(() => {
+                updateResultsPreview();
+            }, 100);
+        }
+        
+        // 집계 결과 테이블 생성 (종합 결과)
+        function generateResultsTable(data, currentEvent, recallCount) {
+            console.log('generateResultsTable called with:', {data, currentEvent, recallCount});
+            let html = '';
+            
+            // 종합 결과 테이블 (모든 댄스의 리콜 수 총합)
+            if (data.player_recalls && data.player_recalls.length > 0) {
+                // 리콜 수 기준으로 정렬 (높은 순)
+                const sortedPlayers = data.player_recalls.sort((a, b) => b.recall_count - a.recall_count);
+                
+                html += `
+                    <div class="overall-results">
+                        <h5>종합 결과</h5>
+                        <table class="results-table">
+                            <thead>
+                                <tr>
+                                    <th>등위</th>
+                                    <th>등번호</th>
+                                    <th>선수명</th>
+                                    <th>리콜수</th>
+                                    <th>상태</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+                
+                sortedPlayers.forEach((player, index) => {
+                    const isAdvancing = index < recallCount;
+                    const statusText = isAdvancing ? '✅ 진출' : '';
+                    const rowClass = isAdvancing ? 'advancing' : 'eliminated';
+                    
+                    html += `
+                        <tr class="${rowClass}">
+                            <td>${index + 1}</td>
+                            <td>${player.player_number}</td>
+                            <td>${player.player_name || `선수 ${player.player_number}`}</td>
+                            <td>${player.recall_count}</td>
+                            <td>${statusText}</td>
+                        </tr>
+                    `;
+                });
+                
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            // 심사위원 명단 추가 (테이블과 별도로)
+            console.log('Adding judges section...');
+            console.log('Judges data:', data.judges);
+            console.log('Judge names:', data.judge_names);
+            console.log('Judges length:', data.judges ? data.judges.length : 'undefined');
+            
+            // 심사위원 명단 추가 (저작권 문구 바로 위에)
+            if (data.judges && data.judges.length > 0) {
+                // 심사위원 코드와 이름을 매핑
+                const judgeMap = data.judges.map((judgeCode, index) => ({
+                    code: judgeCode,
+                    name: data.judge_names && data.judge_names[index] ? data.judge_names[index] : String.fromCharCode(65 + index)
+                }));
+                
+                // 심사위원 코드 순서로 정렬
+                judgeMap.sort((a, b) => parseInt(a.code) - parseInt(b.code));
+                
+                // 4명씩 한 줄로 나누어 표시
+                let judgesHtml = '';
+                for (let i = 0; i < judgeMap.length; i += 4) {
+                    judgesHtml += '<tr>';
+                    for (let j = 0; j < 4; j++) {
+                        const judgeIndex = i + j;
+                        if (judgeIndex < judgeMap.length) {
+                            const judge = judgeMap[judgeIndex];
+                            const letter = String.fromCharCode(65 + judgeIndex);
+                            judgesHtml += `
+                                <td align='left' width='2%' style='padding-left:2em;'><small>${letter}.</small></td>
+                                <td align='left'><small>${judge.name}</small></td>
+                            `;
+                        } else {
+                            judgesHtml += `
+                                <td align='left' width='2%'> </td>
+                                <td align='left'> </td>
+                            `;
+                        }
+                    }
+                    judgesHtml += '</tr>';
+                }
+                
+                html += `
+                    <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial;'>
+                        <tr><td style='font-weight:bold; padding-top:1em; padding-bottom:0.5em;' align='left'>Adjudicators</td></tr>
+                    </table>
+                    <table align='center' width='95%'>
+                        ${judgesHtml}
+                    </table>
+                `;
+                console.log('Judges section added successfully');
+            } else {
+                console.log('No judges data available, adding placeholder');
+                html += `
+                    <table border='0' cellspacing='0' cellpadding='0' width='95%' align='center' style='font-family:Arial;'>
+                        <tr><td style='font-weight:bold; padding-top:1em; padding-bottom:0.5em;' align='left'>Adjudicators</td></tr>
+                    </table>
+                    <table align='center' width='95%'>
+                        <tr>
+                            <td align='left' width='2%' style='padding-left:2em;'><small>심사위원 정보 없음</small></td>
+                        </tr>
+                    </table>
+                `;
+            }
+            
+            console.log('Final HTML length:', html.length);
+            return html;
+        }
+        
+        // 실시간 미리보기 업데이트
+        function updateResultsPreview() {
+            const recallCount = parseInt(document.getElementById('recallCountInput').value) || 0;
+            console.log('updateResultsPreview called with recallCount:', recallCount);
+            const resultsContainer = document.querySelector('.results-container');
+            
+            if (resultsContainer) {
+                console.log('Found results container, updating tables...');
+                // 모든 테이블의 진출/탈락 상태 업데이트
+                const tables = resultsContainer.querySelectorAll('.results-table tbody');
+                console.log('Found tables:', tables.length);
+                
+                tables.forEach((table, tableIndex) => {
+                    const allRows = table.querySelectorAll('tr');
+                    console.log(`Table ${tableIndex} has ${allRows.length} total rows`);
+                    
+                    // 모든 행 처리
+                    allRows.forEach((row, index) => {
+                        const isAdvancing = index < recallCount;
+                        const statusText = isAdvancing ? '✅ 진출' : '';
+                        const rowClass = isAdvancing ? 'advancing' : 'eliminated';
+                        
+                        // 클래스 업데이트
+                        row.className = rowClass;
+                        
+                        // 상태 텍스트 업데이트
+                        const statusCell = row.querySelector('td:last-child');
+                        if (statusCell) {
+                            statusCell.textContent = statusText;
+                        }
+                        
+                        console.log(`Row ${index}: isAdvancing=${isAdvancing}, statusText="${statusText}"`);
+                    });
+                });
+            } else {
+                console.log('Results container not found');
+            }
+        }
+        
+        // 진출자 수 확인 및 집계 결과 표시
+        function confirmRecallCount(eventId) {
+            const recallCount = parseInt(document.getElementById('recallCountInput').value);
+            console.log('confirmRecallCount called with:', {eventId, recallCount});
+            
+            if (!recallCount || recallCount < 1) {
+                alert('진출자 수를 올바르게 입력해주세요.');
+                return;
+            }
+            
+            // 진출자 수 업데이트 (모달 닫지 않음)
+            updateRecallCountWithoutRefresh(eventId, recallCount);
+            
+            // 집계 결과 표시 (사용자가 입력한 진출자 수 전달)
+            showSimpleAggregationInModal(eventId, recallCount);
         }
         
         // 집계 모달 닫기
@@ -5705,6 +6243,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     if (data.success) {
                         displayAggregationResult(data, eventId);
                         document.getElementById('printAggregationBtn').style.display = 'inline-block';
+                        document.getElementById('saveAggregationBtn').style.display = 'inline-block';
                         document.getElementById('nextRoundBtn').style.display = 'inline-block';
                     } else {
                         let errorMessage = data.error || '집계 처리 중 오류가 발생했습니다.';
@@ -5858,6 +6397,59 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             printWindow.print();
         }
         
+        // 집계 결과 파일 저장
+        function saveAggregationResult() {
+            const content = document.getElementById('aggregationContent').innerHTML;
+            const currentEvent = events.find(ev => (ev.detail_no || ev.no) === selectedEvent);
+            const eventNo = currentEvent ? (currentEvent.detail_no || currentEvent.no) : selectedEvent;
+            
+            // HTML 내용을 Blob으로 생성
+            const htmlContent = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <title>집계 결과 - 이벤트 ${eventNo}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; margin: 20px; }
+                        .aggregation-table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                        .aggregation-table th, .aggregation-table td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+                        .aggregation-table th { background: #f5f5f5; }
+                        .rank-1 { background: #ffd700 !important; }
+                        .rank-2 { background: #c0c0c0 !important; }
+                        .rank-3 { background: #cd7f32 !important; color: white; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .event-info { font-size: 18px; font-weight: bold; margin-bottom: 10px; }
+                        .timestamp { color: #666; font-size: 14px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <div class="event-info">집계 결과 - 이벤트 ${eventNo}</div>
+                        <div class="timestamp">생성일시: ${new Date().toLocaleString('ko-KR')}</div>
+                    </div>
+                    ${content}
+                </body>
+                </html>
+            `;
+            
+            const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            
+            // 다운로드 링크 생성
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `집계결과_이벤트${eventNo}_${new Date().toISOString().slice(0,10)}.html`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // URL 해제
+            URL.revokeObjectURL(url);
+            
+            alert(`집계 결과가 파일로 저장되었습니다.\n파일명: 집계결과_이벤트${eventNo}_${new Date().toISOString().slice(0,10)}.html`);
+        }
+        
         // 테스트용 다음 라운드 모달
         function testNextRoundModal() {
             console.log('테스트 모달 시작');
@@ -5895,8 +6487,10 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }
             
             // 집계 결과에서 진출자 정보 가져오기
-            const aggregationResult = document.querySelector('#aggregationContent .aggregation-results') || 
+            const aggregationResult = document.querySelector('#aggregationContent .dancesport-container.aggregation-results') || 
+                                    document.querySelector('#aggregationContent .aggregation-results') || 
                                     document.querySelector('#aggregationContent') ||
+                                    document.querySelector('.dancesport-container.aggregation-results') ||
                                     document.querySelector('.aggregation-results');
             console.log('집계 결과 요소:', aggregationResult);
             
@@ -5905,53 +6499,73 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 console.log('집계 결과를 찾을 수 없습니다. 사용 가능한 요소들:');
                 console.log('aggregationContent:', document.querySelector('#aggregationContent'));
                 console.log('aggregation-results:', document.querySelector('.aggregation-results'));
+                console.log('dancesport-container:', document.querySelector('.dancesport-container'));
+                console.log('전체 DOM 구조 확인:');
+                console.log('aggregationContent 내용:', document.querySelector('#aggregationContent')?.innerHTML?.substring(0, 500));
                 return;
             }
             
-            // 진출자 등번호 추출
-            const advancingPlayers = [];
-            const playerElements = aggregationResult.querySelectorAll('.next-round-player');
-            console.log('진출자 요소들:', playerElements);
+            // 집계 결과 요소의 내용 확인
+            console.log('집계 결과 요소 내용 (처음 500자):', aggregationResult.innerHTML.substring(0, 500));
             
-            // .next-round-player가 없으면 다른 방법으로 시도
-            if (playerElements.length === 0) {
-                // 테이블에서 진출자 정보 추출 시도
-                const tableRows = aggregationResult.querySelectorAll('table tr');
-                console.log('테이블 행들:', tableRows);
-                
-                // 집계 결과 테이블에서 진출자 정보 찾기
-                for (let i = 1; i < tableRows.length; i++) { // 헤더 제외
-                    const row = tableRows[i];
-                    const cells = row.querySelectorAll('td');
-                    if (cells.length >= 3) {
-                        const rank = cells[0]?.textContent?.trim();
-                        const number = cells[1]?.textContent?.trim();
-                        const name = cells[2]?.textContent?.trim();
-                        
-                        if (rank && number && name && !isNaN(parseInt(rank))) {
-                            advancingPlayers.push({
-                                number: number,
-                                name: name,
-                                newNumber: (advancingPlayers.length + 1).toString().padStart(2, '0')
-                            });
-                        }
-                    }
+            // 현재 설정된 진출자 수 가져오기 (recall_count_from_file 우선 사용)
+            const recallCountInput = document.getElementById('recallCountInput');
+            let currentRecallCount = recallCountInput ? parseInt(recallCountInput.value) : 6;
+            
+            // 만약 집계 결과에서 recall_count_from_file이 있다면 그것을 사용
+            const aggregationContent = document.querySelector('#aggregationContent');
+            if (aggregationContent) {
+                const recallInfoText = aggregationContent.textContent;
+                const recallMatch = recallInfoText.match(/파일 리콜 수:\s*(\d+)명/);
+                if (recallMatch) {
+                    currentRecallCount = parseInt(recallMatch[1]);
+                    console.log('집계 결과에서 파일 리콜 수 발견:', currentRecallCount);
                 }
-            } else {
-                playerElements.forEach((playerEl, index) => {
-                    const playerNumber = playerEl.querySelector('.player-number')?.textContent;
-                    const playerName = playerEl.querySelector('.player-name')?.textContent;
-                    if (playerNumber && playerName) {
-                        advancingPlayers.push({
-                            number: playerNumber,
-                            name: playerName,
-                            newNumber: (index + 1).toString().padStart(2, '0') // 01, 02, 03...
-                        });
-                    }
-                });
             }
             
-            console.log('추출된 진출자들:', advancingPlayers);
+            console.log('최종 사용할 진출자 수:', currentRecallCount);
+            
+            // 진출자 등번호 추출
+            const advancingPlayers = [];
+            
+            // API에서 최신 데이터를 가져와서 진출자 추출
+            fetch(`get_recall_data.php?comp_id=<?php echo $comp_id; ?>&event_no=${selectedEvent}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.player_recalls && data.player_recalls.length > 0) {
+                        // 리콜 수 기준으로 정렬 (높은 순)
+                        const sortedPlayers = data.player_recalls.sort((a, b) => b.recall_count - a.recall_count);
+                        
+                        // 상위 N명만 진출자로 선택
+                        for (let i = 0; i < Math.min(currentRecallCount, sortedPlayers.length); i++) {
+                            const player = sortedPlayers[i];
+                            advancingPlayers.push({
+                                number: player.player_number,
+                                name: player.player_name || `선수 ${player.player_number}`,
+                                newNumber: (i + 1).toString().padStart(2, '0')
+                            });
+                        }
+                        
+                        console.log('API에서 추출된 진출자들:', advancingPlayers);
+                        console.log('진출자 수:', advancingPlayers.length);
+                        
+                        // 다음 라운드 생성 계속
+                        continueNextRoundGeneration(advancingPlayers, currentEvent);
+                    } else {
+                        alert('진출자 데이터를 가져올 수 없습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('진출자 데이터 가져오기 오류:', error);
+                    alert('진출자 데이터를 가져오는 중 오류가 발생했습니다.');
+                });
+            
+            return; // 비동기 처리로 인해 여기서 함수 종료
+        }
+        
+        // 다음 라운드 생성 계속 함수
+        function continueNextRoundGeneration(advancingPlayers, currentEvent) {
+            console.log('continueNextRoundGeneration 시작:', {advancingPlayers, currentEvent});
             
             if (advancingPlayers.length === 0) {
                 alert('진출자가 없습니다. 집계 결과를 확인해주세요.');
@@ -5963,33 +6577,23 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             console.log('window.totalParticipants:', window.totalParticipants);
             console.log('API에서 가져온 전체 참가자 수:', totalTeams);
             
-            // 만약 API에서 가져온 값이 없으면 테이블에서 계산
             if (totalTeams === 0) {
-                const summaryTable = aggregationResult.querySelector('table');
-                if (summaryTable) {
-                    const rows = summaryTable.querySelectorAll('tr');
-                    // 헤더를 제외한 데이터 행 수 계산
-                    totalTeams = rows.length - 1;
-                    console.log('집계 테이블에서 계산된 팀 수:', totalTeams);
-                }
-            }
-            
-            // 여전히 0이면 진출자 수를 기본값으로 사용
-            if (totalTeams === 0) {
+                // API에서 가져온 값이 없으면 현재 이벤트의 참가자 수 사용
                 totalTeams = advancingPlayers.length;
-                console.log('모든 계산 실패, 진출자 수를 기본값으로 사용:', totalTeams);
+                console.log('API 값이 없어서 현재 진출자 수 사용:', totalTeams);
             }
             
-            // 다음 라운드 이벤트 번호 계산 (next_event 정보 우선 사용)
+            // 다음 이벤트 정보 찾기
             let nextEventNumber = parseInt(currentEvent.no) + 1; // 기본값
             let nextEventName = currentEvent.desc.replace(/Round \d+/, 'Semi-Final').replace(/Final/, 'Semi-Final');
             
-            // 먼저 next_event 정보가 있으면 사용
-            console.log('currentEvent.next_event:', currentEvent.next_event);
+            // next_event 정보가 있으면 사용
             if (currentEvent.next_event && currentEvent.next_event !== '') {
                 nextEventNumber = parseInt(currentEvent.next_event);
+                console.log('currentEvent.next_event:', currentEvent.next_event);
                 console.log('next_event 번호로 설정:', nextEventNumber);
-                // next_event 번호로 해당 이벤트 찾기
+                
+                // next_event로 다음 라운드 정보 찾기
                 for (const group of groupData) {
                     for (const event of group.events) {
                         if (event.no === currentEvent.next_event) {
@@ -6000,51 +6604,219 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     }
                 }
             } else {
-                console.log('next_event 정보가 없음, 기존 로직 사용');
                 // next_event가 없으면 기존 로직 사용
-                const currentEventDesc = currentEvent.desc;
+                console.log('next_event 정보 없음, 기존 로직 사용');
                 const currentRound = currentEvent.round;
-                
-                // 라운드 순서 정의
-                const roundOrder = {
-                    'Round 1': 'Semi-Final',
-                    'Semi-Final': 'Final',
-                    'Final': 'Final'
-                };
-                
-                const nextRound = roundOrder[currentRound] || 'Final';
-                
-                // 같은 종목의 다음 라운드 이벤트 찾기
-                for (const group of groupData) {
-                    for (const event of group.events) {
-                        if (event.desc === currentEventDesc && event.round === nextRound) {
-                            nextEventNumber = parseInt(event.no);
-                            nextEventName = event.desc;
-                            console.log('실제 다음 라운드 이벤트 발견:', nextEventNumber, nextEventName);
-                            break;
-                        }
-                    }
+                if (currentRound.includes('Round 1')) {
+                    nextEventName = currentEvent.desc.replace('Round 1', 'Semi-Final');
+                } else if (currentRound.includes('Semi-Final')) {
+                    nextEventName = currentEvent.desc.replace('Semi-Final', 'Final');
                 }
             }
             
             console.log('다음 이벤트:', nextEventNumber, nextEventName);
             
-            // 현재 이벤트 정보로 다음 라운드 자동 찾기
-            const currentEventForModal = events.find(e => e.no == selectedEvent);
-            if (currentEventForModal) {
-                const nextRoundInfo = getNextRoundInfo(currentEventForModal);
-                if (nextRoundInfo) {
-                    const match = nextRoundInfo.match(/(\d+)번\s+(.+)/);
-                    if (match) {
-                        nextEventNumber = parseInt(match[1]);
-                        nextEventName = `${currentEventForModal.desc} ${match[2]}`;
-                        console.log('모달용 자동 찾은 다음 라운드:', nextEventNumber, nextEventName);
-                    }
+            // 모달용 자동 찾은 다음 라운드 정보
+            const autoNextRound = getNextRoundInfo(currentEvent);
+            console.log('모달용 자동 찾은 다음 라운드:', autoNextRound);
+            
+            // 바로 다음 라운드 생성 실행
+            createNextRoundDirectly(nextEventNumber, nextEventName, advancingPlayers, totalTeams);
+        }
+        
+        
+        // 바로 다음 라운드 생성 실행
+        function createNextRoundDirectly(nextEventNumber, nextEventName, advancingPlayers, totalTeams) {
+            console.log('바로 다음 라운드 생성 시작:', {nextEventNumber, nextEventName, advancingPlayers, totalTeams});
+            
+            // 서버에 다음 라운드 생성 요청
+            fetch('create_next_round.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    current_event_id: selectedEvent,
+                    next_event_number: nextEventNumber,
+                    next_event_name: nextEventName,
+                    advancing_players: advancingPlayers
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    // 현재 채점 파일을 저장소에 저장
+                    saveCurrentScoringFile(selectedEvent);
+                    
+                    alert(`${nextEventNumber}번 라운드 생성 완료!\n이벤트: ${nextEventName}\n진출자: ${advancingPlayers.length}명\n채점 파일이 저장되었습니다.`);
+                    closeAggregationModal();
+                    
+                    // 새로고침 없이 모달만 닫기
+                } else {
+                    alert('다음 라운드 생성 실패: ' + result.error);
                 }
+            })
+            .catch(error => {
+                console.error('다음 라운드 생성 오류:', error);
+                alert('다음 라운드 생성 중 오류가 발생했습니다.');
+            });
+        }
+        
+        // 현재 채점 파일을 저장소에 저장하는 함수
+        function saveCurrentScoringFile(eventId) {
+            console.log('채점 파일 저장 시작:', eventId);
+            
+            // 현재 이벤트의 채점 데이터를 가져와서 파일로 저장
+            fetch(`get_recall_data.php?event_id=${eventId}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('채점 데이터 받음:', data);
+                    if (data.success) {
+                        // 채점 파일 저장 요청
+                        fetch('save_scoring_file.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                event_id: eventId,
+                                comp_id: '<?php echo $comp_id; ?>',
+                                scoring_data: data
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            console.log('채점 파일 저장 결과:', result);
+                            if (result.success) {
+                                console.log('채점 파일 저장 완료:', result.filename);
+                                
+                                // HTML 파일도 함께 저장
+                                saveHtmlReport(eventId, data);
+                            } else {
+                                console.error('채점 파일 저장 실패:', result.error);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('채점 파일 저장 오류:', error);
+                        });
+                    } else {
+                        console.error('채점 데이터 가져오기 실패:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('채점 데이터 가져오기 오류:', error);
+                });
+        }
+        
+        // HTML 리포트 저장 함수
+        function saveHtmlReport(eventId, data) {
+            console.log('HTML 리포트 저장 시작:', eventId);
+            
+            // 현재 집계 결과 HTML 가져오기
+            const aggregationContent = document.querySelector('#aggregationContent');
+            if (!aggregationContent) {
+                console.error('집계 결과를 찾을 수 없습니다.');
+                return;
             }
             
-            // 진출자 확인 및 등번호 조정 모달 표시
-            showNextRoundModal(nextEventNumber, nextEventName, advancingPlayers, totalTeams);
+            const htmlContent = aggregationContent.innerHTML;
+            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+            const filename = `Event_${eventId}_${timestamp}.html`;
+            
+            // HTML 파일 저장 요청
+            fetch('save_html_report.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    event_id: eventId,
+                    comp_id: '<?php echo $comp_id; ?>',
+                    html_content: htmlContent,
+                    filename: filename,
+                    competition_data: data
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                console.log('HTML 리포트 저장 결과:', result);
+                if (result.success) {
+                    console.log('HTML 리포트 저장 완료:', result.filename);
+                } else {
+                    console.error('HTML 리포트 저장 실패:', result.error);
+                }
+            })
+            .catch(error => {
+                console.error('HTML 리포트 저장 오류:', error);
+            });
+        }
+        
+        // 이벤트 데이터 새로고침 함수
+        function refreshEventData() {
+            console.log('이벤트 데이터 새로고침 시작');
+            
+            // 현재 선택된 이벤트 저장
+            const currentSelectedEvent = selectedEvent;
+            
+            // 이벤트 데이터 다시 로드
+            fetch('get_events.php?comp_id=<?php echo $comp_id; ?>')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // groupData 업데이트
+                        groupData = data.groups;
+                        events = data.events;
+                        
+                        // 이벤트 카드 다시 렌더링
+                        renderEventCards();
+                        
+                        // 이전에 선택된 이벤트가 있으면 다시 선택
+                        if (currentSelectedEvent) {
+                            selectedEvent = currentSelectedEvent;
+                            // 해당 이벤트 카드에 선택 상태 표시
+                            document.querySelectorAll('.event-card').forEach(card => {
+                                card.classList.remove('selected');
+                            });
+                            const selectedCard = document.querySelector(`[data-group-id="${currentSelectedEvent}"]`);
+                            if (selectedCard) {
+                                selectedCard.classList.add('selected');
+                            }
+                        }
+                        
+                        console.log('이벤트 데이터 새로고침 완료');
+                    } else {
+                        console.error('이벤트 데이터 새로고침 실패:', data.error);
+                    }
+                })
+                .catch(error => {
+                    console.error('이벤트 데이터 새로고침 오류:', error);
+                    // 오류 발생 시 페이지 새로고침으로 대체
+                    console.log('오류로 인해 페이지를 새로고침합니다.');
+                    location.reload();
+                });
+        }
+        
+        // 다음 라운드 생성 버튼 텍스트 업데이트
+        function updateNextRoundButtonText() {
+            const currentEvent = events.find(ev => (ev.detail_no || ev.no) === selectedEvent);
+            if (!currentEvent) return;
+            
+            let nextEventNumber = parseInt(currentEvent.no) + 1; // 기본값
+            
+            // next_event 정보가 있으면 사용
+            if (currentEvent.next_event && currentEvent.next_event !== '') {
+                nextEventNumber = parseInt(currentEvent.next_event);
+            }
+            
+            const nextRoundBtn = document.getElementById('nextRoundBtn');
+            if (nextRoundBtn) {
+                nextRoundBtn.textContent = `${nextEventNumber}번 라운드 생성`;
+            }
         }
         
         // 다음 라운드 생성 모달 표시
@@ -6056,6 +6828,19 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             if (totalTeams === undefined || totalTeams === null || totalTeams === 0) {
                 totalTeams = advancingPlayers.length;
                 console.log('totalTeams가 유효하지 않음, advancingPlayers.length 사용:', totalTeams);
+            }
+            
+            // 현재 이벤트의 리콜 수 찾기 (진출할 수 있는 최대 인원)
+            let currentEventRecallCount = 0;
+            for (const group of groupData) {
+                for (const event of group.events) {
+                    if ((event.detail_no || event.no) === selectedEvent) {
+                        currentEventRecallCount = event.recall_count || 0;
+                        console.log('현재 이벤트 리콜 수 찾음:', currentEventRecallCount);
+                        break;
+                    }
+                }
+                if (currentEventRecallCount > 0) break;
             }
             
             // 기존 모달이 있으면 제거
@@ -6074,7 +6859,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     </div>
                     <div class="next-round-modal-body">
                         <p><strong>이벤트명:</strong> ${nextEventName}</p>
-                        <p><strong>리콜 수:</strong> ${advancingPlayers.length}명</p>
+                        <p><strong>리콜 수:</strong> ${currentEventRecallCount}명 (현재 라운드에서 진출할 수 있는 최대 인원)</p>
                         <div class="couple-count-section">
                             <h4>진출할 커플 수 설정</h4>
                             <div class="couple-count-input">
@@ -6124,6 +6909,48 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             // 진출자 목록 테이블이 제거되었으므로 추가 처리 불필요
         }
         
+        // recall 수 업데이트 함수 (모달 닫지 않음)
+        function updateRecallCountWithoutRefresh(eventId, recallCount) {
+            console.log('updateRecallCountWithoutRefresh 호출:', {eventId, recallCount});
+            
+            fetch('update_recall_count.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `group_id=${eventId}&recall_count=${recallCount}`
+            })
+            .then(response => {
+                console.log('updateRecallCountWithoutRefresh 응답 상태:', response.status);
+                return response.text();
+            })
+            .then(text => {
+                console.log('updateRecallCountWithoutRefresh 응답 텍스트:', text);
+                try {
+                    const data = JSON.parse(text);
+                    if (data.success) {
+                        console.log('Recall 수 업데이트 성공:', recallCount);
+                        // UI에서도 recall 수 업데이트
+                        const recallElement = document.querySelector(`[data-group-id="${eventId}"] .recall-count-value`);
+                        if (recallElement) {
+                            recallElement.textContent = `${recallCount}명`;
+                        }
+                        // refreshEventData() 호출하지 않음 - 모달이 닫히지 않도록
+                    } else {
+                        console.error('Recall 수 업데이트 실패:', data.message || data.error);
+                        alert('진출자 수 업데이트에 실패했습니다: ' + (data.message || data.error));
+                    }
+                } catch (e) {
+                    console.error('JSON 파싱 오류:', e, '응답 텍스트:', text);
+                    alert('진출자 수 업데이트 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Recall 수 업데이트 오류:', error);
+                alert('진출자 수 업데이트 중 오류가 발생했습니다: ' + error.message);
+            });
+        }
+        
         // recall 수 업데이트 함수
         function updateRecallCount(eventId, recallCount) {
             console.log('updateRecallCount 호출:', {eventId, recallCount});
@@ -6150,6 +6977,9 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         if (recallElement) {
                             recallElement.textContent = `${recallCount}명`;
                         }
+                        
+                        // 데이터 다시 가져와서 화면 새로고침
+                        refreshEventData();
                     } else {
                         console.error('Recall 수 업데이트 실패:', data.message || data.error);
                     }
@@ -6372,6 +7202,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         <div class="modal-footer">
             <button class="btn-secondary" onclick="closeAggregationModal()">닫기</button>
             <button class="btn-primary" onclick="printAggregation()" id="printAggregationBtn" style="display: none;">인쇄</button>
+            <button class="btn-info" onclick="saveAggregationResult()" id="saveAggregationBtn" style="display: none;">파일 저장</button>
             <button class="btn-success" onclick="generateNextRound()" id="nextRoundBtn" style="display: none;">다음 라운드 생성</button>
         </div>
     </div>

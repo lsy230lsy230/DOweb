@@ -6,9 +6,16 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// POST 데이터 받기 (form-urlencoded 우선, JSON 대체)
+$group_id = $_POST['group_id'] ?? '';
+$recall_count = intval($_POST['recall_count'] ?? 0);
+
+// JSON 데이터가 있으면 우선 사용
 $input = json_decode(file_get_contents('php://input'), true);
-$group_id = $input['group_id'] ?? '';
-$recall_count = intval($input['recall_count'] ?? 0);
+if ($input) {
+    $group_id = $input['group_id'] ?? $group_id;
+    $recall_count = intval($input['recall_count'] ?? $recall_count);
+}
 
 if (!$group_id) {
     echo json_encode(['success' => false, 'error' => '그룹 ID가 필요합니다.']);
@@ -28,15 +35,14 @@ try {
     $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     $updated = false;
     
-    // 해당 그룹의 이벤트들 찾아서 Recall 수 업데이트
+    // 해당 이벤트 찾아서 Recall 수 업데이트
     foreach ($lines as $index => $line) {
         $parts = explode(',', $line);
         if (count($parts) >= 12) {
             $event_no = trim($parts[0]);
-            $detail_no = trim($parts[11]) ?: trim($parts[0]);
             
-            // 그룹 ID와 매칭되는 이벤트 찾기
-            if ($event_no == $group_id || $detail_no == $group_id) {
+            // 정확한 이벤트 번호와 매칭되는 이벤트만 찾기
+            if ($event_no == $group_id) {
                 // 5번째 컬럼(리콜 수) 업데이트 (인덱스 4)
                 $parts[4] = $recall_count;
                 $lines[$index] = implode(',', $parts);

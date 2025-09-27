@@ -2,7 +2,7 @@
 header('Content-Type: application/json; charset=utf-8');
 
 $comp_id = $_GET['comp_id'] ?? '20250913-001';
-$event_no = $_GET['event_no'] ?? '28'; // 테스트용 기본값
+$event_no = $_GET['event_no'] ?? $_GET['event_id'] ?? ''; // event_id 또는 event_no 파라미터 지원
 
 if (!$event_no) {
     echo json_encode(['success' => false, 'error' => '이벤트 번호가 필요합니다.']);
@@ -47,9 +47,14 @@ try {
     
     // 현재 이벤트 찾기
     $current_event = null;
+    error_log("찾고 있는 이벤트 번호: $event_no");
+    error_log("사용 가능한 이벤트들: " . implode(', ', array_column($events, 'no')));
+    
     foreach ($events as $event) {
+        error_log("확인 중인 이벤트: {$event['no']}, detail_no: {$event['detail_no']}, event_no: {$event['event_no']}");
         if ($event['detail_no'] == $event_no || $event['no'] == $event_no || $event['event_no'] == $event_no) {
             $current_event = $event;
+            error_log("이벤트 찾음: {$event['no']}");
             break;
         }
     }
@@ -106,7 +111,8 @@ try {
         '6' => 'Cha Cha Cha',
         '7' => 'Samba', 
         '8' => 'Rumba',
-        '9' => 'Paso Doble'
+        '9' => 'Paso Doble',
+        '10' => 'Jive'
     ];
     
     // 각 댄스별로 리콜 데이터 분석

@@ -7,9 +7,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 }
 
 $input = json_decode(file_get_contents('php://input'), true);
-$eventNumber = $input['eventNumber'] ?? '';
-$eventName = $input['eventName'] ?? '';
-$players = $input['players'] ?? [];
+$eventNumber = $input['next_event_number'] ?? $input['eventNumber'] ?? '';
+$eventName = $input['next_event_name'] ?? $input['eventName'] ?? '';
+$players = $input['advancing_players'] ?? $input['players'] ?? [];
 $comp_id = $input['comp_id'] ?? '20250913-001';
 
 error_log("=== create_next_round.php 시작 ===");
@@ -47,9 +47,8 @@ try {
     
     // 이벤트가 존재하지 않는 경우에만 새로 추가
     if (!$eventExists) {
-        // 진출자 수를 players 배열 길이로 설정
-        $recallCount = count($players);
-        $newEventLine = "$eventNumber,$eventName,Semi-Final,,,,$recallCount,7,8,9,10,LC,1.5,,0";
+        // 임시로 0으로 설정 (나중에 실제 진출자 수로 업데이트)
+        $newEventLine = "$eventNumber,$eventName,Semi-Final,,,,0,7,8,9,10,LC,1.5,,0";
         $lines[] = $newEventLine;
         
         $content = implode("\n", $lines) . "\n";
@@ -60,14 +59,35 @@ try {
     
     // 2. 이벤트용 선수 파일 업데이트 (기존 파일 덮어쓰기)
     $playerContent = "";
+    $validPlayers = [];
     foreach ($players as $player) {
         // 등번호만 저장 (선수명 제외)
-        $playerContent .= $player['oldNumber'] . "\n";
+        $playerNumber = $player['number'] ?? $player['oldNumber'] ?? '';
+        if ($playerNumber && trim($playerNumber) !== '') {
+            $playerContent .= $playerNumber . "\n";
+            $validPlayers[] = $playerNumber;
+        }
     }
     
     if (file_put_contents($players_file, $playerContent) === false) {
         throw new Exception("선수 파일 생성에 실패했습니다.");
     }
+    
+    // 실제 진출자 수로 업데이트
+    $actualRecallCount = count($validPlayers);
+    
+    // RunOrder_Tablet.txt의 리콜 수 업데이트
+    $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $index => $line) {
+        $parts = explode(',', $line);
+        if (count($parts) >= 1 && trim($parts[0]) == $eventNumber) {
+            // 5번째 컬럼(인덱스 4)이 리콜 수
+            $parts[4] = $actualRecallCount;
+            $lines[$index] = implode(',', $parts);
+            break;
+        }
+    }
+    file_put_contents($runorder_file, implode("\n", $lines) . "\n");
     
     // 3. 새 이벤트용 히트 파일 생성 (빈 파일)
     $hits_file = "$data_dir/players_hits_$eventNumber.json";
@@ -88,7 +108,7 @@ try {
         'message' => $message,
         'eventNumber' => $eventNumber,
         'eventName' => $eventName,
-        'playersCount' => count($players),
+        'playersCount' => $actualRecallCount,
         'eventExisted' => $eventExists,
         'filesUpdated' => [
             'players' => $players_file,
