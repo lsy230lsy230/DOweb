@@ -401,6 +401,106 @@ foreach ($events as &$event) {
             font-size: 0.9em;
             margin-left: 15px;
         }
+        
+        /* Live TV 스타일 */
+        .live-tv-container {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .live-tv-header {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .live-tv-header h4 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .advancement-text {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #ffeb3b;
+        }
+        
+        .recall-info {
+            font-size: 1.1em;
+            margin: 10px 0;
+            color: #e3f2fd;
+        }
+        
+        .live-tv-table {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        
+        .live-tv-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .live-tv-table th {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .live-tv-table td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .live-tv-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        .live-tv-table tr:hover {
+            background: #e3f2fd;
+        }
+        
+        .qualified {
+            background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%) !important;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .qualified td {
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .qualified-icon {
+            margin-left: 10px;
+            font-size: 1.2em;
+        }
+        
+        .last-updated {
+            text-align: center;
+            margin-top: 15px;
+            color: white;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            border: 1px solid #f5c6cb;
+        }
     </style>
 </head>
 <body>
@@ -428,14 +528,47 @@ foreach ($events as &$event) {
                 
                 <div class="section">
                     <h3>📺 실시간 경기 결과</h3>
-                    <div class="live-results-section" id="live-results">
-                        <div class="loading">
+                    <div class="live-tv-container" id="live-tv-container">
+                        <div class="loading" id="live-loading">
                             <span class="update-indicator"></span>
                             실시간 결과를 로딩 중입니다...
                         </div>
+                        
+                        <!-- Live TV 결과 표시 영역 -->
+                        <div class="live-tv-content" id="live-tv-content" style="display: none;">
+                            <div class="live-tv-header">
+                                <h4 id="event-title">이벤트 정보 로딩 중...</h4>
+                                <p class="advancement-text" id="advancement-text"></p>
+                                <p class="recall-info" id="recall-info"></p>
+                            </div>
+                            
+                            <div class="live-tv-table">
+                                <table id="results-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Marks</th>
+                                            <th>Tag</th>
+                                            <th>Competitor Name(s)</th>
+                                            <th>From</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="results-tbody">
+                                        <!-- 결과 데이터가 여기에 동적으로 추가됩니다 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="last-updated" id="last-updated"></div>
+                        </div>
+                        
+                        <!-- 에러 메시지 영역 -->
+                        <div class="error-message" id="error-message" style="display: none;">
+                            <p>실시간 결과를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.</p>
+                        </div>
                     </div>
+                    
                     <div style="text-align: center; margin-top: 15px;">
-                        <button class="refresh-button" data-refresh>새로고침</button>
+                        <button class="refresh-button" onclick="loadLiveTvResults()">새로고침</button>
                         <span class="refresh-info">
                             30초마다 자동 갱신됩니다. 최신 결과가 아닐 경우 새로고침(F5) 해주세요.
                         </span>
@@ -514,10 +647,145 @@ foreach ($events as &$event) {
         </div>
     </div>
 
-    <!-- 실시간 결과 통합 JavaScript -->
+    <!-- Live TV 실시간 결과 JavaScript -->
     <script>
-        console.log('Loading live results integration script...');
+        // Live TV 실시간 결과 JavaScript
+        let liveTvUpdateInterval;
+        let isLoading = false;
+        
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Live TV Results initialized');
+            loadLiveTvResults();
+            startAutoUpdate();
+        });
+        
+        // 실시간 결과 로드 함수
+        function loadLiveTvResults() {
+            if (isLoading) return;
+            
+            isLoading = true;
+            showLoading();
+            
+            const compId = '<?php echo str_replace("comp_", "", $comp_id); ?>';
+            const eventNo = '30'; // 기본 이벤트 번호
+            const apiUrl = `live_scoring_monitor.php?comp_id=${compId}&event_no=${eventNo}`;
+            
+            console.log('Loading live TV results from:', apiUrl);
+            
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Live TV API response:', data);
+                    
+                    if (data.success && data.live_tv) {
+                        displayLiveTvResults(data.live_tv);
+                        hideLoading();
+                        hideError();
+                    } else {
+                        throw new Error(data.error || 'API returned error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading live TV results:', error);
+                    showError();
+                    hideLoading();
+                })
+                .finally(() => {
+                    isLoading = false;
+                });
+        }
+        
+        // Live TV 결과 표시 함수
+        function displayLiveTvResults(liveTvData) {
+            console.log('Displaying live TV data:', liveTvData);
+            
+            // 헤더 정보 업데이트
+            document.getElementById('event-title').textContent = liveTvData.event_title || '이벤트 정보 없음';
+            document.getElementById('advancement-text').textContent = liveTvData.advancement_text || '';
+            document.getElementById('recall-info').textContent = liveTvData.recall_info || '';
+            
+            // 테이블 데이터 업데이트
+            const tbody = document.getElementById('results-tbody');
+            tbody.innerHTML = '';
+            
+            if (liveTvData.participants && liveTvData.participants.length > 0) {
+                liveTvData.participants.forEach((participant, index) => {
+                    const row = document.createElement('tr');
+                    if (participant.qualified) {
+                        row.classList.add('qualified');
+                    }
+                    
+                    row.innerHTML = `
+                        <td>${participant.marks || 0}</td>
+                        <td>(${participant.tag || ''})</td>
+                        <td>${participant.name || ''} ${participant.qualified ? '<span class="qualified-icon">✅ 진출</span>' : ''}</td>
+                        <td>${participant.from || ''}</td>
+                    `;
+                    
+                    tbody.appendChild(row);
+                });
+            } else {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="4">경기 결과가 없습니다.</td>';
+                tbody.appendChild(row);
+            }
+            
+            // 업데이트 시간 표시
+            if (liveTvData.file_info && liveTvData.file_info.timestamp) {
+                document.getElementById('last-updated').textContent = 
+                    `마지막 업데이트: ${liveTvData.file_info.timestamp}`;
+            }
+            
+            // Live TV 컨텐츠 표시
+            document.getElementById('live-tv-content').style.display = 'block';
+        }
+        
+        // 로딩 표시
+        function showLoading() {
+            document.getElementById('live-loading').style.display = 'block';
+            document.getElementById('live-tv-content').style.display = 'none';
+            document.getElementById('error-message').style.display = 'none';
+        }
+        
+        // 로딩 숨김
+        function hideLoading() {
+            document.getElementById('live-loading').style.display = 'none';
+        }
+        
+        // 에러 표시
+        function showError() {
+            document.getElementById('error-message').style.display = 'block';
+            document.getElementById('live-tv-content').style.display = 'none';
+        }
+        
+        // 에러 숨김
+        function hideError() {
+            document.getElementById('error-message').style.display = 'none';
+        }
+        
+        // 자동 업데이트 시작
+        function startAutoUpdate() {
+            // 기존 인터벌 클리어
+            if (liveTvUpdateInterval) {
+                clearInterval(liveTvUpdateInterval);
+            }
+            
+            // 30초마다 업데이트
+            liveTvUpdateInterval = setInterval(() => {
+                console.log('Auto updating live TV results...');
+                loadLiveTvResults();
+            }, 30000);
+            
+            console.log('Auto update started (30 seconds interval)');
+        }
+        
+        // 페이지 언로드 시 인터벌 클리어
+        window.addEventListener('beforeunload', function() {
+            if (liveTvUpdateInterval) {
+                clearInterval(liveTvUpdateInterval);
+            }
+        });
     </script>
-    <script src="simple_live_results.js"></script>
 </body>
 </html>
