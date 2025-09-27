@@ -28,6 +28,21 @@ function getEvent30Result() {
 
 $event30_result = getEvent30Result();
 
+// 이벤트 결과 파일이 존재하는지 확인하는 함수
+function hasEventResult($comp_id, $event_id) {
+    $result_file = __DIR__ . "/data/{$comp_id}/Results/Event_{$event_id}/Event_{$event_id}_result.html";
+    return file_exists($result_file);
+}
+
+// 이벤트 결과 파일 내용을 가져오는 함수
+function getEventResult($comp_id, $event_id) {
+    $result_file = __DIR__ . "/data/{$comp_id}/Results/Event_{$event_id}/Event_{$event_id}_result.html";
+    if (file_exists($result_file)) {
+        return file_get_contents($result_file);
+    }
+    return null;
+}
+
 // RunOrder_Tablet.txt에서 이벤트 정보 가져오기 (순서와 이벤트명만)
 function getEventsFromRunOrder($comp_id) {
     $runorder_file = __DIR__ . "/data/{$comp_id}/RunOrder_Tablet.txt";
@@ -47,10 +62,15 @@ function getEventsFromRunOrder($comp_id) {
                 $round = $cols[2];
                 $display_number = $cols[13]; // 세부번호 (1-1, 1-2, 3-1, 3-2...)
                 
-                if (!empty($event_no) && is_numeric($event_no) && !empty($display_number)) {
+                if (!empty($event_no) && is_numeric($event_no)) {
                     // 중복 이벤트 방지 (같은 이벤트 번호는 한 번만)
                     if (!in_array($event_no, $processed_events)) {
                         $processed_events[] = $event_no;
+                        
+                        // 세부번호가 없으면 이벤트 번호를 그대로 사용
+                        if (empty($display_number)) {
+                            $display_number = $event_no;
+                        }
                         
                         $events[] = [
                             'id' => intval($event_no),
@@ -81,10 +101,18 @@ $completed_events = [
     31 => ['status' => 'completed', 'reports' => ['detail', 'recall', 'combined']]
 ];
 
-// 완료된 이벤트 정보 병합
+// 완료된 이벤트 정보 병합 및 결과 파일 존재 여부 확인
 foreach ($events as &$event) {
     if (isset($completed_events[$event['id']])) {
         $event = array_merge($event, $completed_events[$event['id']]);
+    }
+    
+    // 결과 파일이 있는지 확인
+    if (hasEventResult($comp_id_clean, $event['id'])) {
+        $event['has_result'] = true;
+        $event['result_content'] = getEventResult($comp_id_clean, $event['id']);
+    } else {
+        $event['has_result'] = false;
     }
 }
 ?>
@@ -452,27 +480,28 @@ foreach ($events as &$event) {
                     });
                     
                     foreach ($events as $event): ?>
-                    <div class="event-item">
+                    <div class="event-item" <?php if ($event['has_result']): ?>onclick="toggleEventResult(<?php echo $event['id']; ?>)" style="cursor: pointer;"<?php endif; ?>>
                         <div class="event-header-item">
                             <div class="event-title">
                                 <?php echo $event['display_number']; ?>번 <?php echo $event['name']; ?>
+                                <?php if ($event['has_result']): ?>
+                                    <span style="color: #10b981; font-size: 0.8em; margin-left: 8px;">📄 결과보기</span>
+                                <?php endif; ?>
                             </div>
                             <div class="event-round"><?php echo $event['round']; ?></div>
                         </div>
                         <div class="event-status">
-                            <?php if ($event['id'] == 30 && $event30_result): ?>
-                                <!-- 30번 이벤트 특별 처리 -->
+                            <?php if ($event['has_result']): ?>
+                                <!-- 결과가 있는 이벤트 -->
                                 <div class="status-completed">
                                     <div style="margin-bottom: 15px;">
-                                        <strong>📊 집계 결과</strong>
-                                        <div style="margin-top: 10px; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background: #f9f9f9;">
-                                            <?php echo $event30_result; ?>
+                                        <strong>📊 집계 결과 (클릭하여 상세보기)</strong>
+                                        <div id="event-result-<?php echo $event['id']; ?>" style="display: none; margin-top: 10px; border: 1px solid #ddd; border-radius: 5px; padding: 15px; background: #f9f9f9; max-height: 400px; overflow-y: auto;">
+                                            <?php echo $event['result_content']; ?>
                                         </div>
                                     </div>
                                     <div style="margin-top: 10px;">
-                                        <a href="/comp/data/<?php echo str_replace('comp_', '', $_GET['id'] ?? '20250913-001'); ?>/Results/Event_30/Event_30_result.html" target="_blank" style="margin-right: 10px;">📋 전체 결과 보기</a>
-                                        <a href="#" style="margin-right: 10px;">📊 리콜 리포트</a>
-                                        <a href="#">🏆 컴바인 리포트</a>
+                                        <a href="/comp/data/<?php echo $comp_id_clean; ?>/Results/Event_<?php echo $event['id']; ?>/Event_<?php echo $event['id']; ?>_result.html" target="_blank" style="margin-right: 10px;" onclick="event.stopPropagation();">📋 새창에서 보기</a>
                                     </div>
                                 </div>
                             <?php elseif ($event['status'] === 'completed'): ?>
@@ -485,19 +514,6 @@ foreach ($events as &$event) {
                                         <?php foreach ($event['results'] as $result): ?>
                                             <p><strong><?php echo $result['rank']; ?>위</strong> <?php echo implode(', ', $result['players']); ?></p>
                                         <?php endforeach; ?>
-                                    <?php endif; ?>
-                                    <?php if (isset($event['reports'])): ?>
-                                        <div style="margin-top: 10px;">
-                                            <?php if (in_array('detail', $event['reports'])): ?>
-                                                <a href="/comp/data/<?php echo str_replace('comp_', '', $_GET['id'] ?? '20250913-001'); ?>/Results/Event_<?php echo $event['id']; ?>/Event_<?php echo $event['id']; ?>_result.html" target="_blank" style="margin-right: 10px;">📋 상세 리포트</a>
-                                            <?php endif; ?>
-                                            <?php if (in_array('recall', $event['reports'])): ?>
-                                                <a href="/comp/data/<?php echo str_replace('comp_', '', $_GET['id'] ?? '20250913-001'); ?>/Results/Event_<?php echo $event['id']; ?>/Event_<?php echo $event['id']; ?>_result.html" target="_blank" style="margin-right: 10px;">📊 리콜 리포트</a>
-                                            <?php endif; ?>
-                                            <?php if (in_array('combined', $event['reports'])): ?>
-                                                <a href="/comp/data/<?php echo str_replace('comp_', '', $_GET['id'] ?? '20250913-001'); ?>/Results/Event_<?php echo $event['id']; ?>/Event_<?php echo $event['id']; ?>_result.html" target="_blank">🏆 컴바인 리포트</a>
-                                            <?php endif; ?>
-                                        </div>
                                     <?php endif; ?>
                                 </div>
                             <?php else: ?>
@@ -517,6 +533,18 @@ foreach ($events as &$event) {
     <!-- 실시간 결과 통합 JavaScript -->
     <script>
         console.log('Loading live results integration script...');
+        
+        // 이벤트 결과 토글 함수
+        function toggleEventResult(eventId) {
+            const resultDiv = document.getElementById('event-result-' + eventId);
+            if (resultDiv) {
+                if (resultDiv.style.display === 'none') {
+                    resultDiv.style.display = 'block';
+                } else {
+                    resultDiv.style.display = 'none';
+                }
+            }
+        }
     </script>
     <script src="simple_live_results.js"></script>
 </body>
