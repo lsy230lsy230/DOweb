@@ -36,6 +36,52 @@ function getCompetitionNotices($comp_data_path) {
     return [];
 }
 
+// RunOrder_Tablet.txt에서 시간표 순서대로 이벤트 목록 가져오기
+function getEventsFromRunOrder($comp_data_path) {
+    if (!$comp_data_path) return [];
+    
+    $runorder_file = $comp_data_path . '/RunOrder_Tablet.txt';
+    if (!file_exists($runorder_file)) return [];
+    
+    $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $events = [];
+    $processed_events = []; // 중복 방지
+    
+    foreach ($lines as $line) {
+        if (preg_match('/^bom/', $line)) continue; // 헤더 라인 스킵
+        
+        $cols = array_map('trim', explode(',', $line));
+        if (count($cols) >= 14) {
+            $event_no = $cols[0];
+            $event_name = $cols[1];
+            $round = $cols[2];
+            $display_number = $cols[13]; // 세부번호 (1-1, 1-2, 3-1, 3-2...)
+            
+            if (!empty($event_no) && is_numeric($event_no)) {
+                // 중복 이벤트 방지 (같은 이벤트 번호는 한 번만)
+                if (!in_array($event_no, $processed_events)) {
+                    $processed_events[] = $event_no;
+                    
+                    $events[] = [
+                        'event_no' => intval($event_no),
+                        'display_number' => $display_number ?: $event_no,
+                        'event_name' => $event_name,
+                        'round' => $round,
+                        'has_result' => false // 결과 파일 존재 여부는 나중에 확인
+                    ];
+                }
+            }
+        }
+    }
+    
+    // 이벤트 번호 순으로 정렬 (시간표 순서)
+    usort($events, function($a, $b) {
+        return $a['event_no'] - $b['event_no'];
+    });
+    
+    return $events;
+}
+
 function getCompetitionSchedule($comp_data_path, $comp_id) {
     // 먼저 푸시된 타임테이블 데이터 확인
     $timetable_file = __DIR__ . '/data/timetables/timetable_' . str_replace('comp_', '', $comp_id) . '.json';
@@ -1075,51 +1121,79 @@ $results = getCompetitionResults($comp_data_path);
                     </h3>
                     
                     <?php 
-                    // 대회 데이터에서 결과 파일들 로드
+                    // RunOrder에서 시간표 순서대로 이벤트 목록 가져오기
                     $comp_data_dir = __DIR__ . '/comp/data/' . str_replace('comp_', '', $comp_id);
-                    $event_results = [];
+                    $events_list = getEventsFromRunOrder($comp_data_dir);
+                    
+                    // Results 폴더에서 실제 결과 파일이 있는 이벤트 확인
+                    $results_dir = $comp_data_dir . '/Results';
+                    foreach ($events_list as &$event) {
+                        $event_result_file = $results_dir . '/Event_' . $event['event_no'] . '/Event_' . $event['event_no'] . '_result.html';
+                        $event['has_result'] = file_exists($event_result_file);
+                        $event['result_file_path'] = $event['has_result'] ? $event_result_file : null;
+                    }
+                    ?>
+                    
+                    <!-- 이벤트 리스트 -->
+                    <div class="events-list" style="background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                        <?php if (empty($events_list)): ?>
+                            <div style="padding: 40px; text-align: center; color: #6b7280;">
+                                <span class="material-symbols-rounded" style="font-size: 48px; opacity: 0.5; margin-bottom: 16px;">event_note</span>
+                                <p>등록된 이벤트가 없습니다.</p>
+                            </div>
+                        <?php else: ?>
+                            <?php foreach ($events_list as $index => $event): ?>
+                                <div class="event-list-item" onclick="<?php echo $event['has_result'] ? "showEventResult({$event['event_no']}, '" . htmlspecialchars($event['event_name'], ENT_QUOTES) . "')" : ''; ?>" 
+                                     style="padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; cursor: <?php echo $event['has_result'] ? 'pointer' : 'default'; ?>; transition: background-color 0.2s; <?php echo $index === 0 ? 'border-top: none;' : ''; ?> <?php echo $event['has_result'] ? '' : 'opacity: 0.6;'; ?>">
+                                    
+                                    <div style="display: flex; align-items: center; gap: 16px;">
+                                        <div style="background: <?php echo $event['has_result'] ? '#3b82f6' : '#9ca3af'; ?>; color: white; padding: 8px 12px; border-radius: 6px; font-weight: 600; min-width: 60px; text-align: center;">
+                                            <?php echo $event['display_number']; ?>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;">
+                                                <?php echo htmlspecialchars($event['event_name']); ?>
+                                            </div>
+                                            <div style="color: #6b7280; font-size: 14px;">
+                                                <?php echo htmlspecialchars($event['round']); ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <?php if ($event['has_result']): ?>
+                                            <span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                                결과 완료
+                                            </span>
+                                            <span class="material-symbols-rounded" style="color: #3b82f6;">
+                                                chevron_right
+                                            </span>
+                                        <?php else: ?>
+                                            <span style="background: #f3f4f6; color: #6b7280; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
+                                                대기 중
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </div>
+                    
+                    <!-- 구식 이벤트 결과들도 표시 (호환성) -->
+                    <?php 
+                    $legacy_event_results = [];
                     
                     if (is_dir($comp_data_dir)) {
-                        // 1. Results 폴더에서 생성된 리포트 파일들 찾기 (대회별 분리)
-                        $results_dir = $comp_data_dir . '/Results';
-                        if (is_dir($results_dir)) {
-                            $event_dirs = glob($results_dir . '/Event_*', GLOB_ONLYDIR);
-                            foreach ($event_dirs as $event_dir) {
-                                if (preg_match('/Event_(\d+)$/', basename($event_dir), $matches)) {
-                                    $event_no = $matches[1];
-                                    
-                                    // 메타데이터 파일 로드
-                                    $metadata_file = $event_dir . '/metadata.json';
-                                    if (file_exists($metadata_file)) {
-                                        $metadata = json_decode(file_get_contents($metadata_file), true);
-                                        if ($metadata) {
-                                            $event_results[] = [
-                                                'event_no' => $event_no,
-                                                'event_name' => $metadata['event_name'],
-                                                'round' => 'Final',
-                                                'final_rankings' => [],
-                                                'source' => 'results',
-                                                'generated_at' => $metadata['generated_at'],
-                                                'files' => $metadata['files'],
-                                                'results_dir' => $event_dir,
-                                                'comp_id' => $comp_id
-                                            ];
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        
-                        // 2. results_*.json 파일들 찾기 (기존 방식)
+                        // results_*.json 파일들 찾기 (기존 방식)
                         $result_files = glob($comp_data_dir . '/results_*.json');
                         foreach ($result_files as $file) {
                             $result_data = json_decode(file_get_contents($file), true);
                             if ($result_data) {
-                                $event_results[] = $result_data;
+                                $legacy_event_results[] = $result_data;
                             }
                         }
                         
-                        // 3. players_hits_*.json 파일들도 결과로 간주
+                        // players_hits_*.json 파일들도 결과로 간주
                         $hits_files = glob($comp_data_dir . '/players_hits_*.json');
                         foreach ($hits_files as $file) {
                             $hits_data = json_decode(file_get_contents($file), true);
@@ -1129,21 +1203,20 @@ $results = getCompetitionResults($comp_data_path);
                                 if (preg_match('/players_hits_(\d+)\.json/', $filename, $matches)) {
                                     $event_no = $matches[1];
                                     
-                                    // 이미 Results 폴더에 있는 이벤트는 스킵
-                                    $exists = false;
-                                    foreach ($event_results as $existing) {
-                                        if ($existing['event_no'] == $event_no && $existing['source'] == 'results') {
-                                            $exists = true;
+                                    // RunOrder에 없는 이벤트만 추가
+                                    $exists_in_runorder = false;
+                                    foreach ($events_list as $existing) {
+                                        if ($existing['event_no'] == $event_no) {
+                                            $exists_in_runorder = true;
                                             break;
                                         }
                                     }
                                     
-                                    if (!$exists) {
-                                        // RunOrder에서 해당 이벤트 정보 찾기
+                                    if (!$exists_in_runorder) {
+                                        // RunOrder_Tablet.txt에서 이벤트 정보 찾기
                                         $event_name = "이벤트 {$event_no}";
                                         $round = "Final";
                                         
-                                        // RunOrder_Tablet.txt에서 이벤트 정보 찾기
                                         $runorder_file = $comp_data_dir . '/RunOrder_Tablet.txt';
                                         if (file_exists($runorder_file)) {
                                             $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -1158,58 +1231,11 @@ $results = getCompetitionResults($comp_data_path);
                                             }
                                         }
                                         
-                                        // 순위 데이터 변환
-                                        $rankings = [];
-                                        foreach ($hits_data as $rank => $players) {
-                                            foreach ($players as $player_no) {
-                                                $rankings[] = [
-                                                    'rank' => $rank,
-                                                    'player_no' => $player_no,
-                                                    'player_name' => "선수 {$player_no}"
-                                                ];
-                                            }
-                                        }
-                                        
-                                        $event_results[] = [
+                                        $legacy_event_results[] = [
                                             'event_no' => $event_no,
                                             'event_name' => $event_name,
                                             'round' => $round,
-                                            'final_rankings' => $rankings,
                                             'source' => 'hits'
-                                        ];
-                                    }
-                                }
-                            }
-                        }
-                        
-                        // 4. RunOrder_Tablet.txt에서 완료된 이벤트들 찾기
-                        $runorder_file = $comp_data_dir . '/RunOrder_Tablet.txt';
-                        if (file_exists($runorder_file)) {
-                            $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-                            foreach ($lines as $line) {
-                                if (preg_match('/^bom/', $line)) continue;
-                                $cols = array_map('trim', explode(',', $line));
-                                if (count($cols) >= 4) {
-                                    $event_no = $cols[0];
-                                    $event_name = $cols[1];
-                                    $round = $cols[2];
-                                    
-                                    // 이미 결과에 없는 이벤트만 추가
-                                    $exists = false;
-                                    foreach ($event_results as $existing) {
-                                        if ($existing['event_no'] == $event_no) {
-                                            $exists = true;
-                                            break;
-                                        }
-                                    }
-                                    
-                                    if (!$exists && !empty($event_no) && is_numeric($event_no)) {
-                                        $event_results[] = [
-                                            'event_no' => $event_no,
-                                            'event_name' => $event_name,
-                                            'round' => $round,
-                                            'final_rankings' => [],
-                                            'source' => 'runorder'
                                         ];
                                     }
                                 }
@@ -1218,104 +1244,38 @@ $results = getCompetitionResults($comp_data_path);
                     }
                     ?>
                     
-                    <?php if (empty($event_results)): ?>
-                    <div class="empty-state">
-                        <div class="material-symbols-rounded">trophy</div>
-                        <h3>결과가 아직 발표되지 않았습니다</h3>
-                            <p>대회 진행 중 결과가 이곳에 표시됩니다.</p>
-                    </div>
-                <?php else: ?>
-                    <div class="item-list">
-                            <?php foreach ($event_results as $result): ?>
-                            <div class="item-card">
-                                <div class="item-header">
-                                        <h3 class="item-title">
-                                            <span style="background: #3b82f6; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.8em; margin-right: 8px;">
-                                                <?= htmlspecialchars($result['event_no'] ?? '') ?>번
-                                            </span>
-                                            <a href="javascript:void(0)" 
-                                               onclick="viewEventResult('<?= htmlspecialchars($result['event_no'] ?? '') ?>', '<?= htmlspecialchars($result['event_name'] ?? '경기 종목') ?>')"
-                                               style="color: #3b82f6; text-decoration: none; cursor: pointer; border-bottom: 1px dashed #3b82f6;">
-                                                <?= htmlspecialchars($result['event_name'] ?? '경기 종목') ?>
-                                            </a>
-                                        </h3>
-                                        <span class="item-date">
-                                            <?= htmlspecialchars($result['round'] ?? '') ?>
-                                            <?php if (isset($result['generated_at'])): ?>
-                                                <br><small style="color: #64748b;">생성: <?= htmlspecialchars($result['generated_at']) ?></small>
-                                            <?php endif; ?>
-                                        </span>
-                                </div>
-                                <div class="item-content">
-                                        <?php if (isset($result['source']) && $result['source'] === 'results' && isset($result['files'])): ?>
-                                            <!-- Results 폴더에서 생성된 리포트 파일들 -->
-                                            <div style="margin-top: 12px;">
-                                                <h4 style="color: #3b82f6; margin-bottom: 8px;">📊 상세 리포트</h4>
-                                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                                                    <?php if (isset($result['files']['detailed_report'])): ?>
-                                                        <a href="/results_reports/<?= htmlspecialchars(str_replace('comp_', '', $result['comp_id'] ?? $comp_id)) ?>/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['detailed_report']) ?>" 
-                                                           target="_blank" 
-                                                           style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
-                                                            📋 상세 리포트
-                                                        </a>
-                                                    <?php endif; ?>
-                                                    <?php if (isset($result['files']['recall_report'])): ?>
-                                                        <a href="/results_reports/<?= htmlspecialchars(str_replace('comp_', '', $result['comp_id'] ?? $comp_id)) ?>/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['recall_report']) ?>" 
-                                                           target="_blank" 
-                                                           style="background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
-                                                            📊 리콜 리포트
-                                                        </a>
-                                                    <?php endif; ?>
-                                                    <?php if (isset($result['files']['combined_report'])): ?>
-                                                        <a href="/results_reports/<?= htmlspecialchars(str_replace('comp_', '', $result['comp_id'] ?? $comp_id)) ?>/Event_<?= htmlspecialchars($result['event_no']) ?>/<?= htmlspecialchars($result['files']['combined_report']) ?>" 
-                                                           target="_blank" 
-                                                           style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px; display: inline-flex; align-items: center; gap: 6px;">
-                                                            🏆 컴바인 리포트
-                                                        </a>
-                                                    <?php endif; ?>
-                                </div>
+                    <!-- 호환성을 위한 구식 결과 표시 (필요시) -->
+                    <?php if (!empty($legacy_event_results)): ?>
+                        <div style="margin-top: 20px; padding: 16px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #6c757d;">
+                            <h4 style="color: #6c757d; margin-bottom: 12px; font-size: 14px;">이전 형식 결과</h4>
+                            <div style="font-size: 12px; color: #6c757d;">
+                                <?php foreach ($legacy_event_results as $result): ?>
+                                    <span style="margin-right: 12px;">이벤트 <?php echo $result['event_no']; ?></span>
+                                <?php endforeach; ?>
                             </div>
-                                        <?php elseif (isset($result['final_rankings']) && !empty($result['final_rankings'])): ?>
-                                            <!-- 기존 순위 표시 -->
-                                            <div style="margin-top: 12px;">
-                                                <h4 style="color: #3b82f6; margin-bottom: 8px;">최종 순위</h4>
-                                                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px;">
-                                                    <?php 
-                                                    // 순위별로 그룹화
-                                                    $rankings_by_rank = [];
-                                                    foreach ($result['final_rankings'] as $ranking) {
-                                                        $rank = $ranking['rank'];
-                                                        if (!isset($rankings_by_rank[$rank])) {
-                                                            $rankings_by_rank[$rank] = [];
-                                                        }
-                                                        $rankings_by_rank[$rank][] = $ranking;
-                                                    }
-                                                    ksort($rankings_by_rank);
-                                                    
-                                                    foreach ($rankings_by_rank as $rank => $players): 
-                                                    ?>
-                                                        <div style="background: rgba(59, 130, 246, 0.1); padding: 8px; border-radius: 6px; text-align: center;">
-                                                            <strong style="color: #3b82f6; font-size: 14px;"><?= $rank ?>위</strong>
-                                                            <div style="font-size: 0.9em; color: #94a3b8; margin-top: 4px;">
-                                                                <?php foreach ($players as $player): ?>
-                                                                    <div style="margin: 2px 0;"><?= htmlspecialchars($player['player_name'] ?? "선수 {$player['player_no']}") ?></div>
-                        <?php endforeach; ?>
-                    </div>
-                                                        </div>
-                                                    <?php endforeach; ?>
-                                                </div>
-                                            </div>
-                                        <?php else: ?>
-                                            <p style="color: #94a3b8; text-align: center; padding: 20px;">
-                                                <span class="material-symbols-rounded" style="vertical-align: middle; font-size: 18px;">schedule</span>
-                                                결과 데이터를 처리 중입니다...
-                                            </p>
-                <?php endif; ?>
-                                    </div>
-                                </div>
-                            <?php endforeach; ?>
                         </div>
                     <?php endif; ?>
+                </div>
+                
+                <!-- 이벤트 결과 모달 -->
+                <div id="eventResultModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; overflow: auto;">
+                    <div style="position: relative; background: white; margin: 2% auto; max-width: 95%; min-height: 90%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                        <div style="position: sticky; top: 0; background: white; padding: 20px; border-bottom: 1px solid #e5e7eb; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; z-index: 10;">
+                            <h3 id="modalEventTitle" style="margin: 0; color: #1f2937; display: flex; align-items: center; gap: 12px;">
+                                <span class="material-symbols-rounded" style="color: #3b82f6;">emoji_events</span>
+                                이벤트 결과
+                            </h3>
+                            <button onclick="closeEventModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280; padding: 5px; line-height: 1;">
+                                <span class="material-symbols-rounded">close</span>
+                            </button>
+                        </div>
+                        <div id="modalEventContent" style="padding: 20px; min-height: 400px;">
+                            <div style="text-align: center; padding: 40px; color: #6b7280;">
+                                <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">hourglass_empty</span>
+                                <p>결과를 불러오는 중...</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
             <?php elseif ($page === 'live'): ?>
@@ -1719,6 +1679,97 @@ $results = getCompetitionResults($comp_data_path);
                 clearInterval(liveTvUpdateInterval);
             }
         });
+        
+        // 이벤트 결과 모달 표시 함수
+        function showEventResult(eventNo, eventName) {
+            const modal = document.getElementById('eventResultModal');
+            const title = document.getElementById('modalEventTitle');
+            const content = document.getElementById('modalEventContent');
+            
+            // 모달 제목 설정
+            title.innerHTML = `
+                <span class="material-symbols-rounded" style="color: #3b82f6;">emoji_events</span>
+                이벤트 ${eventNo} - ${eventName || '결과'}
+            `;
+            
+            // 로딩 표시
+            content.innerHTML = `
+                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                    <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5; animation: spin 2s linear infinite;">hourglass_empty</span>
+                    <p>결과를 불러오는 중...</p>
+                </div>
+            `;
+            
+            // 모달 표시
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+            
+            // 결과 HTML 파일 불러오기
+            const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
+            fetch(`/comp/get_event_result.php?comp_id=${compId}&event_no=${eventNo}`)
+                .then(response => response.text())
+                .then(html => {
+                    if (html.trim()) {
+                        content.innerHTML = html;
+                    } else {
+                        content.innerHTML = `
+                            <div style="text-align: center; padding: 40px; color: #6b7280;">
+                                <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">description</span>
+                                <h3>결과를 찾을 수 없습니다</h3>
+                                <p>이벤트 ${eventNo}의 결과 파일이 아직 생성되지 않았습니다.</p>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading event result:', error);
+                    content.innerHTML = `
+                        <div style="text-align: center; padding: 40px; color: #ef4444;">
+                            <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px;">error</span>
+                            <h3>오류가 발생했습니다</h3>
+                            <p>결과를 불러올 수 없습니다. 잠시 후 다시 시도해주세요.</p>
+                        </div>
+                    `;
+                });
+        }
+        
+        // 모달 닫기 함수
+        function closeEventModal() {
+            const modal = document.getElementById('eventResultModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // 모달 배경 클릭 시 닫기
+        document.getElementById('eventResultModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEventModal();
+            }
+        });
+        
+        // ESC 키로 모달 닫기
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeEventModal();
+            }
+        });
+        
+        // 로딩 애니메이션 CSS 추가
+        if (!document.getElementById('modal-styles')) {
+            const style = document.createElement('style');
+            style.id = 'modal-styles';
+            style.textContent = `
+                @keyframes spin {
+                    from { transform: rotate(0deg); }
+                    to { transform: rotate(360deg); }
+                }
+                
+                .event-list-item:hover {
+                    background-color: #f8fafc !important;
+                }
+            `;
+            document.head.appendChild(style);
+        }
     </script>
 </body>
 </html>
