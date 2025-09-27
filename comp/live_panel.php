@@ -6439,7 +6439,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             // 다운로드 링크 생성
             const link = document.createElement('a');
             link.href = url;
-            link.download = `집계결과_이벤트${eventNo}_${new Date().toISOString().slice(0,10)}.html`;
+            link.download = `Event_${eventNo}_result.html`;
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -6447,7 +6447,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             // URL 해제
             URL.revokeObjectURL(url);
             
-            alert(`집계 결과가 파일로 저장되었습니다.\n파일명: 집계결과_이벤트${eventNo}_${new Date().toISOString().slice(0,10)}.html`);
+            alert(`집계 결과가 파일로 저장되었습니다.\n파일명: Event_${eventNo}_result.html`);
         }
         
         // 테스트용 다음 라운드 모달
@@ -6720,8 +6720,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }
             
             const htmlContent = aggregationContent.innerHTML;
-            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-            const filename = `Event_${eventId}_${timestamp}.html`;
+            // 고정 형식 파일명 사용 (덮어쓰기)
+            const filename = `Event_${eventId}_result.html`;
             
             // HTML 파일 저장 요청
             fetch('save_html_report.php', {
