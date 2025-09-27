@@ -77,7 +77,7 @@ function convertToLiveTvFormat($data) {
                 'tag' => $player['player_number'] ?? '',
                 'name' => $player['player_name'] ?? '',
                 'from' => $event_info['desc'] ?? '',
-                'qualified' => $player['recall_count'] >= $recall_threshold
+                'qualified' => false // 일단 모두 false로 설정
             ];
             $rank++;
         }
@@ -86,6 +86,11 @@ function convertToLiveTvFormat($data) {
         usort($live_tv['participants'], function($a, $b) {
             return $b['marks'] - $a['marks'];
         });
+        
+        // 상위 리콜 수만큼만 진출로 설정
+        for ($i = 0; $i < min($recall_count, count($live_tv['participants'])); $i++) {
+            $live_tv['participants'][$i]['qualified'] = true;
+        }
         
         // 순위 재조정
         $rank = 1;
