@@ -1776,8 +1776,10 @@ $results = getCompetitionResults($comp_data_path);
             `;
             
             // 모달 표시
+            console.log('Showing modal for event:', eventNo, eventName, detailNo);
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
+            console.log('Modal displayed');
             
             // 결과 HTML 파일 직접 불러오기
             const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
@@ -1801,9 +1803,14 @@ $results = getCompetitionResults($comp_data_path);
                     }
                 })
                 .then(html => {
+                    console.log('HTML content length:', html.length);
+                    console.log('HTML preview:', html.substring(0, 200));
                     if (html.trim()) {
+                        console.log('Setting content.innerHTML with HTML');
                         content.innerHTML = html;
+                        console.log('Content set successfully');
                     } else {
+                        console.log('HTML is empty, showing no content message');
                         content.innerHTML = `
                             <div style="text-align: center; padding: 40px; color: #6b7280;">
                                 <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">description</span>
