@@ -45,7 +45,7 @@ function getEventsFromRunOrder($comp_data_path) {
     
     $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     $events = [];
-    $processed_events = []; // 중복 방지
+    $processed_events = []; // 중복 방지 (이벤트번호-세부번호 조합)
     
     foreach ($lines as $line) {
         if (preg_match('/^bom/', $line)) continue; // 헤더 라인 스킵
@@ -58,25 +58,39 @@ function getEventsFromRunOrder($comp_data_path) {
             $display_number = $cols[13]; // 세부번호 (1-1, 1-2, 3-1, 3-2...)
             
             if (!empty($event_no) && is_numeric($event_no)) {
-                // 중복 이벤트 방지 (같은 이벤트 번호는 한 번만)
-                if (!in_array($event_no, $processed_events)) {
-                    $processed_events[] = $event_no;
+                // 세부번호가 있는 경우 이벤트번호-세부번호 조합으로 중복 체크
+                $unique_key = $event_no . ($display_number ? '-' . $display_number : '');
+                
+                if (!in_array($unique_key, $processed_events)) {
+                    $processed_events[] = $unique_key;
+                    
+                    // 세부번호가 있는 경우 이벤트명에 세부번호 포함
+                    $full_event_name = $event_name;
+                    if ($display_number && $display_number !== $event_no) {
+                        $full_event_name = $event_name . ' (' . $display_number . ')';
+                    }
                     
                     $events[] = [
                         'event_no' => intval($event_no),
                         'display_number' => $display_number ?: $event_no,
-                        'event_name' => $event_name,
+                        'event_name' => $full_event_name,
                         'round' => $round,
-                        'has_result' => false // 결과 파일 존재 여부는 나중에 확인
+                        'has_result' => false, // 결과 파일 존재 여부는 나중에 확인
+                        'detail_no' => $display_number // 세부번호 별도 저장
                     ];
                 }
             }
         }
     }
     
-    // 이벤트 번호 순으로 정렬 (시간표 순서)
+    // 이벤트 번호와 세부번호 순으로 정렬 (시간표 순서)
     usort($events, function($a, $b) {
-        return $a['event_no'] - $b['event_no'];
+        // 먼저 이벤트 번호로 정렬
+        if ($a['event_no'] != $b['event_no']) {
+            return $a['event_no'] - $b['event_no'];
+        }
+        // 같은 이벤트 번호면 세부번호로 정렬
+        return strcmp($a['detail_no'] ?? '', $b['detail_no'] ?? '');
     });
     
     return $events;
@@ -1128,9 +1142,20 @@ $results = getCompetitionResults($comp_data_path);
                     // Results 폴더에서 실제 결과 파일이 있는 이벤트 확인
                     $results_dir = $comp_data_dir . '/Results';
                     foreach ($events_list as &$event) {
-                        $event_result_file = $results_dir . '/Event_' . $event['event_no'] . '/Event_' . $event['event_no'] . '_result.html';
+                        // 세부번호가 있는 경우와 없는 경우를 구분하여 결과 파일 경로 확인
+                        if (!empty($event['detail_no']) && $event['detail_no'] !== $event['event_no']) {
+                            // 세부번호가 있는 경우: Event_1-1, Event_1-2 등으로 폴더명 구성
+                            $event_folder = 'Event_' . $event['event_no'] . '-' . $event['detail_no'];
+                            $event_result_file = $results_dir . '/' . $event_folder . '/' . $event_folder . '_result.html';
+                        } else {
+                            // 세부번호가 없는 경우: 기존 방식
+                            $event_folder = 'Event_' . $event['event_no'];
+                            $event_result_file = $results_dir . '/' . $event_folder . '/' . $event_folder . '_result.html';
+                        }
+                        
                         $event['has_result'] = file_exists($event_result_file);
                         $event['result_file_path'] = $event['has_result'] ? $event_result_file : null;
+                        $event['event_folder'] = $event_folder; // 폴더명 저장
                     }
                     ?>
                     
@@ -1143,7 +1168,11 @@ $results = getCompetitionResults($comp_data_path);
                             </div>
                         <?php else: ?>
                             <?php foreach ($events_list as $index => $event): ?>
-                                <div class="event-list-item" onclick="<?php echo $event['has_result'] ? "showEventResult({$event['event_no']}, '" . htmlspecialchars($event['event_name'], ENT_QUOTES) . "')" : ''; ?>" 
+                                <?php 
+                                $detail_no = !empty($event['detail_no']) && $event['detail_no'] !== $event['event_no'] ? $event['detail_no'] : null;
+                                $onclick_function = $event['has_result'] ? "showEventResult({$event['event_no']}, '" . htmlspecialchars($event['event_name'], ENT_QUOTES) . "'" . ($detail_no ? ", '{$detail_no}'" : '') . ")" : '';
+                                ?>
+                                <div class="event-list-item" onclick="<?php echo $onclick_function; ?>" 
                                      style="padding: 16px 20px; border-bottom: 1px solid #e5e7eb; display: flex; justify-content: space-between; align-items: center; cursor: <?php echo $event['has_result'] ? 'pointer' : 'default'; ?>; transition: background-color 0.2s; <?php echo $index === 0 ? 'border-top: none;' : ''; ?> <?php echo $event['has_result'] ? '' : 'opacity: 0.6;'; ?>">
                                     
                                     <div style="display: flex; align-items: center; gap: 16px;">
@@ -1166,7 +1195,7 @@ $results = getCompetitionResults($comp_data_path);
                                                 <span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
                                                     결과 완료
                                                 </span>
-                                                <button onclick="showEventResult(<?php echo $event['event_no']; ?>, '<?php echo htmlspecialchars($event['event_name'], ENT_QUOTES); ?>')" 
+                                                <button onclick="event.stopPropagation(); showEventResult(<?php echo $event['event_no']; ?>, '<?php echo htmlspecialchars($event['event_name'], ENT_QUOTES); ?>'<?php echo $detail_no ? ", '{$detail_no}'" : ''; ?>)" 
                                                         style="background: #3b82f6; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
                                                     결과보기
                                                 </button>
@@ -1724,17 +1753,18 @@ $results = getCompetitionResults($comp_data_path);
         let currentModalEvent = { eventNo: null, eventName: null };
         
         // 이벤트 결과 모달 표시 함수
-        function showEventResult(eventNo, eventName) {
+        function showEventResult(eventNo, eventName, detailNo = null) {
             // 현재 이벤트 정보 저장
-            currentModalEvent = { eventNo, eventName };
+            currentModalEvent = { eventNo, eventName, detailNo };
             const modal = document.getElementById('eventResultModal');
             const title = document.getElementById('modalEventTitle');
             const content = document.getElementById('modalEventContent');
             
             // 모달 제목 설정
+            const displayEventNo = detailNo ? `${eventNo}-${detailNo}` : eventNo;
             title.innerHTML = `
                 <span class="material-symbols-rounded" style="color: #3b82f6;">emoji_events</span>
-                이벤트 ${eventNo} - ${eventName || '결과'}
+                이벤트 ${displayEventNo} - ${eventName || '결과'}
             `;
             
             // 로딩 표시
@@ -1751,7 +1781,14 @@ $results = getCompetitionResults($comp_data_path);
             
             // 결과 HTML 파일 직접 불러오기
             const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
-            const resultUrl = `/comp/data/${compId}/Results/Event_${eventNo}/Event_${eventNo}_result.html`;
+            let resultUrl;
+            if (detailNo && detailNo !== eventNo) {
+                // 세부번호가 있는 경우
+                resultUrl = `/comp/data/${compId}/Results/Event_${eventNo}-${detailNo}/Event_${eventNo}-${detailNo}_result.html`;
+            } else {
+                // 세부번호가 없는 경우
+                resultUrl = `/comp/data/${compId}/Results/Event_${eventNo}/Event_${eventNo}_result.html`;
+            }
             
             fetch(resultUrl)
                 .then(response => {
@@ -1769,7 +1806,7 @@ $results = getCompetitionResults($comp_data_path);
                             <div style="text-align: center; padding: 40px; color: #6b7280;">
                                 <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">description</span>
                                 <h3>결과를 찾을 수 없습니다</h3>
-                                <p>이벤트 ${eventNo}의 결과 파일이 아직 생성되지 않았습니다.</p>
+                                <p>이벤트 ${displayEventNo}의 결과 파일이 아직 생성되지 않았습니다.</p>
                             </div>
                         `;
                     }
@@ -1794,12 +1831,23 @@ $results = getCompetitionResults($comp_data_path);
             }
             
             const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
-            const resultUrl = `/comp/data/${compId}/Results/Event_${currentModalEvent.eventNo}/Event_${currentModalEvent.eventNo}_result.html`;
+            let resultUrl;
+            let fileName;
+            
+            if (currentModalEvent.detailNo && currentModalEvent.detailNo !== currentModalEvent.eventNo) {
+                // 세부번호가 있는 경우
+                resultUrl = `/comp/data/${compId}/Results/Event_${currentModalEvent.eventNo}-${currentModalEvent.detailNo}/Event_${currentModalEvent.eventNo}-${currentModalEvent.detailNo}_result.html`;
+                fileName = `Event_${currentModalEvent.eventNo}-${currentModalEvent.detailNo}_${currentModalEvent.eventName || 'result'}.html`;
+            } else {
+                // 세부번호가 없는 경우
+                resultUrl = `/comp/data/${compId}/Results/Event_${currentModalEvent.eventNo}/Event_${currentModalEvent.eventNo}_result.html`;
+                fileName = `Event_${currentModalEvent.eventNo}_${currentModalEvent.eventName || 'result'}.html`;
+            }
             
             // 파일 다운로드
             const link = document.createElement('a');
             link.href = resultUrl;
-            link.download = `Event_${currentModalEvent.eventNo}_${currentModalEvent.eventName || 'result'}.html`;
+            link.download = fileName;
             link.target = '_blank';
             document.body.appendChild(link);
             link.click();
