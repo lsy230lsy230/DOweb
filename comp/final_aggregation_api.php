@@ -58,17 +58,17 @@ foreach ($events as $event) {
         break;
     }
     
+    // detail_no로 매칭 (1-1 형태)
+    if ($event['detail_no'] == $event_no) {
+        $current_event = $event;
+        error_log("Found matching event (detail_no): " . json_encode($event));
+        break;
+    }
+    
     // 숫자로 매칭 (문자열과 숫자 비교)
     if (is_numeric($event_no) && is_numeric($event['no']) && intval($event['no']) == intval($event_no)) {
         $current_event = $event;
         error_log("Found matching event (numeric): " . json_encode($event));
-        break;
-    }
-    
-    // detail_no로 매칭
-    if ($event['detail_no'] == $event_no) {
-        $current_event = $event;
-        error_log("Found matching event (detail_no): " . json_encode($event));
         break;
     }
     
