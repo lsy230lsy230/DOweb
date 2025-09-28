@@ -1807,8 +1807,17 @@ $results = getCompetitionResults($comp_data_path);
                     console.log('HTML preview:', html.substring(0, 200));
                     if (html.trim()) {
                         console.log('Setting content.innerHTML with HTML');
-                        content.innerHTML = html;
-                        console.log('Content set successfully');
+                        // HTML을 iframe에 로드하여 완전한 페이지로 표시
+                        content.innerHTML = `
+                            <div style="width: 100%; height: 80vh; border: none;">
+                                <iframe src="${resultUrl}" 
+                                        style="width: 100%; height: 100%; border: none; border-radius: 8px;"
+                                        onload="console.log('Iframe loaded successfully')"
+                                        onerror="console.error('Iframe load error')">
+                                </iframe>
+                            </div>
+                        `;
+                        console.log('Content set successfully with iframe');
                     } else {
                         console.log('HTML is empty, showing no content message');
                         content.innerHTML = `
