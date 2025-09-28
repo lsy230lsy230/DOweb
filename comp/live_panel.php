@@ -4723,17 +4723,42 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
-            // 이벤트가 결승전인지 확인
-            const isFinalRound = currentEvent.round && 
-                                currentEvent.round.toLowerCase().includes('final') && 
-                                !currentEvent.round.toLowerCase().includes('semi');
+            // 이벤트 라운드 타입 확인 (더 정확한 판별)
+            const roundType = getRoundType(currentEvent);
+            console.log('라운드 타입 판별:', roundType, '이벤트:', currentEvent);
             
-            if (isFinalRound) {
+            if (roundType === 'final') {
                 // 결승전: 스케이팅 시스템으로 최종 순위 계산
+                console.log('결승전 집계 실행');
                 openFinalAggregation(eventId);
             } else {
                 // 예선/준결승: 리콜 시스템으로 다음 라운드 진출자 선정
+                console.log('예선/준결승 집계 실행');
                 openAggregationModal(eventId);
+            }
+        }
+        
+        // 라운드 타입 판별 함수
+        function getRoundType(event) {
+            if (!event || !event.round) {
+                console.log('이벤트 또는 라운드 정보 없음');
+                return 'preliminary'; // 기본값은 예선
+            }
+            
+            const round = event.round.toLowerCase().trim();
+            console.log('라운드 문자열 분석:', round);
+            
+            // 정확한 라운드 타입 판별
+            if (round === 'final' || round.includes('final') && !round.includes('semi')) {
+                return 'final'; // 결승전
+            } else if (round.includes('semi') || round.includes('semi-final')) {
+                return 'semifinal'; // 준결승
+            } else if (round.includes('round') || round.includes('preliminary') || round.includes('heat')) {
+                return 'preliminary'; // 예선
+            } else {
+                // 기본값은 예선으로 처리
+                console.log('알 수 없는 라운드 타입, 예선으로 처리:', round);
+                return 'preliminary';
             }
         }
         
@@ -5392,10 +5417,15 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             const currentEventDesc = event.desc;
             const currentRound = event.round;
             
-            // 라운드 순서 정의
+            // 라운드 순서 정의 (더 정확한 매핑)
             const roundOrder = {
                 'Round 1': 'Semi-Final',
+                'Round 2': 'Semi-Final', 
+                'Round 3': 'Semi-Final',
+                'Preliminary': 'Semi-Final',
+                'Heat': 'Semi-Final',
                 'Semi-Final': 'Final',
+                'Semi Final': 'Final',
                 'Final': ''
             };
             
