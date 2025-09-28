@@ -1302,8 +1302,8 @@ $results = getCompetitionResults($comp_data_path);
                                     <span class="material-symbols-rounded" style="font-size: 18px;">download</span>
                                     다운로드
                                 </button>
-                                <button onclick="closeEventModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280; padding: 5px; line-height: 1;">
-                                    <span class="material-symbols-rounded">close</span>
+                                <button onclick="closeEventModal()" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                                    ✕ 닫기
                                 </button>
                             </div>
                         </div>
@@ -1780,18 +1780,28 @@ $results = getCompetitionResults($comp_data_path);
             console.log('Modal element:', modal);
             console.log('Modal current display:', modal.style.display);
             
-            // 모달창을 즉시 표시
-            modal.style.display = 'block';
-            // 약간의 지연 후 visibility와 opacity 설정 (transition 효과를 위해)
-            setTimeout(() => {
-                modal.style.visibility = 'visible';
-                modal.style.opacity = '1';
-                console.log('Modal visibility and opacity set');
-            }, 10);
+            if (!modal) {
+                console.error('Modal element not found!');
+                return;
+            }
+            
+            // 모달창을 강제로 표시
+            modal.style.display = 'block !important';
+            modal.style.visibility = 'visible !important';
+            modal.style.opacity = '1 !important';
+            modal.style.position = 'fixed !important';
+            modal.style.top = '0 !important';
+            modal.style.left = '0 !important';
+            modal.style.width = '100% !important';
+            modal.style.height = '100% !important';
+            modal.style.zIndex = '99999 !important';
+            modal.style.background = 'rgba(0,0,0,0.8) !important';
             
             document.body.style.overflow = 'hidden';
             console.log('Modal displayed, new display:', modal.style.display);
             console.log('Modal computed style:', window.getComputedStyle(modal).display);
+            console.log('Modal position:', window.getComputedStyle(modal).position);
+            console.log('Modal z-index:', window.getComputedStyle(modal).zIndex);
             
             // 결과 HTML 파일 직접 불러오기
             const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
