@@ -1785,23 +1785,23 @@ $results = getCompetitionResults($comp_data_path);
                 return;
             }
             
-            // 모달창을 강제로 표시
-            modal.style.display = 'block !important';
-            modal.style.visibility = 'visible !important';
-            modal.style.opacity = '1 !important';
-            modal.style.position = 'fixed !important';
-            modal.style.top = '0 !important';
-            modal.style.left = '0 !important';
-            modal.style.width = '100% !important';
-            modal.style.height = '100% !important';
-            modal.style.zIndex = '99999 !important';
-            modal.style.background = 'rgba(0,0,0,0.8) !important';
+            // 모달창을 강제로 표시 - CSS 속성을 직접 설정
+            modal.setAttribute('style', 'display: block !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.8) !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; overflow: auto !important;');
             
             document.body.style.overflow = 'hidden';
+            
+            // 모달창이 실제로 DOM에 있는지 확인
+            const modalInDOM = document.getElementById('eventResultModal');
+            console.log('Modal in DOM:', modalInDOM);
+            console.log('Modal parent:', modalInDOM ? modalInDOM.parentElement : 'none');
+            console.log('Modal is connected:', modalInDOM ? modalInDOM.isConnected : false);
+            
             console.log('Modal displayed, new display:', modal.style.display);
             console.log('Modal computed style:', window.getComputedStyle(modal).display);
             console.log('Modal position:', window.getComputedStyle(modal).position);
             console.log('Modal z-index:', window.getComputedStyle(modal).zIndex);
+            console.log('Modal visibility:', window.getComputedStyle(modal).visibility);
+            console.log('Modal opacity:', window.getComputedStyle(modal).opacity);
             
             // 결과 HTML 파일 직접 불러오기
             const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
