@@ -1931,17 +1931,29 @@ $results = getCompetitionResults($comp_data_path);
         // 모달 닫기 함수
         function closeEventModal() {
             console.log('Closing modal');
+            // 기존 모달과 새 모달 모두 확인
             const modal = document.getElementById('eventResultModal');
-            modal.style.display = 'none';
+            const newModal = document.getElementById('eventResultModalClone');
+            
+            if (modal) {
+                modal.style.display = 'none';
+                console.log('Closed original modal');
+            }
+            
+            if (newModal) {
+                newModal.remove();
+                console.log('Removed cloned modal');
+            }
+            
             document.body.style.overflow = 'auto';
             // 이벤트 정보 초기화
             currentModalEvent = { eventNo: null, eventName: null };
         }
 
         
-        // 모달 배경 클릭 시 닫기
-        document.getElementById('eventResultModal').addEventListener('click', function(e) {
-            if (e.target === this) {
+        // 모달 배경 클릭 시 닫기 - 동적으로 이벤트 리스너 추가
+        document.addEventListener('click', function(e) {
+            if (e.target && e.target.id === 'eventResultModalClone') {
                 closeEventModal();
             }
         });
