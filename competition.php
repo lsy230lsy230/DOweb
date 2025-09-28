@@ -1073,7 +1073,7 @@ $results = getCompetitionResults($comp_data_path);
                     </div>
                     
                     <!-- Live TV 결과 표시 영역 -->
-                    <div id="live-tv-content" style="display: none;">
+                    <div id="live-tv-content" style="display: none; max-height: 600px; overflow-y: auto; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.1);">
                         <div style="text-align: center; margin-bottom: 20px; color: white;">
                             <h4 id="event-title" style="font-size: 1.8em; margin-bottom: 10px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">이벤트 정보 로딩 중...</h4>
                             <p id="advancement-text" style="font-size: 1.3em; font-weight: bold; margin: 10px 0; color: #ffeb3b;"></p>
@@ -1162,12 +1162,15 @@ $results = getCompetitionResults($comp_data_path);
                                     
                                     <div style="display: flex; align-items: center; gap: 8px;">
                                         <?php if ($event['has_result']): ?>
-                                            <span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
-                                                결과 완료
-                                            </span>
-                                            <span class="material-symbols-rounded" style="color: #3b82f6;">
-                                                chevron_right
-                                            </span>
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 600;">
+                                                    결과 완료
+                                                </span>
+                                                <button onclick="showEventResult(<?php echo $event['event_no']; ?>, '<?php echo htmlspecialchars($event['event_name'], ENT_QUOTES); ?>')" 
+                                                        style="background: #3b82f6; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer;">
+                                                    결과보기
+                                                </button>
+                                            </div>
                                         <?php else: ?>
                                             <span style="background: #f3f4f6; color: #6b7280; padding: 4px 8px; border-radius: 4px; font-size: 12px;">
                                                 대기 중
@@ -1277,6 +1280,7 @@ $results = getCompetitionResults($comp_data_path);
                         </div>
                     </div>
                 </div>
+
 
             <?php elseif ($page === 'live'): ?>
                 <!-- 실시간 결과 -->
@@ -1501,29 +1505,54 @@ $results = getCompetitionResults($comp_data_path);
                 50% { opacity: 0.5; }
                 100% { opacity: 1; }
             }
-            
+
             .qualified {
                 background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%) !important;
                 color: white !important;
                 font-weight: bold;
             }
-            
+
             .qualified td {
                 border-bottom: 1px solid rgba(255,255,255,0.3) !important;
             }
-            
+
             #results-table tr:nth-child(even) {
                 background: #f8f9fa;
             }
-            
+
             #results-table tr:hover {
                 background: #e3f2fd;
             }
-            
+
             #results-table td {
                 padding: 12px 15px;
                 text-align: center;
                 border-bottom: 1px solid #eee;
+            }
+
+            /* 스크롤바 스타일링 */
+            #live-tv-content::-webkit-scrollbar {
+                width: 8px;
+            }
+
+            #live-tv-content::-webkit-scrollbar-track {
+                background: rgba(255,255,255,0.1);
+                border-radius: 4px;
+            }
+
+            #live-tv-content::-webkit-scrollbar-thumb {
+                background: rgba(255,255,255,0.3);
+                border-radius: 4px;
+            }
+
+            #live-tv-content::-webkit-scrollbar-thumb:hover {
+                background: rgba(255,255,255,0.5);
+            }
+
+            /* Firefox 스크롤바 스타일링 */
+            #live-tv-content {
+                scrollbar-width: thin;
+                scrollbar-color: rgba(255,255,255,0.3) rgba(255,255,255,0.1);
             }
         `;
         document.head.appendChild(style);
@@ -1537,8 +1566,8 @@ $results = getCompetitionResults($comp_data_path);
             
             const urlParams = new URLSearchParams(window.location.search);
             const compId = urlParams.get('id') ? urlParams.get('id').replace('comp_', '') : '';
-            const eventNo = '30'; // 기본 이벤트 번호
-            const apiUrl = `comp/live_scoring_monitor.php?comp_id=${compId}&event_no=${eventNo}`;
+            // 이벤트 번호를 지정하지 않으면 최신 스코어링 파일이 있는 이벤트를 자동으로 찾음
+            const apiUrl = `comp/live_scoring_monitor.php?comp_id=${compId}`;
             
             console.log('Loading live TV results from:', apiUrl);
             
@@ -1546,9 +1575,10 @@ $results = getCompetitionResults($comp_data_path);
                 .then(response => response.json())
                 .then(data => {
                     console.log('Live TV API response:', data);
+                    console.log('Detected event number:', data.event_no);
                     
                     if (data.success && data.live_tv) {
-                        displayLiveTvResults(data.live_tv);
+                        displayLiveTvResults(data.live_tv, data.event_no);
                         hideLoading();
                         hideError();
                     } else {
@@ -1566,15 +1596,18 @@ $results = getCompetitionResults($comp_data_path);
         }
         
         // Live TV 결과 표시 함수
-        function displayLiveTvResults(liveTvData) {
-            console.log('Displaying live TV data:', liveTvData);
+        function displayLiveTvResults(liveTvData, eventNo) {
+            console.log('Displaying live TV data:', liveTvData, 'Event No:', eventNo);
             
             // 헤더 정보 업데이트
             const eventTitle = document.getElementById('event-title');
             const advancementText = document.getElementById('advancement-text');
             const recallInfo = document.getElementById('recall-info');
             
-            if (eventTitle) eventTitle.textContent = liveTvData.event_title || '이벤트 정보 없음';
+            if (eventTitle) {
+                const titleText = eventNo ? `${eventNo}번 ` : '';
+                eventTitle.textContent = titleText + (liveTvData.event_title || '이벤트 정보 없음');
+            }
             if (advancementText) advancementText.textContent = liveTvData.advancement_text || '';
             if (recallInfo) recallInfo.textContent = liveTvData.recall_info || '';
             
@@ -1667,7 +1700,8 @@ $results = getCompetitionResults($comp_data_path);
             console.log('Auto update started (30 seconds interval)');
         }
         
-        // results 페이지에서 live TV 초기화
+        // results 페이지에서 live TV 초기화  
+        const currentPage = "<?= htmlspecialchars($page) ?>";
         if (currentPage === 'results') {
             loadLiveTvResults();
             startAutoUpdate();
@@ -1704,10 +1738,18 @@ $results = getCompetitionResults($comp_data_path);
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
             
-            // 결과 HTML 파일 불러오기
+            // 결과 HTML 파일 직접 불러오기
             const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
-            fetch(`/comp/get_event_result.php?comp_id=${compId}&event_no=${eventNo}`)
-                .then(response => response.text())
+            const resultUrl = `/comp/data/${compId}/Results/Event_${eventNo}/Event_${eventNo}_result.html`;
+            
+            fetch(resultUrl)
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('File not found');
+                    }
+                })
                 .then(html => {
                     if (html.trim()) {
                         content.innerHTML = html;
@@ -1739,6 +1781,7 @@ $results = getCompetitionResults($comp_data_path);
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
         }
+
         
         // 모달 배경 클릭 시 닫기
         document.getElementById('eventResultModal').addEventListener('click', function(e) {
@@ -1746,7 +1789,7 @@ $results = getCompetitionResults($comp_data_path);
                 closeEventModal();
             }
         });
-        
+
         // ESC 키로 모달 닫기
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {

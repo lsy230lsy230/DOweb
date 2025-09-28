@@ -89,15 +89,8 @@ try {
     }
     file_put_contents($runorder_file, implode("\n", $lines) . "\n");
     
-    // 3. 새 이벤트용 히트 파일 생성 (빈 파일)
-    $hits_file = "$data_dir/players_hits_$eventNumber.json";
-    $hitsContent = json_encode([], JSON_PRETTY_PRINT);
-    file_put_contents($hits_file, $hitsContent);
-    
-    // 4. 새 이벤트용 심사위원 파일 생성 (기존 패널 사용)
-    $adjudicators_file = "$data_dir/adjudicators_$eventNumber.txt";
-    $adjudicatorsContent = "12\n13\n14\n15\n16\n17\n18\n19\n20\n21\n22\n23\n24\n";
-    file_put_contents($adjudicators_file, $adjudicatorsContent);
+    // 3. 히트 파일과 심사위원 파일은 이미 존재하므로 생성하지 않음
+    // (사용자 요청에 따라 선수 파일만 생성)
     
     $message = $eventExists ? 
         "이벤트 $eventNumber의 진출자가 업데이트되었습니다." : 
@@ -111,9 +104,7 @@ try {
         'playersCount' => $actualRecallCount,
         'eventExisted' => $eventExists,
         'filesUpdated' => [
-            'players' => $players_file,
-            'hits' => $hits_file,
-            'adjudicators' => $adjudicators_file
+            'players' => $players_file
         ]
     ]);
     

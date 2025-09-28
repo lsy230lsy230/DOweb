@@ -5133,24 +5133,31 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         // 다음 라운드 정보 가져오기
         function getNextRoundInfo(event) {
-            if (!event || !event.desc) return '';
+            if (!event || !event.desc) {
+                console.log('getNextRoundInfo: 이벤트 정보 없음');
+                return '';
+            }
             
             console.log('getNextRoundInfo 호출:', event);
-            console.log('event.next_event:', event.next_event);
+            console.log('getNextRoundInfo: event.next_event:', event.next_event);
             
             // 먼저 next_event 정보가 있으면 사용
             if (event.next_event && event.next_event !== '') {
-                console.log('next_event 정보 사용:', event.next_event);
+                console.log('getNextRoundInfo: next_event 정보 사용:', event.next_event);
                 // next_event 번호로 해당 이벤트 찾기
+                let foundEvent = false;
                 for (const group of groupData) {
                     for (const groupEvent of group.events) {
                         if (groupEvent.no === event.next_event) {
-                            console.log('next_event로 찾은 이벤트:', groupEvent);
+                            console.log('getNextRoundInfo: next_event로 찾은 이벤트:', groupEvent);
+                            foundEvent = true;
                             return `${groupEvent.no}번 ${groupEvent.round}`;
                         }
                     }
                 }
-                console.log('next_event로 이벤트를 찾지 못함:', event.next_event);
+                if (!foundEvent) {
+                    console.log('getNextRoundInfo: next_event로 이벤트를 찾지 못함:', event.next_event);
+                }
             }
             
             // next_event가 없으면 기존 로직 사용
@@ -6583,34 +6590,61 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 console.log('API 값이 없어서 현재 진출자 수 사용:', totalTeams);
             }
             
-            // 다음 이벤트 정보 찾기
+            // getNextRoundInfo 함수를 사용하여 다음 라운드 정보 가져오기
+            const nextRoundInfo = getNextRoundInfo(currentEvent);
+            console.log('continueNextRoundGeneration: getNextRoundInfo 결과:', nextRoundInfo);
+            
             let nextEventNumber = parseInt(currentEvent.no) + 1; // 기본값
             let nextEventName = currentEvent.desc.replace(/Round \d+/, 'Semi-Final').replace(/Final/, 'Semi-Final');
             
-            // next_event 정보가 있으면 사용
-            if (currentEvent.next_event && currentEvent.next_event !== '') {
-                nextEventNumber = parseInt(currentEvent.next_event);
-                console.log('currentEvent.next_event:', currentEvent.next_event);
-                console.log('next_event 번호로 설정:', nextEventNumber);
-                
-                // next_event로 다음 라운드 정보 찾기
-                for (const group of groupData) {
-                    for (const event of group.events) {
-                        if (event.no === currentEvent.next_event) {
-                            nextEventName = `${event.desc} ${event.round}`;
-                            console.log('next_event 정보로 다음 라운드 발견:', nextEventNumber, nextEventName);
-                            break;
-                        }
+            if (nextRoundInfo && nextRoundInfo !== '') {
+                // "30번 Semi-Final" 형태에서 번호와 라운드 추출
+                const match = nextRoundInfo.match(/(\d+)번\s+(.+)/);
+                if (match) {
+                    nextEventNumber = parseInt(match[1]);
+                    nextEventName = `${currentEvent.desc} ${match[2]}`;
+                    console.log('continueNextRoundGeneration: getNextRoundInfo에서 추출한 정보:', nextEventNumber, nextEventName);
+                } else {
+                    // 번호만 추출
+                    const numberMatch = nextRoundInfo.match(/(\d+)번/);
+                    if (numberMatch) {
+                        nextEventNumber = parseInt(numberMatch[1]);
+                        console.log('continueNextRoundGeneration: getNextRoundInfo에서 번호만 추출:', nextEventNumber);
                     }
                 }
             } else {
-                // next_event가 없으면 기존 로직 사용
-                console.log('next_event 정보 없음, 기존 로직 사용');
-                const currentRound = currentEvent.round;
-                if (currentRound.includes('Round 1')) {
-                    nextEventName = currentEvent.desc.replace('Round 1', 'Semi-Final');
-                } else if (currentRound.includes('Semi-Final')) {
-                    nextEventName = currentEvent.desc.replace('Semi-Final', 'Final');
+                // next_event 정보가 있으면 사용
+                if (currentEvent.next_event && currentEvent.next_event !== '') {
+                    nextEventNumber = parseInt(currentEvent.next_event);
+                    console.log('continueNextRoundGeneration: currentEvent.next_event:', currentEvent.next_event);
+                    console.log('continueNextRoundGeneration: next_event 번호로 설정:', nextEventNumber);
+                    
+                    // next_event로 다음 라운드 정보 찾기
+                    let foundNextEvent = false;
+                    for (const group of groupData) {
+                        for (const event of group.events) {
+                            if (event.no === currentEvent.next_event) {
+                                nextEventName = `${event.desc} ${event.round}`;
+                                console.log('continueNextRoundGeneration: next_event 정보로 다음 라운드 발견:', nextEventNumber, nextEventName);
+                                foundNextEvent = true;
+                                break;
+                            }
+                        }
+                        if (foundNextEvent) break;
+                    }
+                    
+                    if (!foundNextEvent) {
+                        console.log('continueNextRoundGeneration: next_event로 이벤트를 찾지 못함, 기본 이름 사용');
+                    }
+                } else {
+                    // next_event가 없으면 기존 로직 사용
+                    console.log('continueNextRoundGeneration: next_event 정보 없음, 기존 로직 사용');
+                    const currentRound = currentEvent.round;
+                    if (currentRound.includes('Round 1')) {
+                        nextEventName = currentEvent.desc.replace('Round 1', 'Semi-Final');
+                    } else if (currentRound.includes('Semi-Final')) {
+                        nextEventName = currentEvent.desc.replace('Semi-Final', 'Final');
+                    }
                 }
             }
             
@@ -6627,7 +6661,13 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         // 바로 다음 라운드 생성 실행
         function createNextRoundDirectly(nextEventNumber, nextEventName, advancingPlayers, totalTeams) {
-            console.log('바로 다음 라운드 생성 시작:', {nextEventNumber, nextEventName, advancingPlayers, totalTeams});
+            console.log('createNextRoundDirectly: 바로 다음 라운드 생성 시작:', {nextEventNumber, nextEventName, advancingPlayers, totalTeams});
+            console.log('createNextRoundDirectly: 전송할 데이터:', {
+                current_event_id: selectedEvent,
+                next_event_number: nextEventNumber,
+                next_event_name: nextEventName,
+                advancing_players: advancingPlayers
+            });
             
             // 서버에 다음 라운드 생성 요청
             fetch('create_next_round.php', {
@@ -6667,7 +6707,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             console.log('채점 파일 저장 시작:', eventId);
             
             // 현재 이벤트의 채점 데이터를 가져와서 파일로 저장
-            fetch(`get_recall_data.php?event_id=${eventId}`)
+            fetch(`get_recall_data.php?event_id=${eventId}&comp_id=<?php echo $comp_id; ?>`)
                 .then(response => response.json())
                 .then(data => {
                     console.log('채점 데이터 받음:', data);
@@ -6720,8 +6760,8 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             }
             
             const htmlContent = aggregationContent.innerHTML;
-            const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
-            const filename = `Event_${eventId}_${timestamp}.html`;
+            // competition.php에서 찾는 형식으로 파일명 생성: Event_30_result.html
+            const filename = `Event_${eventId}_result.html`;
             
             // HTML 파일 저장 요청
             fetch('save_html_report.php', {
@@ -6804,18 +6844,45 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         // 다음 라운드 생성 버튼 텍스트 업데이트
         function updateNextRoundButtonText() {
             const currentEvent = events.find(ev => (ev.detail_no || ev.no) === selectedEvent);
-            if (!currentEvent) return;
+            if (!currentEvent) {
+                console.log('updateNextRoundButtonText: 현재 이벤트를 찾을 수 없음');
+                return;
+            }
+            
+            console.log('updateNextRoundButtonText: 현재 이벤트:', currentEvent);
+            console.log('updateNextRoundButtonText: next_event 정보:', currentEvent.next_event);
+            
+            // getNextRoundInfo 함수를 사용하여 다음 라운드 정보 가져오기
+            const nextRoundInfo = getNextRoundInfo(currentEvent);
+            console.log('updateNextRoundButtonText: getNextRoundInfo 결과:', nextRoundInfo);
             
             let nextEventNumber = parseInt(currentEvent.no) + 1; // 기본값
             
-            // next_event 정보가 있으면 사용
-            if (currentEvent.next_event && currentEvent.next_event !== '') {
-                nextEventNumber = parseInt(currentEvent.next_event);
+            if (nextRoundInfo && nextRoundInfo !== '') {
+                // "30번 Semi-Final" 형태에서 번호 추출
+                const match = nextRoundInfo.match(/(\d+)번/);
+                if (match) {
+                    nextEventNumber = parseInt(match[1]);
+                    console.log('updateNextRoundButtonText: getNextRoundInfo에서 추출한 번호:', nextEventNumber);
+                } else {
+                    console.log('updateNextRoundButtonText: getNextRoundInfo에서 번호를 추출할 수 없음, 기본값 사용:', nextEventNumber);
+                }
+            } else {
+                // next_event 정보가 있으면 사용
+                if (currentEvent.next_event && currentEvent.next_event !== '') {
+                    nextEventNumber = parseInt(currentEvent.next_event);
+                    console.log('updateNextRoundButtonText: next_event 사용, 다음 이벤트 번호:', nextEventNumber);
+                } else {
+                    console.log('updateNextRoundButtonText: next_event 없음, 기본값 사용:', nextEventNumber);
+                }
             }
             
             const nextRoundBtn = document.getElementById('nextRoundBtn');
             if (nextRoundBtn) {
                 nextRoundBtn.textContent = `${nextEventNumber}번 라운드 생성`;
+                console.log('updateNextRoundButtonText: 버튼 텍스트 업데이트 완료:', nextRoundBtn.textContent);
+            } else {
+                console.log('updateNextRoundButtonText: nextRoundBtn 요소를 찾을 수 없음');
             }
         }
         
