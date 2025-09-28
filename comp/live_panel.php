@@ -4723,9 +4723,16 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 return;
             }
             
+            // 이벤트 정보 디버깅
+            console.log('현재 이벤트 정보:', currentEvent);
+            console.log('이벤트 라운드:', currentEvent?.round);
+            console.log('이벤트 설명:', currentEvent?.desc);
+            console.log('이벤트 번호:', currentEvent?.no);
+            console.log('세부번호:', currentEvent?.detail_no);
+            
             // 이벤트 라운드 타입 확인 (더 정확한 판별)
             const roundType = getRoundType(currentEvent);
-            console.log('라운드 타입 판별:', roundType, '이벤트:', currentEvent);
+            console.log('라운드 타입 판별 결과:', roundType);
             
             if (roundType === 'final') {
                 // 결승전: 스케이팅 시스템으로 최종 순위 계산
@@ -4740,20 +4747,30 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         // 라운드 타입 판별 함수
         function getRoundType(event) {
-            if (!event || !event.round) {
-                console.log('이벤트 또는 라운드 정보 없음');
+            console.log('getRoundType 함수 호출됨, 이벤트:', event);
+            
+            if (!event) {
+                console.log('이벤트 정보 없음');
+                return 'preliminary'; // 기본값은 예선
+            }
+            
+            if (!event.round) {
+                console.log('라운드 정보 없음, 이벤트:', event);
                 return 'preliminary'; // 기본값은 예선
             }
             
             const round = event.round.toLowerCase().trim();
-            console.log('라운드 문자열 분석:', round);
+            console.log('라운드 문자열 분석:', round, '원본:', event.round);
             
             // 정확한 라운드 타입 판별
-            if (round === 'final' || round.includes('final') && !round.includes('semi')) {
+            if (round === 'final' || (round.includes('final') && !round.includes('semi'))) {
+                console.log('결승전으로 판별됨');
                 return 'final'; // 결승전
             } else if (round.includes('semi') || round.includes('semi-final')) {
+                console.log('준결승으로 판별됨');
                 return 'semifinal'; // 준결승
             } else if (round.includes('round') || round.includes('preliminary') || round.includes('heat')) {
+                console.log('예선으로 판별됨');
                 return 'preliminary'; // 예선
             } else {
                 // 기본값은 예선으로 처리
