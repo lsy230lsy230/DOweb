@@ -1290,7 +1290,7 @@ $results = getCompetitionResults($comp_data_path);
                 </div>
                 
                 <!-- 이벤트 결과 모달 -->
-                <div id="eventResultModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99999; overflow: auto;">
+                <div id="eventResultModal" style="display: none; position: fixed; top: 0px; left: 0px; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 99999; overflow: auto; margin: 0; padding: 0; transform: none;">
                     <div style="position: relative; background: white; margin: 2% auto; max-width: 95%; min-height: 90%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
                         <div style="position: sticky; top: 0; background: white; padding: 20px; border-bottom: 1px solid #e5e7eb; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; z-index: 10;">
                             <h3 id="modalEventTitle" style="margin: 0; color: #1f2937; display: flex; align-items: center; gap: 12px;">
@@ -1786,7 +1786,7 @@ $results = getCompetitionResults($comp_data_path);
             }
             
             // 모달창을 강제로 표시 - CSS 속성을 직접 설정
-            modal.setAttribute('style', 'display: block !important; position: fixed !important; top: 0 !important; left: 0 !important; width: 100% !important; height: 100% !important; background: rgba(0,0,0,0.8) !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; overflow: auto !important;');
+            modal.setAttribute('style', 'display: block !important; position: fixed !important; top: 0px !important; left: 0px !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.8) !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; overflow: auto !important; margin: 0 !important; padding: 0 !important; transform: none !important;');
             
             document.body.style.overflow = 'hidden';
             
