@@ -1307,7 +1307,7 @@ $results = getCompetitionResults($comp_data_path);
                                 </button>
                             </div>
                         </div>
-                        <div id="modalEventContent" style="padding: 20px; min-height: 400px;">
+                        <div id="modalEventContent" style="padding: 20px; min-height: 400px; background: white; border-radius: 8px;">
                             <div style="text-align: center; padding: 40px; color: #6b7280;">
                                 <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">hourglass_empty</span>
                                 <p>결과를 불러오는 중...</p>
@@ -1802,6 +1802,18 @@ $results = getCompetitionResults($comp_data_path);
             console.log('Modal z-index:', window.getComputedStyle(modal).zIndex);
             console.log('Modal visibility:', window.getComputedStyle(modal).visibility);
             console.log('Modal opacity:', window.getComputedStyle(modal).opacity);
+            
+            // 모달창이 실제로 보이는지 테스트
+            const modalRect = modal.getBoundingClientRect();
+            console.log('Modal bounding rect:', modalRect);
+            console.log('Modal width:', modalRect.width);
+            console.log('Modal height:', modalRect.height);
+            console.log('Modal top:', modalRect.top);
+            console.log('Modal left:', modalRect.left);
+            
+            // 모달창에 강제로 빨간색 테두리 추가하여 시각적으로 확인
+            modal.style.border = '5px solid red !important';
+            console.log('Added red border to modal for debugging');
             
             // 결과 HTML 파일 직접 불러오기
             const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
