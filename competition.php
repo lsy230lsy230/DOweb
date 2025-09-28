@@ -1290,7 +1290,7 @@ $results = getCompetitionResults($comp_data_path);
                 </div>
                 
                 <!-- 이벤트 결과 모달 -->
-                <div id="eventResultModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; overflow: auto;">
+                <div id="eventResultModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 99999; overflow: auto; visibility: hidden; opacity: 0; transition: all 0.3s ease;">
                     <div style="position: relative; background: white; margin: 2% auto; max-width: 95%; min-height: 90%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
                         <div style="position: sticky; top: 0; background: white; padding: 20px; border-bottom: 1px solid #e5e7eb; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; z-index: 10;">
                             <h3 id="modalEventTitle" style="margin: 0; color: #1f2937; display: flex; align-items: center; gap: 12px;">
@@ -1777,9 +1777,14 @@ $results = getCompetitionResults($comp_data_path);
             
             // 모달 표시
             console.log('Showing modal for event:', eventNo, eventName, detailNo);
+            console.log('Modal element:', modal);
+            console.log('Modal current display:', modal.style.display);
             modal.style.display = 'block';
+            modal.style.visibility = 'visible';
+            modal.style.opacity = '1';
             document.body.style.overflow = 'hidden';
-            console.log('Modal displayed');
+            console.log('Modal displayed, new display:', modal.style.display);
+            console.log('Modal computed style:', window.getComputedStyle(modal).display);
             
             // 결과 HTML 파일 직접 불러오기
             const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
@@ -1874,9 +1879,14 @@ $results = getCompetitionResults($comp_data_path);
         
         // 모달 닫기 함수
         function closeEventModal() {
+            console.log('Closing modal');
             const modal = document.getElementById('eventResultModal');
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
+            modal.style.opacity = '0';
+            modal.style.visibility = 'hidden';
+            setTimeout(() => {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }, 300);
             // 이벤트 정보 초기화
             currentModalEvent = { eventNo: null, eventName: null };
         }
