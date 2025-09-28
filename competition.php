@@ -1788,32 +1788,46 @@ $results = getCompetitionResults($comp_data_path);
             // 모달창을 강제로 표시 - CSS 속성을 직접 설정
             modal.setAttribute('style', 'display: block !important; position: fixed !important; top: 0px !important; left: 0px !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.8) !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; overflow: auto !important; margin: 0 !important; padding: 0 !important; transform: none !important;');
             
+            // 추가로 모달창을 body에 직접 추가하여 위치 문제 해결
+            const modalClone = modal.cloneNode(true);
+            modalClone.id = 'eventResultModalClone';
+            modalClone.setAttribute('style', 'display: block !important; position: fixed !important; top: 0px !important; left: 0px !important; width: 100vw !important; height: 100vh !important; background: rgba(0,0,0,0.8) !important; z-index: 99999 !important; visibility: visible !important; opacity: 1 !important; overflow: auto !important; margin: 0 !important; padding: 0 !important; transform: none !important;');
+            
+            // 기존 모달 제거하고 새로 추가
+            modal.remove();
+            document.body.appendChild(modalClone);
+            
+            // 새로운 모달 참조 업데이트
+            const newModal = document.getElementById('eventResultModalClone');
+            console.log('Modal moved to body, new element:', newModal);
+            
             document.body.style.overflow = 'hidden';
             
-            // 모달창이 실제로 DOM에 있는지 확인
-            const modalInDOM = document.getElementById('eventResultModal');
-            console.log('Modal in DOM:', modalInDOM);
-            console.log('Modal parent:', modalInDOM ? modalInDOM.parentElement : 'none');
-            console.log('Modal is connected:', modalInDOM ? modalInDOM.isConnected : false);
+            // 새로운 모달창 정보 확인
+            console.log('New modal in DOM:', newModal);
+            console.log('New modal parent:', newModal ? newModal.parentElement : 'none');
+            console.log('New modal is connected:', newModal ? newModal.isConnected : false);
             
-            console.log('Modal displayed, new display:', modal.style.display);
-            console.log('Modal computed style:', window.getComputedStyle(modal).display);
-            console.log('Modal position:', window.getComputedStyle(modal).position);
-            console.log('Modal z-index:', window.getComputedStyle(modal).zIndex);
-            console.log('Modal visibility:', window.getComputedStyle(modal).visibility);
-            console.log('Modal opacity:', window.getComputedStyle(modal).opacity);
+            console.log('New modal displayed, new display:', newModal ? newModal.style.display : 'none');
+            console.log('New modal computed style:', newModal ? window.getComputedStyle(newModal).display : 'none');
+            console.log('New modal position:', newModal ? window.getComputedStyle(newModal).position : 'none');
+            console.log('New modal z-index:', newModal ? window.getComputedStyle(newModal).zIndex : 'none');
+            console.log('New modal visibility:', newModal ? window.getComputedStyle(newModal).visibility : 'none');
+            console.log('New modal opacity:', newModal ? window.getComputedStyle(newModal).opacity : 'none');
             
             // 모달창이 실제로 보이는지 테스트
-            const modalRect = modal.getBoundingClientRect();
-            console.log('Modal bounding rect:', modalRect);
-            console.log('Modal width:', modalRect.width);
-            console.log('Modal height:', modalRect.height);
-            console.log('Modal top:', modalRect.top);
-            console.log('Modal left:', modalRect.left);
-            
-            // 모달창에 강제로 빨간색 테두리 추가하여 시각적으로 확인
-            modal.style.border = '5px solid red !important';
-            console.log('Added red border to modal for debugging');
+            if (newModal) {
+                const modalRect = newModal.getBoundingClientRect();
+                console.log('New modal bounding rect:', modalRect);
+                console.log('New modal width:', modalRect.width);
+                console.log('New modal height:', modalRect.height);
+                console.log('New modal top:', modalRect.top);
+                console.log('New modal left:', modalRect.left);
+                
+                // 모달창에 강제로 빨간색 테두리 추가하여 시각적으로 확인
+                newModal.style.border = '5px solid red !important';
+                console.log('Added red border to new modal for debugging');
+            }
             
             // 결과 HTML 파일 직접 불러오기
             const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
@@ -1827,6 +1841,14 @@ $results = getCompetitionResults($comp_data_path);
             }
             
             console.log('Loading result file:', resultUrl);
+            
+            // 새로운 모달의 content 요소 찾기
+            const newContent = newModal ? newModal.querySelector('#modalEventContent') : null;
+            if (!newContent) {
+                console.error('Content element not found in new modal');
+                return;
+            }
+            
             fetch(resultUrl)
                 .then(response => {
                     console.log('Response status:', response.status);
@@ -1842,7 +1864,7 @@ $results = getCompetitionResults($comp_data_path);
                     if (html.trim()) {
                         console.log('Setting content.innerHTML with HTML');
                         // HTML을 iframe에 로드하여 완전한 페이지로 표시
-                        content.innerHTML = `
+                        newContent.innerHTML = `
                             <div style="width: 100%; height: 80vh; border: none;">
                                 <iframe src="${resultUrl}" 
                                         style="width: 100%; height: 100%; border: none; border-radius: 8px;"
@@ -1854,7 +1876,7 @@ $results = getCompetitionResults($comp_data_path);
                         console.log('Content set successfully with iframe');
                     } else {
                         console.log('HTML is empty, showing no content message');
-                        content.innerHTML = `
+                        newContent.innerHTML = `
                             <div style="text-align: center; padding: 40px; color: #6b7280;">
                                 <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">description</span>
                                 <h3>결과를 찾을 수 없습니다</h3>
@@ -1865,7 +1887,7 @@ $results = getCompetitionResults($comp_data_path);
                 })
                 .catch(error => {
                     console.error('Error loading event result:', error);
-                    content.innerHTML = `
+                    newContent.innerHTML = `
                         <div style="text-align: center; padding: 40px; color: #ef4444;">
                             <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px;">error</span>
                             <h3>오류가 발생했습니다</h3>
