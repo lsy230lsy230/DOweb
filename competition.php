@@ -1756,7 +1756,43 @@ $results = getCompetitionResults($comp_data_path);
         function showEventResult(eventNo, eventName, detailNo = null) {
             // 현재 이벤트 정보 저장
             currentModalEvent = { eventNo, eventName, detailNo };
-            const modal = document.getElementById('eventResultModal');
+            
+            // 기존 모달이 제거되었는지 확인하고 필요하면 다시 생성
+            let modal = document.getElementById('eventResultModal');
+            if (!modal) {
+                console.log('Original modal not found, recreating...');
+                // 원본 모달 HTML을 다시 생성
+                const modalHTML = `
+                    <div id="eventResultModal" style="display: none; position: fixed; top: 0px; left: 0px; width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); z-index: 99999; overflow: auto; margin: 0; padding: 0; transform: none;">
+                        <div style="position: relative; background: white; margin: 2% auto; max-width: 95%; min-height: 90%; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.3);">
+                            <div style="position: sticky; top: 0; background: white; padding: 20px; border-bottom: 1px solid #e5e7eb; border-radius: 8px 8px 0 0; display: flex; justify-content: space-between; align-items: center; z-index: 10;">
+                                <h3 id="modalEventTitle" style="margin: 0; color: #1f2937; display: flex; align-items: center; gap: 12px;">
+                                    <span class="material-symbols-rounded" style="color: #3b82f6;">emoji_events</span>
+                                    이벤트 결과
+                                </h3>
+                                <div style="display: flex; align-items: center; gap: 12px;">
+                                    <button id="downloadResultBtn" onclick="downloadEventResult()" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                                        <span class="material-symbols-rounded" style="font-size: 18px;">download</span>
+                                        다운로드
+                                    </button>
+                                    <button onclick="closeEventModal()" style="background: #ef4444; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold;">
+                                        ✕ 닫기
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="modalEventContent" style="padding: 20px; min-height: 400px; background: white; border-radius: 8px;">
+                                <div style="text-align: center; padding: 40px; color: #6b7280;">
+                                    <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">hourglass_empty</span>
+                                    <p>결과를 불러오는 중...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                modal = document.getElementById('eventResultModal');
+            }
+            
             const title = document.getElementById('modalEventTitle');
             const content = document.getElementById('modalEventContent');
             
@@ -1945,9 +1981,13 @@ $results = getCompetitionResults($comp_data_path);
                 console.log('Removed cloned modal');
             }
             
+            // body 스크롤 복원
             document.body.style.overflow = 'auto';
+            
             // 이벤트 정보 초기화
             currentModalEvent = { eventNo: null, eventName: null };
+            
+            console.log('Modal closed successfully');
         }
 
         
