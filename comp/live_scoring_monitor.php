@@ -99,6 +99,7 @@ if (empty($event_no)) {
         
         // 2. 히트 파일 확인 (스코어링 파일이 없을 때)
         if (!$latest_file) {
+            $data_dir = __DIR__ . "/data/{$comp_id}";
             $hits_files = glob($data_dir . "/players_hits_*.json");
             error_log("Checking hits files: " . count($hits_files));
             
@@ -279,11 +280,15 @@ function convertHtmlResultToLiveTvFormat($html_content, $event_no) {
                     $marks_raw = trim(strip_tags($cells[1]));
                     $marks = intval(str_replace(['(', ')'], '', $marks_raw));
                     $tag = trim(strip_tags($cells[2]));
-                    $name = trim(strip_tags($cells[3]));
+                    $name_raw = trim(strip_tags($cells[3]));
                     $from = trim(strip_tags($cells[4]));
                     
                     // 진출 여부 확인 (✅ 이모지나 "진출" 텍스트 포함 여부)
                     $qualified = strpos($cells[3], '✅') !== false || strpos($cells[3], '진출') !== false;
+                    
+                    // 이름에서 "✅ 진출" 텍스트 제거하여 중복 방지
+                    $name = preg_replace('/\s*✅\s*진출\s*/', '', $name_raw);
+                    $name = trim($name);
                     
                     if ($rank > 0 && !empty($name) && !empty($tag)) {
                         $participants[] = [

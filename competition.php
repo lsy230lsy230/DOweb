@@ -1268,9 +1268,15 @@ $results = getCompetitionResults($comp_data_path);
                                 <span class="material-symbols-rounded" style="color: #3b82f6;">emoji_events</span>
                                 이벤트 결과
                             </h3>
-                            <button onclick="closeEventModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280; padding: 5px; line-height: 1;">
-                                <span class="material-symbols-rounded">close</span>
-                            </button>
+                            <div style="display: flex; align-items: center; gap: 12px;">
+                                <button id="downloadResultBtn" onclick="downloadEventResult()" style="background: #10b981; color: white; border: none; padding: 8px 16px; border-radius: 6px; display: flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: 500;">
+                                    <span class="material-symbols-rounded" style="font-size: 18px;">download</span>
+                                    다운로드
+                                </button>
+                                <button onclick="closeEventModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: #6b7280; padding: 5px; line-height: 1;">
+                                    <span class="material-symbols-rounded">close</span>
+                                </button>
+                            </div>
                         </div>
                         <div id="modalEventContent" style="padding: 20px; min-height: 400px;">
                             <div style="text-align: center; padding: 40px; color: #6b7280;">
@@ -1626,7 +1632,7 @@ $results = getCompetitionResults($comp_data_path);
                         row.innerHTML = `
                             <td>${participant.marks || 0}</td>
                             <td>(${participant.tag || ''})</td>
-                            <td>${participant.name || ''} ${participant.qualified ? '<span style="margin-left: 10px; font-size: 1.2em;">✅ 진출</span>' : ''}</td>
+                            <td>${participant.name || ''} ${participant.qualified ? '<span style="margin-left: 10px; font-size: 1.2em; color: #10b981;">✅</span>' : ''}</td>
                             <td>${participant.from || ''}</td>
                         `;
                         
@@ -1714,8 +1720,13 @@ $results = getCompetitionResults($comp_data_path);
             }
         });
         
+        // 현재 모달의 이벤트 정보 저장
+        let currentModalEvent = { eventNo: null, eventName: null };
+        
         // 이벤트 결과 모달 표시 함수
         function showEventResult(eventNo, eventName) {
+            // 현재 이벤트 정보 저장
+            currentModalEvent = { eventNo, eventName };
             const modal = document.getElementById('eventResultModal');
             const title = document.getElementById('modalEventTitle');
             const content = document.getElementById('modalEventContent');
@@ -1775,11 +1786,33 @@ $results = getCompetitionResults($comp_data_path);
                 });
         }
         
+        // 이벤트 결과 다운로드 함수
+        function downloadEventResult() {
+            if (!currentModalEvent.eventNo) {
+                alert('다운로드할 이벤트가 선택되지 않았습니다.');
+                return;
+            }
+            
+            const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
+            const resultUrl = `/comp/data/${compId}/Results/Event_${currentModalEvent.eventNo}/Event_${currentModalEvent.eventNo}_result.html`;
+            
+            // 파일 다운로드
+            const link = document.createElement('a');
+            link.href = resultUrl;
+            link.download = `Event_${currentModalEvent.eventNo}_${currentModalEvent.eventName || 'result'}.html`;
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
         // 모달 닫기 함수
         function closeEventModal() {
             const modal = document.getElementById('eventResultModal');
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
+            // 이벤트 정보 초기화
+            currentModalEvent = { eventNo: null, eventName: null };
         }
 
         
