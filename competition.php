@@ -1784,18 +1784,20 @@ $results = getCompetitionResults($comp_data_path);
             let resultUrl;
             if (detailNo && detailNo !== eventNo) {
                 // 세부번호가 있는 경우
-                resultUrl = `/comp/data/${compId}/Results/Event_${eventNo}-${detailNo}/Event_${eventNo}-${detailNo}_result.html`;
+                resultUrl = `comp/data/${compId}/Results/Event_${eventNo}-${detailNo}/Event_${eventNo}-${detailNo}_result.html`;
             } else {
                 // 세부번호가 없는 경우
-                resultUrl = `/comp/data/${compId}/Results/Event_${eventNo}/Event_${eventNo}_result.html`;
+                resultUrl = `comp/data/${compId}/Results/Event_${eventNo}/Event_${eventNo}_result.html`;
             }
             
+            console.log('Loading result file:', resultUrl);
             fetch(resultUrl)
                 .then(response => {
+                    console.log('Response status:', response.status);
                     if (response.ok) {
                         return response.text();
                     } else {
-                        throw new Error('File not found');
+                        throw new Error(`File not found: ${response.status}`);
                     }
                 })
                 .then(html => {
@@ -1836,11 +1838,11 @@ $results = getCompetitionResults($comp_data_path);
             
             if (currentModalEvent.detailNo && currentModalEvent.detailNo !== currentModalEvent.eventNo) {
                 // 세부번호가 있는 경우
-                resultUrl = `/comp/data/${compId}/Results/Event_${currentModalEvent.eventNo}-${currentModalEvent.detailNo}/Event_${currentModalEvent.eventNo}-${currentModalEvent.detailNo}_result.html`;
+                resultUrl = `comp/data/${compId}/Results/Event_${currentModalEvent.eventNo}-${currentModalEvent.detailNo}/Event_${currentModalEvent.eventNo}-${currentModalEvent.detailNo}_result.html`;
                 fileName = `Event_${currentModalEvent.eventNo}-${currentModalEvent.detailNo}_${currentModalEvent.eventName || 'result'}.html`;
             } else {
                 // 세부번호가 없는 경우
-                resultUrl = `/comp/data/${compId}/Results/Event_${currentModalEvent.eventNo}/Event_${currentModalEvent.eventNo}_result.html`;
+                resultUrl = `comp/data/${compId}/Results/Event_${currentModalEvent.eventNo}/Event_${currentModalEvent.eventNo}_result.html`;
                 fileName = `Event_${currentModalEvent.eventNo}_${currentModalEvent.eventName || 'result'}.html`;
             }
             
