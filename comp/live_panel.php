@@ -20,8 +20,14 @@ if ($view_mode === 'aggregation' && $view_event_no) {
         
         // API 파일 직접 실행하여 결과 캡처
         ob_start();
-        include 'final_aggregation_api.php';
+        $include_result = include 'final_aggregation_api.php';
         $aggregation_data = ob_get_clean();
+        
+        // include 실패 확인
+        if ($include_result === false) {
+            error_log("final_aggregation_api.php include 실패");
+            $aggregation_data = json_encode(['success' => false, 'error' => 'API 파일을 로드할 수 없습니다.']);
+        }
         
         error_log("집계 데이터 길이: " . strlen($aggregation_data));
         error_log("집계 데이터: " . substr($aggregation_data, 0, 500));
@@ -46,6 +52,11 @@ if ($view_mode === 'aggregation' && $view_event_no) {
         }
     } catch (Exception $e) {
         error_log("집계 API 실행 오류: " . $e->getMessage());
+        error_log("오류 스택 트레이스: " . $e->getTraceAsString());
+        $aggregation_result = null;
+    } catch (Error $e) {
+        error_log("집계 API 치명적 오류: " . $e->getMessage());
+        error_log("오류 스택 트레이스: " . $e->getTraceAsString());
         $aggregation_result = null;
     }
 }

@@ -1012,4 +1012,12 @@ function calculateSkatingDataForPlayer($judge_scores, $player_no) {
         'sum_1to6' => $sum_1to6
     ];
 }
+
+} catch (Exception $e) {
+    error_log("final_aggregation_api.php 오류: " . $e->getMessage());
+    echo json_encode(['success' => false, 'error' => '집계 처리 중 오류가 발생했습니다: ' . $e->getMessage()]);
+} catch (Error $e) {
+    error_log("final_aggregation_api.php 치명적 오류: " . $e->getMessage());
+    echo json_encode(['success' => false, 'error' => '집계 처리 중 치명적 오류가 발생했습니다: ' . $e->getMessage()]);
+}
 ?>
