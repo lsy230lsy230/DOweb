@@ -104,16 +104,30 @@ function getEventsFromTimetable($comp_id) {
     if (!$timetable_data || !isset($timetable_data['events'])) return [];
     
     $events = [];
+    $processed_event_numbers = []; // 중복 이벤트 번호 방지
+    
     foreach ($timetable_data['events'] as $event) {
-        $events[] = [
-            'event_no' => intval($event['no']),
-            'display_number' => $event['detail_no'] ?: $event['no'],
-            'event_name' => $event['desc'],
-            'round' => $event['roundtype'],
-            'has_result' => false, // 결과 파일 존재 여부는 나중에 확인
-            'detail_no' => $event['detail_no']
-        ];
+        $event_no = intval($event['no']);
+        
+        // 이벤트 번호로만 중복 체크
+        if (!in_array($event_no, $processed_event_numbers)) {
+            $processed_event_numbers[] = $event_no;
+            
+            $events[] = [
+                'event_no' => $event_no,
+                'display_number' => $event['detail_no'] ?: $event['no'],
+                'event_name' => $event['desc'],
+                'round' => $event['roundtype'],
+                'has_result' => false, // 결과 파일 존재 여부는 나중에 확인
+                'detail_no' => $event['detail_no']
+            ];
+        }
     }
+    
+    // 이벤트 번호 순으로 정렬
+    usort($events, function($a, $b) {
+        return $a['event_no'] - $b['event_no'];
+    });
     
     return $events;
 }
