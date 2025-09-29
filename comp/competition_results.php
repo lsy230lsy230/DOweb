@@ -45,16 +45,16 @@ function getEventsFromRunOrder($comp_id) {
                 $event_no = $cols[0];
                 $event_name = $cols[1];
                 $round = $cols[2];
-                $display_number = $cols[13]; // 세부번호 (1-1, 1-2, 3-1, 3-2...)
+                $display_number = isset($cols[13]) ? $cols[13] : ''; // 세부번호 (1-1, 1-2, 3-1, 3-2...)
                 
-                if (!empty($event_no) && is_numeric($event_no) && !empty($display_number)) {
+                if (!empty($event_no) && is_numeric($event_no)) {
                     // 중복 이벤트 방지 (같은 이벤트 번호는 한 번만)
                     if (!in_array($event_no, $processed_events)) {
                         $processed_events[] = $event_no;
                         
                         $events[] = [
                             'id' => intval($event_no),
-                            'display_number' => $display_number,
+                            'display_number' => $display_number ?: $event_no, // display_number가 비어있으면 event_no 사용
                             'name' => $event_name,
                             'round' => $round,
                             'status' => 'processing' // 기본값

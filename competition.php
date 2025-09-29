@@ -109,7 +109,7 @@ function getEventsFromTimetable($comp_id) {
     foreach ($timetable_data['events'] as $event) {
         $event_no = intval($event['no']);
         
-        // 이벤트 번호로만 중복 체크
+        // 이벤트 번호로만 중복 체크 (group_events는 무시)
         if (!in_array($event_no, $processed_event_numbers)) {
             $processed_event_numbers[] = $event_no;
             

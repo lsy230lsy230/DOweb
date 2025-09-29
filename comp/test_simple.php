@@ -1,7 +1,13 @@
 <?php
-echo "PHP 서버가 정상적으로 작동합니다!";
-echo "<br>";
-echo "현재 시간: " . date('Y-m-d H:i:s');
-echo "<br>";
-echo "GET 파라미터: " . json_encode($_GET);
+header('Content-Type: application/json');
+
+$comp_id = $_GET['comp_id'] ?? '';
+$event_no = $_GET['event_no'] ?? '';
+
+echo json_encode([
+    'success' => true,
+    'comp_id' => $comp_id,
+    'event_no' => $event_no,
+    'message' => 'Simple test working'
+]);
 ?>

@@ -45,7 +45,7 @@ if (file_exists($runorder_file)) {
                 $cols[9] ?? '',
                 $cols[10] ?? ''
             ]),
-            'detail_no' => $cols[13] ?? '',
+            'detail_no' => isset($cols[13]) ? $cols[13] : '',
             'next_event' => $cols[5] ?? ''
         ];
     }
@@ -67,6 +67,20 @@ foreach ($events as $event) {
     }
     
     $groups[$group_no]['events'][] = $event;
+}
+
+// 디버깅: 51번과 52번 이벤트 확인
+$debug_events = array_filter($events, function($event) {
+    return $event['no'] == '51' || $event['no'] == '52';
+});
+if (!empty($debug_events)) {
+    error_log("Debug: Found events 51 and 52 in get_events.php");
+    foreach ($debug_events as $debug_event) {
+        error_log("Event " . $debug_event['no'] . ": " . $debug_event['desc']);
+    }
+} else {
+    error_log("Debug: Events 51 and 52 NOT found in get_events.php");
+}
     
     // 여러 이벤트가 있으면 멀티 이벤트로 표시
     if (count($groups[$group_no]['events']) > 1) {
