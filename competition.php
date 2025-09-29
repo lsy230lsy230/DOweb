@@ -1180,35 +1180,6 @@ $results = getCompetitionResults($comp_data_path);
                         $events_list = getEventsFromRunOrder($comp_data_dir);
                     }
                     
-                    // 디버깅: 전체 이벤트 수와 51번, 52번 이벤트 확인
-                    echo "<!-- Debug: Total events: " . count($events_list) . " -->";
-                    
-                    // 51번 이벤트 중복 확인
-                    $event_51_count = 0;
-                    $event_51_events = [];
-                    foreach ($events_list as $index => $event) {
-                        if ($event['event_no'] == 51) {
-                            $event_51_count++;
-                            $event_51_events[] = "Index $index: " . $event['event_name'] . " (display: " . $event['display_number'] . ")";
-                        }
-                    }
-                    echo "<!-- Debug: Event 51 count: " . $event_51_count . " -->";
-                    if ($event_51_count > 0) {
-                        echo "<!-- Debug: Event 51 details: " . implode(', ', $event_51_events) . " -->";
-                    }
-                    
-                    // 52번 이벤트 확인
-                    $event_52_count = 0;
-                    foreach ($events_list as $event) {
-                        if ($event['event_no'] == 52) {
-                            $event_52_count++;
-                        }
-                    }
-                    echo "<!-- Debug: Event 52 count: " . $event_52_count . " -->";
-                    
-                    // 모든 이벤트 번호 출력 (디버깅용)
-                    $event_numbers = array_map(function($event) { return $event['event_no']; }, $events_list);
-                    echo "<!-- Debug: All event numbers: " . implode(', ', $event_numbers) . " -->";
                     
                     // Results 폴더에서 실제 결과 파일이 있는 이벤트 확인
                     $results_dir = $comp_data_dir . '/Results';
@@ -1228,6 +1199,7 @@ $results = getCompetitionResults($comp_data_path);
                         $event['result_file_path'] = $event['has_result'] ? $event_result_file : null;
                         $event['event_folder'] = $event_folder; // 폴더명 저장
                     }
+                    unset($event); // 참조 해제 - 중복 렌더링 방지를 위해 필수
                     ?>
                     
                     <!-- 이벤트 리스트 -->
@@ -1970,18 +1942,14 @@ $results = getCompetitionResults($comp_data_path);
                     console.log('HTML content length:', html.length);
                     console.log('HTML preview:', html.substring(0, 200));
                     if (html.trim()) {
-                        console.log('Setting content.innerHTML with HTML');
-                        // HTML을 iframe에 로드하여 완전한 페이지로 표시
+                        console.log('Setting content.innerHTML with HTML directly');
+                        // HTML을 직접 표시 (iframe 대신)
                         newContent.innerHTML = `
-                            <div style="width: 100%; height: 80vh; border: none;">
-                                <iframe src="${resultUrl}" 
-                                        style="width: 100%; height: 100%; border: none; border-radius: 8px;"
-                                        onload="console.log('Iframe loaded successfully')"
-                                        onerror="console.error('Iframe load error')">
-                                </iframe>
+                            <div style="width: 100%; height: 80vh; overflow: auto; border: 1px solid #e5e7eb; border-radius: 8px;">
+                                ${html}
                             </div>
                         `;
-                        console.log('Content set successfully with iframe');
+                        console.log('Content set successfully with direct HTML');
                     } else {
                         console.log('HTML is empty, showing no content message');
                         newContent.innerHTML = `
