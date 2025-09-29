@@ -36,7 +36,7 @@ function getCompetitionNotices($comp_data_path) {
     return [];
 }
 
-// RunOrder_Tablet.txt에서 시간표 순서대로 이벤트 목록 가져오기
+// RunOrder_Tablet.txt에서 시간표 순서대로 이벤트 목록 가져오기 (중복 제거 강화)
 function getEventsFromRunOrder($comp_data_path) {
     if (!$comp_data_path) return [];
     
@@ -45,7 +45,7 @@ function getEventsFromRunOrder($comp_data_path) {
     
     $lines = file($runorder_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     $events = [];
-    $processed_events = []; // 중복 방지 (이벤트번호-세부번호 조합)
+    $processed_event_numbers = []; // 이벤트 번호만으로 중복 체크
     
     foreach ($lines as $line) {
         if (preg_match('/^bom/', $line)) continue; // 헤더 라인 스킵
@@ -55,43 +55,65 @@ function getEventsFromRunOrder($comp_data_path) {
             $event_no = $cols[0];
             $event_name = $cols[1];
             $round = $cols[2];
-            $display_number = $cols[13]; // 세부번호 (1-1, 1-2, 3-1, 3-2...)
+            $display_number = isset($cols[13]) ? $cols[13] : ''; // 세부번호 (1-1, 1-2, 3-1, 3-2...)
             
             if (!empty($event_no) && is_numeric($event_no)) {
-                // 세부번호가 있는 경우 이벤트번호-세부번호 조합으로 중복 체크
-                $unique_key = $event_no . ($display_number ? '-' . $display_number : '');
+                $event_number = intval($event_no);
                 
-                if (!in_array($unique_key, $processed_events)) {
-                    $processed_events[] = $unique_key;
+                // 이벤트 번호로만 중복 체크 (세부번호 무시)
+                if (!in_array($event_number, $processed_event_numbers)) {
+                    $processed_event_numbers[] = $event_number;
                     
-                    // 세부번호가 있는 경우 이벤트명에 세부번호 포함
-                    $full_event_name = $event_name;
-                    if ($display_number && $display_number !== $event_no) {
-                        $full_event_name = $event_name . ' (' . $display_number . ')';
+                    // 51번, 52번 이벤트 디버깅
+                    if ($event_number == 51 || $event_number == 52) {
+                        error_log("Added event $event_number: $event_name");
                     }
                     
                     $events[] = [
-                        'event_no' => intval($event_no),
+                        'event_no' => $event_number,
                         'display_number' => $display_number ?: $event_no,
-                        'event_name' => $full_event_name,
+                        'event_name' => $event_name,
                         'round' => $round,
                         'has_result' => false, // 결과 파일 존재 여부는 나중에 확인
                         'detail_no' => $display_number // 세부번호 별도 저장
                     ];
+                } else {
+                    // 중복된 이벤트 로그
+                    if ($event_number == 51 || $event_number == 52) {
+                        error_log("Skipped duplicate event $event_number: $event_name");
+                    }
                 }
             }
         }
     }
     
-    // 이벤트 번호와 세부번호 순으로 정렬 (시간표 순서)
+    // 이벤트 번호 순으로 정렬
     usort($events, function($a, $b) {
-        // 먼저 이벤트 번호로 정렬
-        if ($a['event_no'] != $b['event_no']) {
-            return $a['event_no'] - $b['event_no'];
-        }
-        // 같은 이벤트 번호면 세부번호로 정렬
-        return strcmp($a['detail_no'] ?? '', $b['detail_no'] ?? '');
+        return $a['event_no'] - $b['event_no'];
     });
+    
+    return $events;
+}
+
+function getEventsFromTimetable($comp_id) {
+    // 타임테이블 JSON 파일에서 이벤트 목록 가져오기
+    $timetable_file = __DIR__ . '/data/timetables/timetable_' . str_replace('comp_', '', $comp_id) . '.json';
+    if (!file_exists($timetable_file)) return [];
+    
+    $timetable_data = json_decode(file_get_contents($timetable_file), true);
+    if (!$timetable_data || !isset($timetable_data['events'])) return [];
+    
+    $events = [];
+    foreach ($timetable_data['events'] as $event) {
+        $events[] = [
+            'event_no' => intval($event['no']),
+            'display_number' => $event['detail_no'] ?: $event['no'],
+            'event_name' => $event['desc'],
+            'round' => $event['roundtype'],
+            'has_result' => false, // 결과 파일 존재 여부는 나중에 확인
+            'detail_no' => $event['detail_no']
+        ];
+    }
     
     return $events;
 }
@@ -1135,9 +1157,44 @@ $results = getCompetitionResults($comp_data_path);
                     </h3>
                     
                     <?php 
-                    // RunOrder에서 시간표 순서대로 이벤트 목록 가져오기
-                    $comp_data_dir = __DIR__ . '/comp/data/' . str_replace('comp_', '', $comp_id);
-                    $events_list = getEventsFromRunOrder($comp_data_dir);
+                    // 타임테이블 JSON에서 이벤트 목록 가져오기 (중복 제거 완료)
+                    $events_list = getEventsFromTimetable($comp_id);
+                    
+                    // 타임테이블이 없으면 RunOrder_Tablet.txt에서 가져오기 (fallback)
+                    if (empty($events_list)) {
+                        $comp_data_dir = __DIR__ . '/comp/data/' . str_replace('comp_', '', $comp_id);
+                        $events_list = getEventsFromRunOrder($comp_data_dir);
+                    }
+                    
+                    // 디버깅: 전체 이벤트 수와 51번, 52번 이벤트 확인
+                    echo "<!-- Debug: Total events: " . count($events_list) . " -->";
+                    
+                    // 51번 이벤트 중복 확인
+                    $event_51_count = 0;
+                    $event_51_events = [];
+                    foreach ($events_list as $index => $event) {
+                        if ($event['event_no'] == 51) {
+                            $event_51_count++;
+                            $event_51_events[] = "Index $index: " . $event['event_name'] . " (display: " . $event['display_number'] . ")";
+                        }
+                    }
+                    echo "<!-- Debug: Event 51 count: " . $event_51_count . " -->";
+                    if ($event_51_count > 0) {
+                        echo "<!-- Debug: Event 51 details: " . implode(', ', $event_51_events) . " -->";
+                    }
+                    
+                    // 52번 이벤트 확인
+                    $event_52_count = 0;
+                    foreach ($events_list as $event) {
+                        if ($event['event_no'] == 52) {
+                            $event_52_count++;
+                        }
+                    }
+                    echo "<!-- Debug: Event 52 count: " . $event_52_count . " -->";
+                    
+                    // 모든 이벤트 번호 출력 (디버깅용)
+                    $event_numbers = array_map(function($event) { return $event['event_no']; }, $events_list);
+                    echo "<!-- Debug: All event numbers: " . implode(', ', $event_numbers) . " -->";
                     
                     // Results 폴더에서 실제 결과 파일이 있는 이벤트 확인
                     $results_dir = $comp_data_dir . '/Results';
@@ -1235,11 +1292,12 @@ $results = getCompetitionResults($comp_data_path);
                                 if (preg_match('/players_hits_(\d+)\.json/', $filename, $matches)) {
                                     $event_no = $matches[1];
                                     
-                                    // RunOrder에 없는 이벤트만 추가
+                                    // RunOrder에 없는 이벤트만 추가 (중복 방지 강화)
                                     $exists_in_runorder = false;
                                     foreach ($events_list as $existing) {
                                         if ($existing['event_no'] == $event_no) {
                                             $exists_in_runorder = true;
+                                            error_log("Skipping duplicate event $event_no from players_hits file");
                                             break;
                                         }
                                     }
