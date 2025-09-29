@@ -1909,18 +1909,14 @@ $results = getCompetitionResults($comp_data_path);
                 console.log('Added red border to new modal for debugging');
             }
             
-            // 결과 HTML 파일 직접 불러오기
-            const compId = "<?= htmlspecialchars(str_replace('comp_', '', $comp_id)) ?>";
-            let resultUrl;
+            // 결과 HTML 파일을 API를 통해 불러오기
+            const compId = "<?= htmlspecialchars($comp_id) ?>";
+            let apiUrl = `comp/get_event_result.php?comp_id=${compId}&event_no=${eventNo}`;
             if (detailNo && detailNo !== eventNo) {
-                // 세부번호가 있는 경우
-                resultUrl = `comp/data/${compId}/Results/Event_${eventNo}-${detailNo}/Event_${eventNo}-${detailNo}_result.html`;
-            } else {
-                // 세부번호가 없는 경우
-                resultUrl = `comp/data/${compId}/Results/Event_${eventNo}/Event_${eventNo}_result.html`;
+                apiUrl += `&detail_no=${detailNo}`;
             }
             
-            console.log('Loading result file:', resultUrl);
+            console.log('Loading result via API:', apiUrl);
             
             // 새로운 모달의 content 요소 찾기
             const newContent = newModal ? newModal.querySelector('#modalEventContent') : null;
@@ -1929,34 +1925,35 @@ $results = getCompetitionResults($comp_data_path);
                 return;
             }
             
-            fetch(resultUrl)
+            fetch(apiUrl)
                 .then(response => {
                     console.log('Response status:', response.status);
                     if (response.ok) {
-                        return response.text();
+                        return response.json();
                     } else {
-                        throw new Error(`File not found: ${response.status}`);
+                        throw new Error(`API error: ${response.status}`);
                     }
                 })
-                .then(html => {
-                    console.log('HTML content length:', html.length);
-                    console.log('HTML preview:', html.substring(0, 200));
-                    if (html.trim()) {
-                        console.log('Setting content.innerHTML with HTML directly');
-                        // HTML을 직접 표시 (iframe 대신)
+                .then(data => {
+                    console.log('API response:', data);
+                    if (data.success && data.html) {
+                        console.log('HTML content length:', data.html.length);
+                        console.log('HTML preview:', data.html.substring(0, 200));
+                        // HTML을 직접 표시
                         newContent.innerHTML = `
                             <div style="width: 100%; height: 80vh; overflow: auto; border: 1px solid #e5e7eb; border-radius: 8px;">
-                                ${html}
+                                ${data.html}
                             </div>
                         `;
-                        console.log('Content set successfully with direct HTML');
+                        console.log('Content set successfully with API HTML');
                     } else {
-                        console.log('HTML is empty, showing no content message');
+                        console.log('API returned error or empty content');
                         newContent.innerHTML = `
                             <div style="text-align: center; padding: 40px; color: #6b7280;">
                                 <span class="material-symbols-rounded" style="font-size: 48px; margin-bottom: 16px; opacity: 0.5;">description</span>
                                 <h3>결과를 찾을 수 없습니다</h3>
                                 <p>이벤트 ${displayEventNo}의 결과 파일이 아직 생성되지 않았습니다.</p>
+                                <p style="color: #ef4444; font-size: 12px; margin-top: 10px;">${data.message || '알 수 없는 오류'}</p>
                             </div>
                         `;
                     }
