@@ -13,9 +13,9 @@ if (empty($comp_id) || empty($event_no)) {
 }
 
 // 이벤트 정보 로드
-$runorder_file = "data/{$comp_id}/RunOrder_Tablet.txt";
+$runorder_file = __DIR__ . "/data/{$comp_id}/RunOrder_Tablet.txt";
 if (!file_exists($runorder_file)) {
-        echo json_encode(['success' => false, 'error' => 'RunOrder file not found']);
+        echo json_encode(['success' => false, 'error' => 'RunOrder file not found: ' . $runorder_file]);
     exit;
 }
 
@@ -81,8 +81,8 @@ if (!$current_event) {
 
 // 선수 정보 로드 (전체 선수 파일에서 해당 이벤트 선수들 찾기)
 $players = [];
-$all_players_file = "data/{$comp_id}/players.txt";
-$event_players_file = "data/{$comp_id}/players_{$event_no}.txt";
+$all_players_file = __DIR__ . "/data/{$comp_id}/players.txt";
+$event_players_file = __DIR__ . "/data/{$comp_id}/players_{$event_no}.txt";
 
 // 전체 선수 데이터 로드
 $all_players = [];
@@ -142,7 +142,7 @@ foreach ($dance_codes as $dance_code) {
 error_log("Event $event_no judges found: " . implode(', ', $event_judges));
 
 // 전체 심사위원 정보 로드
-$adjudicators_file = "data/{$comp_id}/adjudicators.txt";
+$adjudicators_file = __DIR__ . "/data/{$comp_id}/adjudicators.txt";
 $all_adjudicators = [];
 if (file_exists($adjudicators_file)) {
     $lines = file($adjudicators_file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
@@ -783,7 +783,7 @@ th { background-color: #eee; font-weight: bold; }
 
 // 대회 정보 로드
 function loadCompetitionInfo($comp_id) {
-    $info_file = "data/{$comp_id}/info.json";
+    $info_file = __DIR__ . "/data/{$comp_id}/info.json";
     if (file_exists($info_file)) {
         $content = file_get_contents($info_file);
         $data = json_decode($content, true);
