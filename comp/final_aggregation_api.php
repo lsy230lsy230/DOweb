@@ -359,13 +359,18 @@ function calculateSkatingRankings($judge_scores, $players) {
         }
     }
     
-    // 순위 결정
+    // 순위 결정 (중복 제거)
     $ranked_players = [];
+    $processed_players = [];
     foreach ($player_rankings as $player_no => $data) {
-        $ranked_players[] = [
-            'player_no' => $player_no,
-            'skating_data' => $data
-        ];
+        // 중복 제거: 이미 처리된 선수는 건너뛰기
+        if (!in_array($player_no, $processed_players)) {
+            $ranked_players[] = [
+                'player_no' => $player_no,
+                'skating_data' => $data
+            ];
+            $processed_players[] = $player_no;
+        }
     }
     
     // 스케이팅 시스템 규칙에 따라 정렬 (올바른 과반수 규칙 적용)
