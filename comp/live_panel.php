@@ -4818,20 +4818,41 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     }
                     
                     if (data.success && data.event_info && data.final_rankings) {
-                        // 성공시 생성된 결과 HTML 파일 열기
-                        // 올바른 경로: comp/data/{comp_id}/Results/Event_{event_id}/Event_{event_id}_result.html
-                        const resultUrl = `../comp/data/${compId}/Results/Event_${eventId}/Event_${eventId}_result.html`;
-                        console.log('결승 집계 성공, 결과 파일로 이동:', resultUrl);
+                        // 성공시 API를 통해 결과 HTML 가져오기
+                        const resultApiUrl = `./get_event_result.php?comp_id=${compId}&event_no=${eventId}`;
+                        console.log('결승 집계 성공, API를 통해 결과 가져오기:', resultApiUrl);
                         
-                        // 새 창에서 결과 표시
-                        const newWindow = window.open(resultUrl, '_blank', 'width=1200,height=900,scrollbars=yes,resizable=yes');
-                        
-                        if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
-                            // 팝업이 차단된 경우 현재 페이지에 결과 표시
-                            showAggregationResult(data, eventId);
-                        } else {
-                            console.log('결승 결과 창이 열렸습니다.');
-                        }
+                        fetch(resultApiUrl)
+                            .then(response => {
+                                console.log('Result API response status:', response.status);
+                                if (response.ok) {
+                                    return response.json();
+                                } else {
+                                    throw new Error(`Result API error: ${response.status}`);
+                                }
+                            })
+                            .then(resultData => {
+                                console.log('Result API response:', resultData);
+                                if (resultData.success && resultData.html) {
+                                    // 새 창에서 결과 표시
+                                    const newWindow = window.open('', '_blank', 'width=1200,height=900,scrollbars=yes,resizable=yes');
+                                    if (newWindow) {
+                                        newWindow.document.write(resultData.html);
+                                        newWindow.document.close();
+                                        console.log('결승 결과 창이 열렸습니다.');
+                                    } else {
+                                        // 팝업이 차단된 경우 현재 페이지에 결과 표시
+                                        showAggregationResult(data, eventId);
+                                    }
+                                } else {
+                                    console.error('Result API failed:', resultData.message);
+                                    showAggregationResult(data, eventId);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Result API error:', error);
+                                showAggregationResult(data, eventId);
+                            });
                     } else {
                         console.error('결승 집계 실패:', data);
                         alert(`결승 집계 처리 중 오류가 발생했습니다: ${data.error || data.message || '알 수 없는 오류'}`);
