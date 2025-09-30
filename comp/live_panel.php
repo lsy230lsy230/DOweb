@@ -4820,7 +4820,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                     if (data.success && data.event_info && data.final_rankings) {
                         // 성공시 생성된 결과 HTML 파일 열기
                         // 올바른 경로: comp/data/{comp_id}/Results/Event_{event_id}/Event_{event_id}_result.html
-                        const resultUrl = `${baseUrl}/comp/data/${compId}/Results/Event_${eventId}/Event_${eventId}_result.html`;
+                        const resultUrl = `data/${compId}/Results/Event_${eventId}/Event_${eventId}_result.html`;
                         console.log('결승 집계 성공, 결과 파일로 이동:', resultUrl);
                         
                         // 새 창에서 결과 표시
