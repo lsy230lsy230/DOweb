@@ -39,8 +39,8 @@ if (!preg_match('/^\d{8}-\d+$/', $comp_id)) {
 $data_dir = __DIR__ . "/data/$comp_id";
 if (!is_dir($data_dir)) @mkdir($data_dir, 0777, true);
 
-// 세부번호가 있으면 세부번호별 파일 사용, 없으면 원본 이벤트 번호 사용
-$file = $detailNo ? "$data_dir/players_{$detailNo}.txt" : "$data_dir/players_{$eventNo}.txt";
+// 세부번호가 있으면 eventNo-detailNo 형태로 파일명 생성, 없으면 원본 이벤트 번호 사용
+$file = $detailNo ? "$data_dir/players_{$eventNo}-{$detailNo}.txt" : "$data_dir/players_{$eventNo}.txt";
 
 $content = implode("\n", $players);
 
