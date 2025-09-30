@@ -1911,7 +1911,7 @@ $results = getCompetitionResults($comp_data_path);
             
             // 결과 HTML 파일을 API를 통해 불러오기
             const compId = "<?= htmlspecialchars($comp_id) ?>";
-            let apiUrl = `comp/get_event_result.php?comp_id=${compId}&event_no=${eventNo}`;
+            let apiUrl = `./comp/get_event_result.php?comp_id=${compId}&event_no=${eventNo}`;
             if (detailNo && detailNo !== eventNo) {
                 apiUrl += `&detail_no=${detailNo}`;
             }
