@@ -423,10 +423,37 @@ function calculateSkatingRankings($judge_scores, $players) {
         return strcmp($a['sort_key'], $b['sort_key']);
     });
     
-    // 최종 순위 부여
+    // 최종 순위 부여 (동점 처리)
     $final_rankings = [];
+    $current_rank = 1;
+    $tied_players = [];
+    
     for ($i = 0; $i < count($ranked_players); $i++) {
-        $final_rankings[$ranked_players[$i]['player_no']] = $i + 1;
+        $player = $ranked_players[$i];
+        $tied_players[] = $player;
+        
+        // 다음 선수와 비교하여 동점인지 확인
+        $is_tied = false;
+        if ($i < count($ranked_players) - 1) {
+            $next_player = $ranked_players[$i + 1];
+            $is_tied = ($player['sort_key'] === $next_player['sort_key']);
+        }
+        
+        // 동점이 아니거나 마지막 선수인 경우 등위 부여
+        if (!$is_tied) {
+            if (count($tied_players) == 1) {
+                // 단독 등위
+                $final_rankings[$tied_players[0]['player_no']] = $current_rank;
+            } else {
+                // 동점 등위 (괄호 표기)
+                foreach ($tied_players as $tied_player) {
+                    $final_rankings[$tied_player['player_no']] = $current_rank . "=";
+                }
+            }
+            
+            $current_rank += count($tied_players);
+            $tied_players = [];
+        }
     }
     
     return $final_rankings;
@@ -627,7 +654,12 @@ th { background-color: #eee; font-weight: bold; }
         error_log("Final player name for $player_no: $player_name");
         
         $html .= '<tr>';
-        $html .= '<td>' . htmlspecialchars($rank_entry['final_rank']) . '</td>';
+        // 동점 표기 처리
+        $display_rank = $rank_entry['final_rank'];
+        if (strpos($display_rank, '=') !== false) {
+            $display_rank = '(' . str_replace('=', '', $display_rank) . ')';
+        }
+        $html .= '<td>' . htmlspecialchars($display_rank) . '</td>';
         $html .= '<td>' . htmlspecialchars($player_no) . '</td>';
         $html .= '<td>' . $player_name . '</td>';
         $html .= '<td>' . htmlspecialchars($rank_entry['sum_of_places']) . '</td>';
@@ -660,11 +692,20 @@ th { background-color: #eee; font-weight: bold; }
         foreach ($event_info['dances'] as $dance_code) {
             $dance_rank = isset($dance_results[$dance_code]['final_rankings'][$player_no]) ? 
                          $dance_results[$dance_code]['final_rankings'][$player_no] : '-';
+            // 동점 표기 처리
+            if (strpos($dance_rank, '=') !== false) {
+                $dance_rank = '(' . str_replace('=', '', $dance_rank) . ')';
+            }
             $html .= '<td>' . htmlspecialchars($dance_rank) . '</td>';
         }
         
         $html .= '<td>' . htmlspecialchars($rank_entry['sum_of_places']) . '</td>';
-        $html .= '<td>' . htmlspecialchars($rank_entry['final_rank']) . '</td>';
+        // 동점 표기 처리
+        $display_rank = $rank_entry['final_rank'];
+        if (strpos($display_rank, '=') !== false) {
+            $display_rank = '(' . str_replace('=', '', $display_rank) . ')';
+        }
+        $html .= '<td>' . htmlspecialchars($display_rank) . '</td>';
         $html .= '</tr>';
     }
     $html .= '</tbody>';
@@ -785,8 +826,12 @@ th { background-color: #eee; font-weight: bold; }
             $html .= '<td' . getMajorityClass($skating_data['place_1to5'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1to5']) . '</td>';
             $html .= '<td' . getMajorityClass($skating_data['place_1to6'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1to6']) . '</td>';
 
-            // Place Dance
+            // Place Dance (동점 표기 처리)
             $dance_place = $dance_data['final_rankings'][$player_no] ?? '';
+            if (strpos($dance_place, '=') !== false) {
+                // 동점인 경우 괄호로 표기
+                $dance_place = '(' . str_replace('=', '', $dance_place) . ')';
+            }
             $html .= '<td>' . htmlspecialchars($dance_place) . '</td>';
             $html .= '</tr>';
         }
