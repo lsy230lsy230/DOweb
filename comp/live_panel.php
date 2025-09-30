@@ -6026,13 +6026,18 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 detailNo = '';
             }
             
+            // currentPlayers 배열에서 등번호만 추출
+            const playerNumbers = currentPlayers.map(p => p.number);
+            
             const requestData = {
                 eventNo: eventNo,
                 detailNo: detailNo,
-                players: currentPlayers
+                players: playerNumbers
             };
             
             console.log('Saving players:', requestData);
+            console.log('currentEventForPlayerModal:', currentEventForPlayerModal);
+            console.log('currentPlayers:', currentPlayers);
             
             fetch(`https://www.danceoffice.net/comp/save_players.php?comp_id=${compId}`, {
                 method: 'POST',
