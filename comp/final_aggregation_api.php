@@ -396,23 +396,23 @@ function calculateSkatingRankings($judge_scores, $players) {
             case 0: // 1위 수
                 $sort_key .= sprintf('%02d', $data['place_1']);
                 break;
-            case 1: // 1&2위 수
-                $sort_key .= sprintf('%02d', $data['place_1_2']);
-                break;
-            case 2: // 1to3위 수
-                $sort_key .= sprintf('%02d', $data['place_1to3']);
-                $sort_key .= sprintf('%03d', $data['sum_1to3']);
-                break;
-            case 3: // 1to4위 수
-                $sort_key .= sprintf('%02d', $data['place_1to4']);
+        case 1: // 1&2위 수 (더 많은 수를 받은 선수가 우위)
+            $sort_key .= sprintf('%02d', 99 - $data['place_1_2']); // 역순으로 정렬
+            break;
+        case 2: // 1to3위 수 (더 많은 수를 받은 선수가 우위)
+            $sort_key .= sprintf('%02d', 99 - $data['place_1to3']); // 역순으로 정렬
+            $sort_key .= sprintf('%03d', $data['sum_1to3']);
+            break;
+            case 3: // 1to4위 수 (더 많은 수를 받은 선수가 우위)
+                $sort_key .= sprintf('%02d', 99 - $data['place_1to4']); // 역순으로 정렬
                 $sort_key .= sprintf('%03d', $data['sum_1to4']);
                 break;
-            case 4: // 1to5위 수
-                $sort_key .= sprintf('%02d', $data['place_1to5']);
+            case 4: // 1to5위 수 (더 많은 수를 받은 선수가 우위)
+                $sort_key .= sprintf('%02d', 99 - $data['place_1to5']); // 역순으로 정렬
                 $sort_key .= sprintf('%03d', $data['sum_1to5']);
                 break;
-            case 5: // 1to6위 수
-                $sort_key .= sprintf('%02d', $data['place_1to6']);
+            case 5: // 1to6위 수 (더 많은 수를 받은 선수가 우위)
+                $sort_key .= sprintf('%02d', 99 - $data['place_1to6']); // 역순으로 정렬
                 $sort_key .= sprintf('%03d', $data['sum_1to6']);
                 break;
             case 6: // 과반 달성 못한 경우
