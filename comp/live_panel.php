@@ -6015,8 +6015,16 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             if (!currentEventForPlayerModal) return;
             
             const compId = '<?=$comp_id?>';
-            const eventNo = currentEventForPlayerModal;
-            const detailNo = currentEventForPlayerModal.includes('-') ? currentEventForPlayerModal.split('-')[1] : '';
+            let eventNo, detailNo;
+            
+            if (currentEventForPlayerModal.includes('-')) {
+                const parts = currentEventForPlayerModal.split('-');
+                eventNo = parts[0];
+                detailNo = parts[1];
+            } else {
+                eventNo = currentEventForPlayerModal;
+                detailNo = '';
+            }
             
             const requestData = {
                 eventNo: eventNo,
