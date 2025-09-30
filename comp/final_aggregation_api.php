@@ -431,6 +431,17 @@ function calculateSkatingRankings($judge_scores, $players) {
     return $final_rankings;
 }
 
+// 과반 계산 함수 (13명 심사위원 기준, 과반은 7명 이상)
+function isMajority($count, $total_judges = 13) {
+    $majority_threshold = ceil($total_judges / 2);
+    return $count >= $majority_threshold;
+}
+
+// 과반 하이라이트를 위한 CSS 클래스 생성
+function getMajorityClass($count, $total_judges = 13) {
+    return isMajority($count, $total_judges) ? ' class="majority-highlight"' : '';
+}
+
 // 스케이팅 데이터 계산
 function calculateSkatingData($rankings) {
     $place_1 = 0;
@@ -573,6 +584,7 @@ th { background-color: #eee; font-weight: bold; }
 .final-rank-table tr:nth-child(even) { background-color: #f0f0f0; }
 .rules-table th { background-color: #e6f3ff; }
 .rules-table th.dance-header { background-color: #b3d9ff; }
+.majority-highlight { background-color: #ffff99 !important; font-weight: bold; }
 .adjudicator-list { margin-top: 30px; border-top: 1px solid #000; padding-top: 10px; }
 .adjudicator-list h3 { font-size: 16px; margin-bottom: 10px; }
 .adjudicator-list ul { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; }
@@ -675,11 +687,11 @@ th { background-color: #eee; font-weight: bold; }
             // 전체 댄스에서의 스케이팅 계산
             $total_skating = calculateTotalSkatingData($dance_results, $player_no);
             $html .= '<td>' . htmlspecialchars($total_skating['place_1']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($total_skating['place_1_2']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($total_skating['place_1to3']) . ' (' . htmlspecialchars($total_skating['sum_1to3']) . ')</td>';
-            $html .= '<td>' . htmlspecialchars($total_skating['place_1to4']) . ' (' . htmlspecialchars($total_skating['sum_1to4']) . ')</td>';
-            $html .= '<td>' . htmlspecialchars($total_skating['place_1to5']) . ' (' . htmlspecialchars($total_skating['sum_1to5']) . ')</td>';
-            $html .= '<td>' . htmlspecialchars($total_skating['place_1to6']) . ' (' . htmlspecialchars($total_skating['sum_1to6']) . ')</td>';
+            $html .= '<td' . getMajorityClass($total_skating['place_1_2']) . '>' . htmlspecialchars($total_skating['place_1_2']) . '</td>';
+            $html .= '<td' . getMajorityClass($total_skating['place_1to3']) . '>' . htmlspecialchars($total_skating['place_1to3']) . ' (' . htmlspecialchars($total_skating['sum_1to3']) . ')</td>';
+            $html .= '<td' . getMajorityClass($total_skating['place_1to4']) . '>' . htmlspecialchars($total_skating['place_1to4']) . ' (' . htmlspecialchars($total_skating['sum_1to4']) . ')</td>';
+            $html .= '<td' . getMajorityClass($total_skating['place_1to5']) . '>' . htmlspecialchars($total_skating['place_1to5']) . ' (' . htmlspecialchars($total_skating['sum_1to5']) . ')</td>';
+            $html .= '<td' . getMajorityClass($total_skating['place_1to6']) . '>' . htmlspecialchars($total_skating['place_1to6']) . ' (' . htmlspecialchars($total_skating['sum_1to6']) . ')</td>';
             $html .= '</tr>';
         }
         $html .= '</tbody>';
@@ -699,11 +711,11 @@ th { background-color: #eee; font-weight: bold; }
             // 전체 댄스에서의 스케이팅 계산 (Rules 11은 Rules 10과 동일)
             $total_skating = calculateTotalSkatingData($dance_results, $player_no);
             $html .= '<td>' . htmlspecialchars($total_skating['place_1']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($total_skating['place_1_2']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($total_skating['place_1to3']) . ' (' . htmlspecialchars($total_skating['sum_1to3']) . ')</td>';
-            $html .= '<td>' . htmlspecialchars($total_skating['place_1to4']) . ' (' . htmlspecialchars($total_skating['sum_1to4']) . ')</td>';
-            $html .= '<td>' . htmlspecialchars($total_skating['place_1to5']) . ' (' . htmlspecialchars($total_skating['sum_1to5']) . ')</td>';
-            $html .= '<td>' . htmlspecialchars($total_skating['place_1to6']) . ' (' . htmlspecialchars($total_skating['sum_1to6']) . ')</td>';
+            $html .= '<td' . getMajorityClass($total_skating['place_1_2']) . '>' . htmlspecialchars($total_skating['place_1_2']) . '</td>';
+            $html .= '<td' . getMajorityClass($total_skating['place_1to3']) . '>' . htmlspecialchars($total_skating['place_1to3']) . ' (' . htmlspecialchars($total_skating['sum_1to3']) . ')</td>';
+            $html .= '<td' . getMajorityClass($total_skating['place_1to4']) . '>' . htmlspecialchars($total_skating['place_1to4']) . ' (' . htmlspecialchars($total_skating['sum_1to4']) . ')</td>';
+            $html .= '<td' . getMajorityClass($total_skating['place_1to5']) . '>' . htmlspecialchars($total_skating['place_1to5']) . ' (' . htmlspecialchars($total_skating['sum_1to5']) . ')</td>';
+            $html .= '<td' . getMajorityClass($total_skating['place_1to6']) . '>' . htmlspecialchars($total_skating['place_1to6']) . ' (' . htmlspecialchars($total_skating['sum_1to6']) . ')</td>';
             $html .= '</tr>';
         }
         $html .= '</tbody>';
@@ -766,11 +778,11 @@ th { background-color: #eee; font-weight: bold; }
             }
             $skating_data = calculateSkatingDataForPlayerWithMajority($judge_scores_for_calculation, $player_no, count($adjudicators));
             $html .= '<td>' . htmlspecialchars($skating_data['place_1']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($skating_data['place_1_2']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($skating_data['place_1to3']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($skating_data['place_1to4']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($skating_data['place_1to5']) . '</td>';
-            $html .= '<td>' . htmlspecialchars($skating_data['place_1to6']) . '</td>';
+            $html .= '<td' . getMajorityClass($skating_data['place_1_2'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1_2']) . '</td>';
+            $html .= '<td' . getMajorityClass($skating_data['place_1to3'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1to3']) . '</td>';
+            $html .= '<td' . getMajorityClass($skating_data['place_1to4'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1to4']) . '</td>';
+            $html .= '<td' . getMajorityClass($skating_data['place_1to5'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1to5']) . '</td>';
+            $html .= '<td' . getMajorityClass($skating_data['place_1to6'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1to6']) . '</td>';
 
             // Place Dance
             $dance_place = $dance_data['final_rankings'][$player_no] ?? '';
