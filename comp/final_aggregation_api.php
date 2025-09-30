@@ -382,8 +382,8 @@ function calculateSkatingRankings($judge_scores, $players) {
         
         // 레벨 계산
         $level = 0;
-        if ($data['place_1'] > 0 && $data['place_1_2'] >= $majority_threshold) $level = 0;
-        elseif ($data['place_1_2'] >= $majority_threshold) $level = 1;
+        if ($data['place_1'] >= $majority_threshold) $level = 0; // 1위에서 과반 달성
+        elseif ($data['place_1_2'] >= $majority_threshold) $level = 1; // 1&2에서 과반 달성
         elseif ($data['place_1to3'] >= $majority_threshold) $level = 2;
         elseif ($data['place_1to4'] >= $majority_threshold) $level = 3;
         elseif ($data['place_1to5'] >= $majority_threshold) $level = 4;
@@ -393,8 +393,8 @@ function calculateSkatingRankings($judge_scores, $players) {
         // 정렬 키 생성 (레벨, 해당 레벨의 값, 합계)
         $sort_key = $level;
         switch ($level) {
-            case 0: // 1위 수
-                $sort_key .= sprintf('%02d', $data['place_1']);
+            case 0: // 1위 수 (더 많은 수를 받은 선수가 우위)
+                $sort_key .= sprintf('%02d', 99 - $data['place_1']); // 역순으로 정렬
                 break;
         case 1: // 1&2위 수 (더 많은 수를 받은 선수가 우위)
             $sort_key .= sprintf('%02d', 99 - $data['place_1_2']); // 역순으로 정렬
