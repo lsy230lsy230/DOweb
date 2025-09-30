@@ -465,7 +465,25 @@ function calculateSkatingRankings($judge_scores, $players) {
         }
     }
     
-    return $final_rankings;
+    // 배열 형태로 변환하여 반환
+    $result_array = [];
+    foreach ($final_rankings as $player_no => $rank) {
+        // sum_of_places 계산 (각 선수의 순위 합계)
+        $sum_of_places = 0;
+        foreach ($judge_scores as $judge_code => $scores) {
+            if (isset($scores[$player_no])) {
+                $sum_of_places += $scores[$player_no];
+            }
+        }
+        
+        $result_array[] = [
+            'player_no' => $player_no,
+            'final_rank' => $rank,
+            'sum_of_places' => $sum_of_places
+        ];
+    }
+    
+    return $result_array;
 }
 
 // 과반 계산 함수 (13명 심사위원 기준, 과반은 7명 이상)
@@ -537,8 +555,12 @@ function calculateFinalRankings($dance_results, $players) {
         $sum = 0;
         
         foreach ($dance_results as $dance_code => $dance_data) {
-            if (isset($dance_data['final_rankings'][$player_no])) {
-                $sum += $dance_data['final_rankings'][$player_no];
+            // final_rankings가 배열 형태로 변경됨
+            foreach ($dance_data['final_rankings'] as $ranking) {
+                if ($ranking['player_no'] == $player_no) {
+                    $sum += $ranking['final_rank'];
+                    break;
+                }
             }
         }
         
@@ -709,8 +731,14 @@ th { background-color: #eee; font-weight: bold; }
         
         // 각 댄스별 순위
         foreach ($event_info['dances'] as $dance_code) {
-            $dance_rank = isset($dance_results[$dance_code]['final_rankings'][$player_no]) ? 
-                         $dance_results[$dance_code]['final_rankings'][$player_no] : '-';
+            $dance_rank = '-';
+            // final_rankings가 배열 형태로 변경됨
+            foreach ($dance_results[$dance_code]['final_rankings'] as $ranking) {
+                if ($ranking['player_no'] == $player_no) {
+                    $dance_rank = $ranking['final_rank'];
+                    break;
+                }
+            }
             // 동점 표기 처리
             if (strpos($dance_rank, '=') !== false) {
                 $dance_rank = '(' . str_replace('=', '', $dance_rank) . ')';
@@ -843,7 +871,7 @@ th { background-color: #eee; font-weight: bold; }
                 }
             }
             $skating_data = calculateSkatingDataForPlayerWithMajority($judge_scores_for_calculation, $player_no, count($adjudicators));
-            $html .= '<td>' . htmlspecialchars($skating_data['place_1']) . '</td>';
+            $html .= '<td' . getMajorityClass($skating_data['place_1'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1']) . '</td>';
             $html .= '<td' . getMajorityClass($skating_data['place_1_2'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1_2']) . '</td>';
             $html .= '<td' . getMajorityClass($skating_data['place_1to3'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1to3']) . '</td>';
             $html .= '<td' . getMajorityClass($skating_data['place_1to4'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1to4']) . '</td>';
@@ -851,7 +879,14 @@ th { background-color: #eee; font-weight: bold; }
             $html .= '<td' . getMajorityClass($skating_data['place_1to6'], count($adjudicators)) . '>' . htmlspecialchars($skating_data['place_1to6']) . '</td>';
 
             // Place Dance (동점 표기 처리)
-            $dance_place = $dance_data['final_rankings'][$player_no] ?? '';
+            $dance_place = '';
+            // final_rankings가 배열 형태로 변경됨
+            foreach ($dance_data['final_rankings'] as $ranking) {
+                if ($ranking['player_no'] == $player_no) {
+                    $dance_place = $ranking['final_rank'];
+                    break;
+                }
+            }
             if (strpos($dance_place, '=') !== false) {
                 // 동점인 경우 괄호로 표기
                 $dance_place = '(' . str_replace('=', '', $dance_place) . ')';
