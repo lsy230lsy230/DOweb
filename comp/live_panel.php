@@ -4790,18 +4790,34 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             
             fetch(apiUrl)
                 .then(response => {
+                    console.log('API 응답 상태:', response.status);
+                    console.log('API 응답 헤더:', response.headers);
+                    
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
-                    return response.json();
+                    
+                    // 응답을 텍스트로 먼저 읽어서 확인
+                    return response.text().then(text => {
+                        console.log('API 응답 텍스트 (처음 500자):', text.substring(0, 500));
+                        try {
+                            return JSON.parse(text);
+                        } catch (e) {
+                            console.error('JSON 파싱 오류:', e);
+                            console.error('원본 응답:', text);
+                            throw new Error(`JSON 파싱 오류: ${e.message}`);
+                        }
+                    });
                 })
                 .then(data => {
+                    console.log('파싱된 데이터:', data);
+                    
                     // 로딩 인디케이터 제거
                     if (loadingMsg.parentNode) {
                         document.body.removeChild(loadingMsg);
                     }
                     
-                    if (data.event_info && data.final_rankings) {
+                    if (data.success && data.event_info && data.final_rankings) {
                         // 성공시 생성된 결과 HTML 파일 열기
                         // 올바른 경로: comp/data/{comp_id}/Results/Event_{event_id}/Event_{event_id}_result.html
                         const resultUrl = `${baseUrl}/comp/data/${compId}/Results/Event_${eventId}/Event_${eventId}_result.html`;
@@ -4818,7 +4834,7 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         }
                     } else {
                         console.error('결승 집계 실패:', data);
-                        alert(`결승 집계 처리 중 오류가 발생했습니다: ${data.error || '알 수 없는 오류'}`);
+                        alert(`결승 집계 처리 중 오류가 발생했습니다: ${data.error || data.message || '알 수 없는 오류'}`);
                     }
                 })
                 .catch(error => {
