@@ -199,7 +199,7 @@ foreach ($current_event['dances'] as $dance_code) {
     
     // 각 심사위원의 순위 파일에서 데이터 수집
     foreach ($adjudicators as $judge) {
-        $score_file = "data/{$comp_id}/{$event_no}_{$dance_code}_{$judge['original_code']}.adj";
+        $score_file = __DIR__ . "/data/{$comp_id}/{$event_no}_{$dance_code}_{$judge['original_code']}.adj";
         if (file_exists($score_file)) {
             $content = file_get_contents($score_file);
             $lines = explode("\n", $content);
