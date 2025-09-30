@@ -1,4 +1,16 @@
 <?php
+// CORS 헤더 추가
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Content-Type: application/json; charset=utf-8');
+
+// OPTIONS 요청 처리 (preflight)
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit;
+}
+
 // POST: {"eventNo": "1", "players": ["101", "102", ...]}
 $data = json_decode(file_get_contents("php://input"), true);
 $comp_id = $_GET['comp_id'] ?? '';
