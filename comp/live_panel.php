@@ -5938,9 +5938,15 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                 playersList.innerHTML = '<div style="color:#666; font-style:italic;">등록된 선수가 없습니다.</div>';
             } else {
                 playersList.innerHTML = currentPlayers.map(player => `
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:0.3em; border-bottom:1px solid #eee;">
-                        <span>${player.number} (${player.type === 'couple' ? '커플' : '싱글'})</span>
-                        <button onclick="removePlayer(${player.number})" style="background:#dc3545; color:white; border:none; padding:0.2em 0.5em; border-radius:3px; cursor:pointer;">X</button>
+                    <div style="display:flex; justify-content:space-between; align-items:center; padding:0.5em; border-bottom:1px solid #eee; background:#f8f9fa; margin-bottom:0.2em; border-radius:4px;">
+                        <div style="flex:1;">
+                            <div style="font-weight:bold; color:#333;">${player.number}번</div>
+                            <div style="font-size:0.9em; color:#666;">${player.name}</div>
+                            <div style="font-size:0.8em; color:#888;">${player.type === 'couple' ? '커플' : '싱글'}</div>
+                        </div>
+                        <button onclick="removePlayer(${player.number})" 
+                                style="background:#dc3545; color:white; border:none; padding:0.3em 0.6em; border-radius:4px; cursor:pointer; font-size:0.9em; font-weight:bold;"
+                                title="선수 제거">×</button>
                     </div>
                 `).join('');
             }
@@ -5948,8 +5954,11 @@ function h($s) { return htmlspecialchars($s ?? ''); }
         
         // 선수 제거
         function removePlayer(playerNumber) {
-            currentPlayers = currentPlayers.filter(p => p.number != playerNumber);
-            updatePlayersList();
+            const player = currentPlayers.find(p => p.number == playerNumber);
+            if (player && confirm(`${player.number}번 ${player.name} 선수를 제거하시겠습니까?`)) {
+                currentPlayers = currentPlayers.filter(p => p.number != playerNumber);
+                updatePlayersList();
+            }
         }
         
         // 선수 추가 (입력 처리)
