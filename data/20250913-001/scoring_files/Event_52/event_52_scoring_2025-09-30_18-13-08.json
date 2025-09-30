@@ -1,0 +1,182 @@
+{
+    "event_info": {
+        "no": "52",
+        "desc": "프로페셔널 라틴",
+        "round": "Final",
+        "detail_no": "LC",
+        "event_no": "52",
+        "dances": [
+            "6",
+            "7",
+            "8",
+            "9",
+            "10"
+        ],
+        "panel": "LC"
+    },
+    "players": [
+        {
+            "number": "14",
+            "male": "이유진",
+            "female": "송민영"
+        },
+        {
+            "number": "15",
+            "male": "염태우",
+            "female": "박서희"
+        },
+        {
+            "number": "16",
+            "male": "김민제",
+            "female": "함혜빈"
+        },
+        {
+            "number": "18",
+            "male": "김재희",
+            "female": "박건희"
+        },
+        {
+            "number": "19",
+            "male": "전상우",
+            "female": "강민지"
+        },
+        {
+            "number": "22",
+            "male": "박동규",
+            "female": "이혜숙"
+        }
+    ],
+    "adjudicators": [
+        {
+            "code": "A",
+            "name": "5",
+            "original_code": "12"
+        },
+        {
+            "code": "B",
+            "name": "9",
+            "original_code": "13"
+        },
+        {
+            "code": "C",
+            "name": "7",
+            "original_code": "14"
+        },
+        {
+            "code": "D",
+            "name": "10",
+            "original_code": "15"
+        },
+        {
+            "code": "E",
+            "name": "2",
+            "original_code": "16"
+        },
+        {
+            "code": "F",
+            "name": "4",
+            "original_code": "17"
+        },
+        {
+            "code": "G",
+            "name": "3",
+            "original_code": "18"
+        },
+        {
+            "code": "H",
+            "name": "6",
+            "original_code": "19"
+        },
+        {
+            "code": "I",
+            "name": "11",
+            "original_code": "20"
+        },
+        {
+            "code": "J",
+            "name": "8",
+            "original_code": "21"
+        },
+        {
+            "code": "K",
+            "name": "12",
+            "original_code": "22"
+        },
+        {
+            "code": "L",
+            "name": "1",
+            "original_code": "23"
+        },
+        {
+            "code": "M",
+            "name": "13",
+            "original_code": "24"
+        }
+    ],
+    "dance_results": {
+        "6": {
+            "name": "Cha Cha Cha",
+            "code": "6",
+            "judge_scores": [],
+            "final_rankings": []
+        },
+        "7": {
+            "name": "Samba",
+            "code": "7",
+            "judge_scores": [],
+            "final_rankings": []
+        },
+        "8": {
+            "name": "Rumba",
+            "code": "8",
+            "judge_scores": [],
+            "final_rankings": []
+        },
+        "9": {
+            "name": "Paso Doble",
+            "code": "9",
+            "judge_scores": [],
+            "final_rankings": []
+        },
+        "10": {
+            "name": "Jive",
+            "code": "10",
+            "judge_scores": [],
+            "final_rankings": []
+        }
+    },
+    "final_rankings": [
+        {
+            "player_no": 14,
+            "sum_of_places": 0,
+            "final_rank": 1
+        },
+        {
+            "player_no": 15,
+            "sum_of_places": 0,
+            "final_rank": 2
+        },
+        {
+            "player_no": 16,
+            "sum_of_places": 0,
+            "final_rank": 3
+        },
+        {
+            "player_no": 18,
+            "sum_of_places": 0,
+            "final_rank": 4
+        },
+        {
+            "player_no": 19,
+            "sum_of_places": 0,
+            "final_rank": 5
+        },
+        {
+            "player_no": 22,
+            "sum_of_places": 0,
+            "final_rank": 6
+        }
+    ],
+    "timestamp": "2025-09-30 18:13:08",
+    "comp_id": "20250913-001"
+}
