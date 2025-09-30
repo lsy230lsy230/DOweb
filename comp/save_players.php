@@ -43,9 +43,34 @@ if (!is_dir($data_dir)) @mkdir($data_dir, 0777, true);
 $file = $detailNo ? "$data_dir/players_{$detailNo}.txt" : "$data_dir/players_{$eventNo}.txt";
 
 $content = implode("\n", $players);
-if (file_put_contents($file, $content)!==false) {
-    echo json_encode(['success'=>true]);
+
+// 디버깅 정보 추가
+error_log("Save players debug - comp_id: $comp_id, eventNo: $eventNo, detailNo: $detailNo");
+error_log("Save players debug - file path: $file");
+error_log("Save players debug - players count: " . count($players));
+error_log("Save players debug - content: " . substr($content, 0, 200));
+
+// 디렉토리 존재 확인
+if (!is_dir($data_dir)) {
+    error_log("Save players debug - data directory does not exist: $data_dir");
+    echo json_encode(['success'=>false, 'error'=>'데이터 디렉토리가 존재하지 않습니다: ' . $data_dir]);
+    exit;
+}
+
+// 파일 쓰기 권한 확인
+if (!is_writable($data_dir)) {
+    error_log("Save players debug - data directory is not writable: $data_dir");
+    echo json_encode(['success'=>false, 'error'=>'데이터 디렉토리에 쓰기 권한이 없습니다: ' . $data_dir]);
+    exit;
+}
+
+$result = file_put_contents($file, $content);
+if ($result !== false) {
+    error_log("Save players debug - file saved successfully, bytes written: $result");
+    echo json_encode(['success'=>true, 'message'=>'선수 정보가 저장되었습니다']);
 } else {
-    echo json_encode(['success'=>false, 'error'=>'파일 저장 실패']);
+    $error = error_get_last();
+    error_log("Save players debug - file save failed: " . ($error['message'] ?? 'Unknown error'));
+    echo json_encode(['success'=>false, 'error'=>'파일 저장 실패: ' . ($error['message'] ?? '알 수 없는 오류')]);
 }
 ?>

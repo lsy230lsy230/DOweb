@@ -6015,17 +6015,30 @@ function h($s) { return htmlspecialchars($s ?? ''); }
             if (!currentEventForPlayerModal) return;
             
             const compId = '<?=$comp_id?>';
-            const formData = new FormData();
-            formData.append('comp_id', compId);
-            formData.append('event_no', currentEventForPlayerModal);
-            formData.append('players', JSON.stringify(currentPlayers));
+            const eventNo = currentEventForPlayerModal;
+            const detailNo = currentEventForPlayerModal.includes('-') ? currentEventForPlayerModal.split('-')[1] : '';
             
-            fetch('https://www.danceoffice.net/comp/save_players.php', {
+            const requestData = {
+                eventNo: eventNo,
+                detailNo: detailNo,
+                players: currentPlayers
+            };
+            
+            console.log('Saving players:', requestData);
+            
+            fetch(`https://www.danceoffice.net/comp/save_players.php?comp_id=${compId}`, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(requestData)
             })
-            .then(response => response.json())
+            .then(response => {
+                console.log('Response status:', response.status);
+                return response.json();
+            })
             .then(data => {
+                console.log('Response data:', data);
                 if (data.success) {
                     alert('선수 목록이 저장되었습니다.');
                     closePlayerModal();
@@ -6034,12 +6047,12 @@ function h($s) { return htmlspecialchars($s ?? ''); }
                         updateRightPanel(selectedEvent, selectedGroup);
                     }
                 } else {
-                    alert('저장 중 오류가 발생했습니다: ' + (data.message || '알 수 없는 오류'));
+                    alert('저장 중 오류가 발생했습니다: ' + (data.error || data.message || '알 수 없는 오류'));
                 }
             })
             .catch(error => {
                 console.error('Error saving players:', error);
-                alert('저장 중 오류가 발생했습니다.');
+                alert('저장 중 오류가 발생했습니다: ' + error.message);
             });
         }
         
