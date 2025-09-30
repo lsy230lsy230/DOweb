@@ -375,7 +375,7 @@ function calculateSkatingRankings($judge_scores, $players) {
     
     // 스케이팅 시스템 규칙에 따라 정렬 (올바른 과반수 규칙 적용)
     // 각 선수에 대해 정렬 키를 계산
-    foreach ($ranked_players as &$player) {
+    foreach ($ranked_players as $index => $player) {
         $data = $player['skating_data'];
         $total_judges = 13; // 13명의 심사위원
         $majority_threshold = ceil($total_judges / 2); // 7명 이상
@@ -420,7 +420,7 @@ function calculateSkatingRankings($judge_scores, $players) {
                 break;
         }
         
-        $player['sort_key'] = $sort_key;
+        $ranked_players[$index]['sort_key'] = $sort_key;
     }
     
     // 정렬 키로 정렬
