@@ -110,17 +110,17 @@ if (file_exists($runorder_file)) {
         $recall = $cols[4] ?? ''; // 4번째 컬럼이 리콜 수 (인덱스 4)
         $heats = $cols[14] ?? ''; // 히트는 15번째 컬럼 (인덱스 14)
         $dance_codes = [];
-        // 7-11번째 컬럼의 숫자를 댄스 코드로 사용 (6번째 컬럼은 next_event이므로 건너뛰기)
-        for ($i=7; $i<=11; $i++) {
+        // 6-10번째 컬럼의 숫자를 댄스 코드로 사용
+        for ($i=6; $i<=10; $i++) {
             if (isset($cols[$i]) && is_numeric($cols[$i]) && $cols[$i] > 0) {
                 $dance_codes[] = $cols[$i];
             }
         }
         
-        // 디버깅: 30번 이벤트의 댄스 코드 확인
-        if ($no === '30') {
-            error_log("30번 이벤트 댄스 코드: " . implode(',', $dance_codes));
-            error_log("30번 이벤트 컬럼 7-11: " . implode(',', array_slice($cols, 7, 5)));
+        // 디버깅: 1-1, 1-2 이벤트의 댄스 코드 확인
+        if ($no === '1') {
+            error_log("1번 이벤트 댄스 코드: " . implode(',', $dance_codes));
+            error_log("1번 이벤트 컬럼 6-10: " . implode(',', array_slice($cols, 6, 5)));
         }
         // 댄스 코드를 실제 댄스명으로 변환
         $dance_names = [];
