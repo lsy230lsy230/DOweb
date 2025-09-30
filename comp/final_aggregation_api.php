@@ -6,12 +6,29 @@
     header('Content-Type: application/json; charset=utf-8');
     
     // OPTIONS 요청 처리 (preflight)
-    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
         http_response_code(200);
         exit;
     }
-    ini_set('memory_limit', '512M');
-    ini_set('max_execution_time', '300');
+    ini_set('memory_limit', '1024M');
+    ini_set('max_execution_time', '600');
+    ini_set('max_input_time', '600');
+    ini_set('post_max_size', '100M');
+    ini_set('upload_max_filesize', '100M');
+    error_reporting(E_ALL);
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+    ini_set('error_log', __DIR__ . '/error.log');
+    
+    // 웹 서버 타임아웃 방지
+    if (function_exists('set_time_limit')) {
+        set_time_limit(600);
+    }
+    
+    // 출력 버퍼링 비활성화
+    if (ob_get_level()) {
+        ob_end_clean();
+    }
 
 try {
 $comp_id = $_GET['comp_id'] ?? '';
