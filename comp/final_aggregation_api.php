@@ -368,57 +368,94 @@ function calculateSkatingRankings($judge_scores, $players) {
         ];
     }
     
-    // 스케이팅 시스템 규칙에 따라 정렬
+    // 스케이팅 시스템 규칙에 따라 정렬 (과반수 규칙 적용)
     usort($ranked_players, function($a, $b) {
         $data_a = $a['skating_data'];
         $data_b = $b['skating_data'];
+        $total_judges = 13; // 13명의 심사위원
+        $majority_threshold = ceil($total_judges / 2); // 7명 이상
         
         // 1위 수 비교
         if ($data_a['place_1'] != $data_b['place_1']) {
             return $data_b['place_1'] - $data_a['place_1'];
         }
         
-        // 1&2위 수 비교
-        if ($data_a['place_1_2'] != $data_b['place_1_2']) {
-            return $data_b['place_1_2'] - $data_a['place_1_2'];
+        // 1&2위 수 비교 (과반수 확인)
+        $a_1_2_majority = $data_a['place_1_2'] >= $majority_threshold;
+        $b_1_2_majority = $data_b['place_1_2'] >= $majority_threshold;
+        
+        if ($a_1_2_majority && !$b_1_2_majority) return -1; // A가 과반, B가 미과반
+        if (!$a_1_2_majority && $b_1_2_majority) return 1;  // B가 과반, A가 미과반
+        if ($a_1_2_majority && $b_1_2_majority) {
+            // 둘 다 과반이면 숫자 비교
+            if ($data_a['place_1_2'] != $data_b['place_1_2']) {
+                return $data_b['place_1_2'] - $data_a['place_1_2'];
+            }
         }
         
-        // 1to3위 수 비교
-        if ($data_a['place_1to3'] != $data_b['place_1to3']) {
-            return $data_b['place_1to3'] - $data_a['place_1to3'];
+        // 1to3위 수 비교 (과반수 확인)
+        $a_1to3_majority = $data_a['place_1to3'] >= $majority_threshold;
+        $b_1to3_majority = $data_b['place_1to3'] >= $majority_threshold;
+        
+        if ($a_1to3_majority && !$b_1to3_majority) return -1;
+        if (!$a_1to3_majority && $b_1to3_majority) return 1;
+        if ($a_1to3_majority && $b_1to3_majority) {
+            if ($data_a['place_1to3'] != $data_b['place_1to3']) {
+                return $data_b['place_1to3'] - $data_a['place_1to3'];
+            }
+            // 1to3 합계 비교 (낮은 합계가 우위)
+            if ($data_a['sum_1to3'] != $data_b['sum_1to3']) {
+                return $data_a['sum_1to3'] - $data_b['sum_1to3'];
+            }
         }
         
-        // 1to3 합계 비교 (낮은 합계가 우위)
-        if ($data_a['sum_1to3'] != $data_b['sum_1to3']) {
-            return $data_a['sum_1to3'] - $data_b['sum_1to3'];
+        // 1to4위 수 비교 (과반수 확인)
+        $a_1to4_majority = $data_a['place_1to4'] >= $majority_threshold;
+        $b_1to4_majority = $data_b['place_1to4'] >= $majority_threshold;
+        
+        if ($a_1to4_majority && !$b_1to4_majority) return -1;
+        if (!$a_1to4_majority && $b_1to4_majority) return 1;
+        if ($a_1to4_majority && $b_1to4_majority) {
+            if ($data_a['place_1to4'] != $data_b['place_1to4']) {
+                return $data_b['place_1to4'] - $data_a['place_1to4'];
+            }
+            // 1to4 합계 비교
+            if ($data_a['sum_1to4'] != $data_b['sum_1to4']) {
+                return $data_a['sum_1to4'] - $data_b['sum_1to4'];
+            }
         }
         
-        // 1to4 비교
-        if ($data_a['place_1to4'] != $data_b['place_1to4']) {
-            return $data_b['place_1to4'] - $data_a['place_1to4'];
+        // 1to5위 수 비교 (과반수 확인)
+        $a_1to5_majority = $data_a['place_1to5'] >= $majority_threshold;
+        $b_1to5_majority = $data_b['place_1to5'] >= $majority_threshold;
+        
+        if ($a_1to5_majority && !$b_1to5_majority) return -1;
+        if (!$a_1to5_majority && $b_1to5_majority) return 1;
+        if ($a_1to5_majority && $b_1to5_majority) {
+            if ($data_a['place_1to5'] != $data_b['place_1to5']) {
+                return $data_b['place_1to5'] - $data_a['place_1to5'];
+            }
+            // 1to5 합계 비교
+            if ($data_a['sum_1to5'] != $data_b['sum_1to5']) {
+                return $data_a['sum_1to5'] - $data_b['sum_1to5'];
+            }
         }
         
-        // 1to4 합계 비교
-        if ($data_a['sum_1to4'] != $data_b['sum_1to4']) {
-            return $data_a['sum_1to4'] - $data_b['sum_1to4'];
+        // 1to6위 수 비교 (과반수 확인)
+        $a_1to6_majority = $data_a['place_1to6'] >= $majority_threshold;
+        $b_1to6_majority = $data_b['place_1to6'] >= $majority_threshold;
+        
+        if ($a_1to6_majority && !$b_1to6_majority) return -1;
+        if (!$a_1to6_majority && $b_1to6_majority) return 1;
+        if ($a_1to6_majority && $b_1to6_majority) {
+            if ($data_a['place_1to6'] != $data_b['place_1to6']) {
+                return $data_b['place_1to6'] - $data_a['place_1to6'];
+            }
+            // 1to6 합계 비교
+            return $data_a['sum_1to6'] - $data_b['sum_1to6'];
         }
         
-        // 1to5 비교
-        if ($data_a['place_1to5'] != $data_b['place_1to5']) {
-            return $data_b['place_1to5'] - $data_a['place_1to5'];
-        }
-        
-        // 1to5 합계 비교
-        if ($data_a['sum_1to5'] != $data_b['sum_1to5']) {
-            return $data_a['sum_1to5'] - $data_b['sum_1to5'];
-        }
-        
-        // 1to6 비교
-        if ($data_a['place_1to6'] != $data_b['place_1to6']) {
-            return $data_b['place_1to6'] - $data_a['place_1to6'];
-        }
-        
-        // 1to6 합계 비교
+        // 모든 단계에서 과반을 넘지 못한 경우, 기존 로직 사용
         return $data_a['sum_1to6'] - $data_b['sum_1to6'];
     });
     
