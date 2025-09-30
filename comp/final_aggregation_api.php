@@ -450,7 +450,11 @@ function calculateSkatingRankings($judge_scores, $players) {
                 // 단독 등위
                 $final_rankings[$tied_players[0]['player_no']] = $current_rank;
             } else {
-                // 동점 등위 (괄호 표기)
+                // 동점 등위 - 선수 번호 순으로 정렬 후 등위 부여
+                usort($tied_players, function($a, $b) {
+                    return strcmp($a['player_no'], $b['player_no']);
+                });
+                
                 foreach ($tied_players as $tied_player) {
                     $final_rankings[$tied_player['player_no']] = $current_rank . "=";
                 }
@@ -638,6 +642,11 @@ th { background-color: #eee; font-weight: bold; }
     $html .= '<thead><tr><th>Place</th><th>Tag</th><th>Competitor Name</th><th>Sum of Places</th></tr></thead>';
     $html .= '<tbody>';
     
+    // 선수 번호 순으로 정렬
+    usort($final_rankings, function($a, $b) {
+        return strcmp($a['player_no'], $b['player_no']);
+    });
+    
     foreach ($final_rankings as $rank_entry) {
         $player_no = $rank_entry['player_no'];
         
@@ -686,6 +695,11 @@ th { background-color: #eee; font-weight: bold; }
     
     $html .= '<th>SUM of Places</th><th>Place Skating</th></tr></thead>';
     $html .= '<tbody>';
+    
+    // 선수 번호 순으로 정렬 (이미 위에서 정렬했지만 명시적으로 다시 정렬)
+    usort($final_rankings, function($a, $b) {
+        return strcmp($a['player_no'], $b['player_no']);
+    });
     
     foreach ($final_rankings as $rank_entry) {
         $player_no = $rank_entry['player_no'];
@@ -793,7 +807,12 @@ th { background-color: #eee; font-weight: bold; }
         $html .= '</thead>';
         $html .= '<tbody>';
 
-        // 선수별 데이터 (최종 순위 순서대로)
+        // 선수별 데이터 (최종 순위 순서대로, 선수 번호 오름차순)
+        // 선수 번호 순으로 정렬
+        usort($final_rankings, function($a, $b) {
+            return strcmp($a['player_no'], $b['player_no']);
+        });
+        
         foreach ($final_rankings as $rank_entry) {
             $player_no = $rank_entry['player_no'];
             $html .= '<tr>';
